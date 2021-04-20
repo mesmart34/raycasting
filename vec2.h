@@ -24,5 +24,6 @@ public:
 	static float dot_product(const vec2 a, const vec2 b);
 	static vec2 cross_product(const vec2 a, const vec2 b);
 	static float distance(const vec2 a, const vec2 b);
+	static vec2 transpose(const vec2& a);
 	float x, y;
 };

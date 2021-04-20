@@ -3,28 +3,22 @@
 using namespace std;
 
 vector<vector<int>> Game::m_map = { 
-	{1, 1, 2, 1, 1, 1}, 
-	{1, 0, 0, 0, 0, 1}, 
-	{1, 0, 0, 0, 0, 1}, 
-	{1, 0, 0, 0, 0, 3}, 
-	{1, 0, 0, 0, 0, 1}, 
-	{1, 1, 1, 1, 1, 1} 
+	{33, 33,33,33, 35, 33, 33, 33},
+	{33, 0, 0, 0, 0, 0, 0, 33},
+	{33, 0, 33, 0, 0, 0, 0, 33},
+	{33, 0, 0, 0, 0, 0, 0, 33},
+	{33, 0, 0, 0, 0, 0, 0, 33},
+	{35, 0, 0, 33, 0, 0, 0, 35},
+	{33, 0, 0, 0, 0, 33, 0, 33},
+	{33, 33,33,33, 35, 33, 33, 33}
 };
 
-Game::Game(const int width, const int height) : m_width(width), m_height(height)
+Game::Game(const int width, const int height)
 {
-	auto windowFlags = (Uint32)(SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
-	m_window = SDL_CreateWindow("Wolf3D", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 600, windowFlags);
-	auto renderFlags = (Uint32)(SDL_RENDERER_ACCELERATED | SDL_RENDERER_TARGETTEXTURE);
-	m_renderer = SDL_CreateRenderer(m_window, -1, renderFlags);
-	m_texture = SDL_CreateTexture(m_renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, width, height);
-	SDL_RenderSetLogicalSize(m_renderer, m_width, m_height);
-	fieldOfView = 90.0f;
-	playerPosition = vec2(3, 3);
-	wallHeight = m_height;
-	viewDistance = 20.0f;
-	direction = vec2(-1, 0);
-	playerPlane = vec2(0, 0.96f);
+	m_window = Window();
+	m_renderer = Renderer(m_window, width, height);
+	m_eventHandler = EventHandler();
+	InitGameWorld();
 }
 
 void Game::Run()
@@ -33,168 +27,117 @@ void Game::Run()
 	auto lastTime = SDL_GetPerformanceCounter();
 	while (m_running)
 	{
-		HandleEvents();
+		m_eventHandler.Handle();
 		auto currentTime = SDL_GetPerformanceCounter();
 		auto timeSlice = currentTime - lastTime;
 		auto deltaTime = timeSlice / (float)SDL_GetPerformanceFrequency();
 		Update(deltaTime);
-		Render();
+		m_eventHandler.PostUpdate();
+		Render();	
 		lastTime = currentTime;
 	}
 }
 
-void Game::HandleEvents()
+void Game::InitGameWorld()
 {
-	auto event = SDL_Event();
-	while (SDL_PollEvent(&event))
-	{
-		switch (event.type)
-		{
-		case SDL_KEYDOWN:
-		{
-			if (event.key.keysym.scancode == SDL_SCANCODE_ESCAPE)
-				m_running = false;
-		} break;
-		default:
-			break;
-		}
-	}
+	m_player = Player(vec2(5, 5), 0.0f);
+	m_raycaster = Raycaster();
+	m_wallTexture = Texture("textures/walls.png");
 }
 
 void Game::Update(const float deltaTime)
 {
-	playerAngle += deltaTime * 10;
-	if (playerAngle > 360)
-		playerAngle = 0;
-	if (playerAngle < 0)
-		playerAngle = 360;
-	direction = RotateVector(direction, playerAngle);
-	playerPlane = RotateVector(playerPlane, playerAngle);
-	playerAngle = 0;
+	if (Input::IsKeyDown(SDL_SCANCODE_ESCAPE))
+		m_running = false;
+	m_player.Rotate(-Input::GetMouseAxis().x * deltaTime * 50.0f);
+
+	auto oldPosition = m_player.GetPosition();
+
+	auto GetTile = [&](const int x, const int y)
+	{
+		if (x >= 0 && x < m_map.size() && y >= 0 && y < m_map[x].size())
+			return m_map[x][y];
+	};
+	auto oldPlayerPos = m_player.GetPosition();
+	if (Input::IsKeyPressed(SDL_SCANCODE_W))
+		m_player.Move(m_player.GetDirection() * deltaTime * 2);
+	else if (Input::IsKeyPressed(SDL_SCANCODE_S))
+		m_player.Move(m_player.GetDirection() * deltaTime * -2);
+	if (Input::IsKeyPressed(SDL_SCANCODE_A))
+		m_player.Move(vec2(-m_player.GetDirection().y, m_player.GetDirection().x) * deltaTime * 2);
+	else if (Input::IsKeyPressed(SDL_SCANCODE_D))
+		m_player.Move(vec2(m_player.GetDirection().y, -m_player.GetDirection().x) * deltaTime * 2);
+	auto newPos = m_player.GetPosition();
+	auto delta = (m_player.GetPosition() - oldPlayerPos);
+
+	if (delta.x <= 0) 
+	{
+		if (GetTile(newPos.x - m_player.GetRadius(), newPos.y) != 0)
+		{
+			newPos.x = (int)newPos.x + m_player.GetRadius();
+		}
+	}
+	else 
+	{
+		if (GetTile(newPos.x + m_player.GetRadius(), newPos.y) != 0)
+		{
+			newPos.x = (int)newPos.x + 1 -  m_player.GetRadius();
+		}
+	}
+
+	if (delta.y <= 0) 
+	{
+		if (GetTile(newPos.x, newPos.y - m_player.GetRadius()) != 0)
+		{
+			newPos.y = (int)newPos.y + m_player.GetRadius();
+		}
+	}
+	else 
+	{
+		if (GetTile(newPos.x, newPos.y + m_player.GetRadius()) != 0)
+		{
+			newPos.y = (int)newPos.y + 1 +- m_player.GetRadius();
+		}
+	}
+
+	m_player.SetPosition(newPos);
 }
 
 void Game::Render()
 {
-	auto data = new uint32_t[(int64_t)m_width * (int64_t)m_height];
-	ClearScreen(data);
+	m_renderer.Clear();
+	DrawWorld();
+	DrawMap();
+	m_renderer.Draw();
+}
+
+void Game::DrawWorld()
+{
+	for (auto strip = 0; strip < m_renderer.GetWidth(); strip++)
+	{
+		auto ray = m_raycaster.CastRay(strip, m_renderer.GetWidth(), m_map, m_player);
+		m_renderer.DrawWallStrip(ray, m_wallTexture, strip);
+	}
+}
+
+void Game::DrawMap()
+{
 	
-	DrawWorld(data);
-
-	SDL_UpdateTexture(m_texture, nullptr, &data[0], sizeof(uint32_t) * m_width);
-	auto dst = SDL_Rect{0, 0, m_width, m_height};
-	SDL_RenderCopy(m_renderer, m_texture, nullptr, &dst);
-	SDL_RenderPresent(m_renderer);
-	delete[] data;
-}
-
-uint32_t Game::PackRGBA(const SDL_Color color) const
-{
-	return (uint32_t)(color.r << 24 | color.g << 16 | color.b << 8 | color.a << 0);
-}
-
-void Game::DrawWorld(uint32_t data[])
-{
-	for (auto strip = 0; strip < m_width; strip++)
+	for (auto x = 0; x < m_map.size(); x++)
 	{
-		auto ray = CastRay(strip);
-		DrawWall(data, ray, strip);
-	}
-}
-
-float Game::DegToRag(const float deg) const
-{
-	return deg * M_PI / 180.0f;
-}
-
-void Game::DrawWall(uint32_t data[], const Ray& ray, const int x)
-{
-	auto height = (int)floorf(wallHeight / ray.Distance);
-	auto start = m_height / 2 - height / 2;
-	if (start < 0)
-		start = 0;
-	auto end = start + height;
-	if (end > m_height)
-		end = m_height - 1;
-	auto color = SDL_Color{ 100, 50, 50, 255 };
-	if (ray.Id > 1)
-		color = SDL_Color{50, 25, 25, 255};
-	auto drawColor = PackRGBA(color);
-	if (ray.Horizonal)
-		drawColor = (drawColor) & 8355711;
-	for (auto j = start; j < end; j++)
-		data[x + j * m_width] = drawColor;
-}
-
-vec2 Game::RotateVector(const vec2& other, const float angle) const
-{
-	return vec2(
-		other.x * cosf(DegToRag(angle)) - other.y * sinf(DegToRag(angle)),
-		other.x * sinf(DegToRag(angle)) + other.y * cosf(DegToRag(angle))
-	);
-}
-
-Ray Game::CastRay(const int strip) const
-{
-	auto camera_x = 2 * strip / (float)m_width - 1;
-	auto rayDir = vec2(
-		direction.x + playerPlane.x * camera_x,
-		direction.y + playerPlane.y * camera_x
-	);
-	auto deltaDist = vec2(
-		(rayDir.y == 0) ? 0 : ((rayDir.x == 0) ? 1 : fabs(1 / rayDir.x)),
-		(rayDir.x == 0) ? 0 : ((rayDir.y == 0) ? 1 : fabs(1 / rayDir.y))
-	);
-	auto step = vec2(0, 0);
-	auto sideDist = vec2(0, 0);
-	auto horizontal = false;
-	auto map = vec2((int)playerPosition.x, (int)playerPosition.y);
-	if (rayDir.x < 0)
-		sideDist.x = (playerPosition.x - map.x) * deltaDist.x;
-	else 
-		sideDist.x = (map.x + 1.0f - playerPosition.x) * deltaDist.x;
-	step.x = rayDir.x < 0 ? -1 : 1;
-
-	if (rayDir.y < 0)
-		sideDist.y = (playerPosition.y - map.y) * deltaDist.y;
-	else
-		sideDist.y = (map.y + 1.0f - playerPosition.y) * deltaDist.y;
-	step.y = rayDir.y < 0 ? -1 : 1;
-
-	while (true)
-	{
-		if (sideDist.x < sideDist.y)
+		for (auto y = 0; y < m_map[x].size(); y++)
 		{
-			sideDist.x += deltaDist.x;
-			map.x += step.x;
-			horizontal = false;
-		}
-		else
-		{
-			sideDist.y += deltaDist.y;
-			map.y += step.y;
-			horizontal = true;
-		}
-		if (m_map[(int)map.x][(int)map.y] > 0) 
-			break;
-	}
-	auto distance = 0.0f;
-	if (horizontal == false) 
-		distance = (map.x - playerPosition.x + (1 - step.x) / 2) / rayDir.x;
-	else
-		distance = (map.y - playerPosition.y + (1 - step.y) / 2) / rayDir.y;
-	return Ray(distance, horizontal, m_map[(int)map.x][(int)map.y]);
-}
-
-void Game::ClearScreen(uint32_t data[])
-{
-	for (auto x = 0; x < m_width; x++)
-	{
-		for (auto y = 0; y < m_height; y++)
-		{
-			if(y <= m_height / 2)
-				data[x + y * m_width] = PackRGBA(SDL_Color{56, 56, 56, 255});
-			else
-				data[x + y * m_width] = PackRGBA(SDL_Color{113, 113, 113, 255});
+			auto color = SDL_Color{ 100, 100, 100, 100 };
+			if (m_map[x][y] == 35)
+				color = SDL_Color{ 255, 100, 100, 100 };
+			else if (m_map[x][y] == 33)
+				color = SDL_Color{ 200, 100, 100, 100 };
+			m_renderer.DrawRect(m_renderer, vec2(x * 4, y * 4), vec2(4, 4), MathUtils::PackRGBA(color), m_renderer.GetWidth());
 		}
 	}
+	m_renderer.DrawRect(m_renderer, 
+		m_player.GetPosition() * 4, 
+		vec2(m_player.GetRadius(), m_player.GetRadius() * 4),
+		MathUtils::PackRGBA(
+		SDL_Color{ 50, 255, 100, 255 }), m_renderer.GetWidth());
 }

@@ -122,3 +122,8 @@ float vec2::distance(const vec2 a, const vec2 b)
 {
 	return 1.0f / Q_rsqrt((b.x - a.x) * (b.x - a.x) + (b.y - a.y) * (b.y - a.y));
 }
+
+vec2 vec2::transpose(const vec2& a)
+{
+	return vec2(a.y, a.x);
+}

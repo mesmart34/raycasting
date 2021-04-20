@@ -90,12 +90,12 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>F:\Users\artem\Documents\vs projects\SDL\include;F:\Users\artem\Documents\vs projects\SDL2_ttf-2.0.15\include;F:\Users\artem\Documents\vs projects\GLFW\GLFW\GLFW;F:\Users\artem\Documents\vs projects\glew-2.1.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>F:\Users\artem\Documents\vs projects\SDL\include;F:\Users\artem\Documents\vs projects\SDL2_ttf-2.0.15\include;F:\Users\artem\Documents\vs projects\GLFW\GLFW\GLFW;F:\Users\artem\Documents\vs projects\glew-2.1.0\include;F:\Users\artem\Documents\SDL2-2.0.14\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
-      <AdditionalLibraryDirectories>F:\Users\artem\Documents\vs projects\SDL\lib\x64;F:\Users\artem\Documents\vs projects\SDL2_ttf-2.0.15\lib\x64;F:\Users\artem\Documents\vs projects\GLFW\lib;F:\Users\artem\Documents\vs projects\glew-2.1.0\lib\Release\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_ttf.lib;glu32.lib;opengl32.lib;glfw3.lib;glew32.lib;glfw3dll.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>F:\Users\artem\Documents\vs projects\SDL\lib\x64;F:\Users\artem\Documents\vs projects\SDL2_ttf-2.0.15\lib\x64;F:\Users\artem\Documents\vs projects\GLFW\lib;F:\Users\artem\Documents\vs projects\glew-2.1.0\lib\Release\x64;F:\Users\artem\Documents\SDL2-2.0.14\lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -129,15 +129,35 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Event.cpp" />
     <ClCompile Include="Game.cpp" />
+    <ClCompile Include="Input.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="MathUtils.cpp" />
+    <ClCompile Include="Physics.cpp" />
+    <ClCompile Include="Player.cpp" />
+    <ClCompile Include="Ray.cpp" />
+    <ClCompile Include="Raycaster.cpp" />
+    <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="stbi_image.cpp" />
+    <ClCompile Include="Texture.cpp" />
     <ClCompile Include="vec2.cpp" />
+    <ClCompile Include="Window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Event.h" />
     <ClInclude Include="Game.h" />
+    <ClInclude Include="Input.h" />
+    <ClInclude Include="MathUtils.h" />
+    <ClInclude Include="Physics.h" />
+    <ClInclude Include="Player.h" />
+    <ClInclude Include="Ray.h" />
+    <ClInclude Include="Raycaster.h" />
+    <ClInclude Include="Renderer.h" />
     <ClInclude Include="stbi_image.h" />
+    <ClInclude Include="Texture.h" />
     <ClInclude Include="vec2.h" />
+    <ClInclude Include="Window.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

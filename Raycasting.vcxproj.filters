@@ -2,29 +2,90 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="vec2.cpp">
-      <Filter>math</Filter>
+      <Filter>Math</Filter>
     </ClCompile>
     <ClCompile Include="stbi_image.cpp">
-      <Filter>thirdparty</Filter>
+      <Filter>Thirdparty</Filter>
     </ClCompile>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Game.cpp" />
+    <ClCompile Include="Ray.cpp" />
+    <ClCompile Include="Player.cpp" />
+    <ClCompile Include="Input.cpp">
+      <Filter>Event</Filter>
+    </ClCompile>
+    <ClCompile Include="Event.cpp">
+      <Filter>Event</Filter>
+    </ClCompile>
+    <ClCompile Include="MathUtils.cpp">
+      <Filter>Math</Filter>
+    </ClCompile>
+    <ClCompile Include="Physics.cpp">
+      <Filter>Math</Filter>
+    </ClCompile>
+    <ClCompile Include="Window.cpp">
+      <Filter>Platform</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderer.cpp">
+      <Filter>Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Raycaster.cpp">
+      <Filter>Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Texture.cpp">
+      <Filter>Graphics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="vec2.h">
-      <Filter>math</Filter>
+      <Filter>Math</Filter>
     </ClInclude>
     <ClInclude Include="stbi_image.h">
-      <Filter>thirdparty</Filter>
+      <Filter>Thirdparty</Filter>
     </ClInclude>
     <ClInclude Include="Game.h" />
+    <ClInclude Include="Ray.h" />
+    <ClInclude Include="Player.h" />
+    <ClInclude Include="Input.h">
+      <Filter>Event</Filter>
+    </ClInclude>
+    <ClInclude Include="Event.h">
+      <Filter>Event</Filter>
+    </ClInclude>
+    <ClInclude Include="MathUtils.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Physics.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Window.h">
+      <Filter>Platform</Filter>
+    </ClInclude>
+    <ClInclude Include="Raycaster.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Texture.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Filter Include="math">
+    <Filter Include="Event">
+      <UniqueIdentifier>{4a406c3a-ae45-49bd-8208-1465db5e4511}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Math">
       <UniqueIdentifier>{d1b0a68c-0657-4456-92b9-6286b8a59bb6}</UniqueIdentifier>
     </Filter>
-    <Filter Include="thirdparty">
+    <Filter Include="Thirdparty">
       <UniqueIdentifier>{37f41208-8f34-43b5-a00c-04f61d0f70d2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Platform">
+      <UniqueIdentifier>{ac854cae-6268-4132-ab11-64c2de9f2f2a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Graphics">
+      <UniqueIdentifier>{123cc308-a248-45a5-9518-247d35a7af90}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

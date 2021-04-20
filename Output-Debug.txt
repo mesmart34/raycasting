@@ -1,0 +1,80 @@
+﻿'Raycasting.exe' (Win32): Loaded 'F:\Users\artem\Documents\GitHub\Raycasting\bin\Raycasting.exe'. Symbols loaded.
+'Raycasting.exe' (Win32): Loaded 'C:\Windows\System32\ntdll.dll'. 
+'Raycasting.exe' (Win32): Loaded 'C:\Windows\System32\kernel32.dll'. 
+'Raycasting.exe' (Win32): Loaded 'C:\Windows\System32\KernelBase.dll'. 
+'Raycasting.exe' (Win32): Loaded 'C:\Windows\System32\shell32.dll'. 
+'Raycasting.exe' (Win32): Loaded 'C:\Windows\System32\msvcp_win.dll'. 
+'Raycasting.exe' (Win32): Loaded 'C:\Windows\System32\ucrtbase.dll'. 
+'Raycasting.exe' (Win32): Loaded 'C:\Windows\System32\user32.dll'. 
+'Raycasting.exe' (Win32): Loaded 'C:\Windows\System32\win32u.dll'. 
+'Raycasting.exe' (Win32): Loaded 'C:\Windows\System32\msvcp140d.dll'. 
+'Raycasting.exe' (Win32): Loaded 'C:\Windows\System32\vcruntime140d.dll'. 
+'Raycasting.exe' (Win32): Loaded 'C:\Windows\System32\ucrtbased.dll'. 
+'Raycasting.exe' (Win32): Loaded 'C:\Windows\System32\vcruntime140_1d.dll'. 
+'Raycasting.exe' (Win32): Loaded 'F:\Users\artem\Documents\GitHub\Raycasting\SDL2.dll'. Module was built without symbols.
+'Raycasting.exe' (Win32): Loaded 'C:\Windows\System32\advapi32.dll'. 
+'Raycasting.exe' (Win32): Loaded 'C:\Windows\System32\gdi32.dll'. 
+'Raycasting.exe' (Win32): Loaded 'C:\Windows\System32\msvcrt.dll'. 
+'Raycasting.exe' (Win32): Loaded 'C:\Windows\System32\gdi32full.dll'. 
+'Raycasting.exe' (Win32): Loaded 'C:\Windows\System32\sechost.dll'. 
+'Raycasting.exe' (Win32): Loaded 'C:\Windows\System32\rpcrt4.dll'. 
+'Raycasting.exe' (Win32): Loaded 'C:\Windows\System32\imm32.dll'. 
+'Raycasting.exe' (Win32): Loaded 'C:\Windows\System32\ole32.dll'. 
+'Raycasting.exe' (Win32): Loaded 'C:\Windows\System32\combase.dll'. 
+'Raycasting.exe' (Win32): Loaded 'C:\Windows\System32\oleaut32.dll'. 
+'Raycasting.exe' (Win32): Loaded 'C:\Windows\System32\setupapi.dll'. 
+'Raycasting.exe' (Win32): Loaded 'C:\Windows\System32\cfgmgr32.dll'. 
+'Raycasting.exe' (Win32): Loaded 'C:\Windows\System32\bcrypt.dll'. 
+'Raycasting.exe' (Win32): Loaded 'C:\Windows\System32\version.dll'. 
+'Raycasting.exe' (Win32): Loaded 'C:\Windows\System32\winmm.dll'. 
+'Raycasting.exe' (Win32): Loaded 'C:\Windows\System32\SHCore.dll'. 
+'Raycasting.exe' (Win32): Loaded 'C:\Windows\System32\uxtheme.dll'. 
+'Raycasting.exe' (Win32): Loaded 'C:\Windows\System32\msctf.dll'. 
+'Raycasting.exe' (Win32): Loaded 'C:\Windows\System32\kernel.appcore.dll'. 
+'Raycasting.exe' (Win32): Loaded 'C:\Windows\System32\bcryptprimitives.dll'. 
+'Raycasting.exe' (Win32): Loaded 'C:\Windows\System32\clbcatq.dll'. 
+'Raycasting.exe' (Win32): Loaded 'C:\Windows\System32\TextInputFramework.dll'. 
+'Raycasting.exe' (Win32): Loaded 'C:\Windows\System32\CoreMessaging.dll'. 
+'Raycasting.exe' (Win32): Loaded 'C:\Windows\System32\CoreUIComponents.dll'. 
+'Raycasting.exe' (Win32): Loaded 'C:\Windows\System32\ws2_32.dll'. 
+'Raycasting.exe' (Win32): Loaded 'C:\Windows\System32\ntmarta.dll'. 
+'Raycasting.exe' (Win32): Loaded 'C:\Windows\System32\WinTypes.dll'. 
+'Raycasting.exe' (Win32): Loaded 'C:\Windows\System32\WinTypes.dll'. 
+'Raycasting.exe' (Win32): Unloaded 'C:\Windows\System32\WinTypes.dll'
+'Raycasting.exe' (Win32): Loaded 'C:\Windows\System32\d3d9.dll'. 
+'Raycasting.exe' (Win32): Loaded 'C:\Windows\System32\windows.storage.dll'. 
+'Raycasting.exe' (Win32): Loaded 'C:\Windows\System32\dwmapi.dll'. 
+'Raycasting.exe' (Win32): Loaded 'C:\Windows\System32\wldp.dll'. 
+'Raycasting.exe' (Win32): Loaded 'C:\Windows\System32\DriverStore\FileRepository\nv_dispi.inf_amd64_d67c20d727d4578c\nvldumdx.dll'. 
+'Raycasting.exe' (Win32): Loaded 'C:\Windows\System32\msasn1.dll'. 
+'Raycasting.exe' (Win32): Loaded 'C:\Windows\System32\cryptnet.dll'. 
+'Raycasting.exe' (Win32): Loaded 'C:\Windows\System32\crypt32.dll'. 
+'Raycasting.exe' (Win32): Loaded 'C:\Windows\System32\cryptbase.dll'. 
+'Raycasting.exe' (Win32): Loaded 'C:\Windows\System32\wintrust.dll'. 
+'Raycasting.exe' (Win32): Loaded 'C:\Windows\System32\imagehlp.dll'. 
+'Raycasting.exe' (Win32): Loaded 'C:\Windows\System32\cryptsp.dll'. 
+'Raycasting.exe' (Win32): Loaded 'C:\Windows\System32\rsaenh.dll'. 
+'Raycasting.exe' (Win32): Loaded 'C:\Windows\System32\DriverStore\FileRepository\nv_dispi.inf_amd64_d67c20d727d4578c\nvd3dumx.dll'. 
+The thread 0x172c has exited with code 0 (0x0).
+'Raycasting.exe' (Win32): Loaded 'C:\Windows\System32\ResourcePolicyClient.dll'. 
+'Raycasting.exe' (Win32): Unloaded 'C:\Windows\System32\ResourcePolicyClient.dll'
+'Raycasting.exe' (Win32): Loaded 'C:\Windows\System32\shlwapi.dll'. 
+'Raycasting.exe' (Win32): Loaded 'C:\Windows\System32\nvspcap64.dll'. 
+'Raycasting.exe' (Win32): Loaded 'C:\Windows\System32\profapi.dll'. 
+'Raycasting.exe' (Win32): Loaded 'C:\Windows\System32\gpapi.dll'. 
+'Raycasting.exe' (Win32): Loaded 'C:\Windows\System32\DriverStore\FileRepository\nv_dispi.inf_amd64_d67c20d727d4578c\NvCamera\NvCameraAllowlisting64.dll'. 
+'Raycasting.exe' (Win32): Unloaded 'C:\Windows\System32\DriverStore\FileRepository\nv_dispi.inf_amd64_d67c20d727d4578c\NvCamera\NvCameraAllowlisting64.dll'
+'Raycasting.exe' (Win32): Loaded 'C:\Windows\System32\DXCore.dll'. 
+The thread 0x3df0 has exited with code 0 (0x0).
+The thread 0x2da4 has exited with code 0 (0x0).
+The thread 0x1d08 has exited with code 0 (0x0).
+The thread 0x1658 has exited with code 0 (0x0).
+The thread 0x1d50 has exited with code 0 (0x0).
+The thread 0x1328 has exited with code 0 (0x0).
+The thread 0x23d8 has exited with code 0 (0x0).
+The thread 0x2934 has exited with code 0 (0x0).
+The thread 0x1004 has exited with code 0 (0x0).
+The thread 0x100c has exited with code 0 (0x0).
+The thread 0x1e70 has exited with code 0 (0x0).
+The thread 0x3fac has exited with code 0 (0x0).
+The program '[7956] Raycasting.exe' has exited with code 0 (0x0).

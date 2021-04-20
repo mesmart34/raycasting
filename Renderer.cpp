@@ -31,14 +31,14 @@ void Renderer::PutPixel(const int x, const int y, const Uint32 color)
 
 void Renderer::DrawWallStrip(const Ray& ray, const Texture& texture, const int x)
 {
-	auto height = (int)floorf(m_height / ray.GetDistance());
+	auto height = (int)floorf(m_height / ray.Distance);
 	//std::cout << height << std::endl;
 	auto start = m_height / 2 - height / 2;
 	auto end = m_height / 2 + height / 2;
-	auto offset = vec2((ray.GetID() - 1) % 6, (ray.GetID() - 1) / 6);
-	if (ray.IsHorizontal())
+	auto offset = vec2((ray.Id - 1) % 6, (ray.Id - 1) / 6);
+	if (ray.Horizontal)
 		offset.x += 1;
-	auto txt = texture.GetScaledColumn(m_height, 64, height, ray.GetWallX() * texture.GetWidth(), m_height, offset);
+	auto txt = texture.GetScaledColumn(m_height, 64, height, ray.WallX * texture.GetWidth(), m_height, offset);
 	for (auto j = start; j < end; j++)
 	{
 		PutPixel(x, j, txt[(j - start) % height]);

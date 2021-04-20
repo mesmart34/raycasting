@@ -29,8 +29,11 @@ Ray Raycaster::CastRay(const int strip, const int width, const vector<vector<int
 		sideDist.y = (roundedCoords.y + 1.0f - player.GetPosition().y) * deltaDist.y;
 	step.y = rayDir.y < 0 ? -1 : 1;
 
-	while (true)
+	auto ray = Ray();
+	auto hit = false;
+	do
 	{
+		auto last = map;
 		if (sideDist.x < sideDist.y)
 		{
 			sideDist.x += deltaDist.x;
@@ -43,9 +46,74 @@ Ray Raycaster::CastRay(const int strip, const int width, const vector<vector<int
 			roundedCoords.y += step.y;
 			horizontal = true;
 		}
-		if (map[(int)roundedCoords.x][(int)roundedCoords.y] > 0)
-			break;
-	}
+
+
+		if (map[(int)roundedCoords.x][(int)roundedCoords.y] == 99)
+		{
+			auto dir = horizontal;
+			//need to backup by the end
+			auto last_x = roundedCoords.x;
+			auto last_y = roundedCoords.y;
+
+			auto distance = 0.0f;
+			auto hit_point = 0.0f;
+
+			auto state_hit_point = 0.0f;
+			if (horizontal == 0)
+				state_hit_point = player.GetPosition().y + ((roundedCoords.x + step.x * 0.5f - player.GetPosition().x + (1 - step.x) / 2) / rayDir.x) * rayDir.y;
+			else
+				state_hit_point = player.GetPosition().x + ((roundedCoords.y + step.y * 0.5f - player.GetPosition().y + (1 - step.y) / 2) / rayDir.y) * rayDir.x;
+			state_hit_point -= floor((state_hit_point));
+			//do an additional iteration to get next hit point, exactly like in cast_ray function but here we need the distance too
+			if (sideDist.x < sideDist.y)
+			{
+				roundedCoords.x += step.x;
+				horizontal = 0;
+				distance = (roundedCoords.x - player.GetPosition().x + (1 - step.x) / 2) / rayDir.x;
+			}
+			else
+			{
+				roundedCoords.y += step.y;
+				horizontal = 1;
+				distance = (roundedCoords.y - player.GetPosition().y + (1 - step.x) / 2) / rayDir.y;
+			}
+
+			//getting a hit point from an additional iteration 
+			if (horizontal == 0)
+				hit_point = player.GetPosition().y + distance * rayDir.y;
+			else
+				hit_point = player.GetPosition().x + distance * rayDir.x;
+			hit_point -= floor((hit_point));
+
+			// getting the offset relative to the direction a ray is casted with
+			auto offset = (dir == 0 ? rayDir.x : rayDir.y) > 0 ? 0.5 : 0.0;
+
+			auto opening_offset = 0.3f;
+			auto texture_offset = opening_offset;
+
+			//check if ray actually hit a thin wall
+			if (hit_point >= 0.0 + offset && hit_point < 0.5 + offset || (dir == 0 ? (last_x != roundedCoords.x) : (last_y != roundedCoords.y)))
+			{
+				//printf("%f\n", player_frac);
+				if (state_hit_point < opening_offset)
+				{
+					roundedCoords.x = last_x;
+					roundedCoords.y = last_y;
+					
+				}
+				else {
+					horizontal = dir;
+					ray.Door = true;
+					hit = true;
+					roundedCoords.x = last_x + (dir == 0 ? step.x * 0.5f : 0);
+					roundedCoords.y = last_y + (dir == 1 ? step.y * 0.5f : 0);
+				}
+
+
+			}
+		}else if (map[(int)roundedCoords.x][(int)roundedCoords.y] > 0)
+			hit = true;
+	} while (!hit);
 	auto distance = 0.0f;
 	if (horizontal == false)
 		distance = (roundedCoords.x - player.GetPosition().x + (1 - step.x) / 2) / rayDir.x;
@@ -57,5 +125,11 @@ Ray Raycaster::CastRay(const int strip, const int width, const vector<vector<int
 	else           
 		wallX = player.GetPosition().x + distance * rayDir.x;
 	wallX -= floor((wallX));
-	return Ray(distance, horizontal, map[(int)roundedCoords.x][(int)roundedCoords.y], wallX);
+	ray.Distance = distance;
+	ray.Horizontal = horizontal;
+	ray.WallX = wallX;
+	ray.Id = map[(int)roundedCoords.x][(int)roundedCoords.y];
+	return ray;
 }
+
+

@@ -1,8 +1,11 @@
 #pragma once
 #include "vec2.h"
+#include "MathUtils.h"
+#include <iostream>
 
 class Physics
 {
 public:
-	static bool Intersection(const vec2& a, const vec2& b, const float a_size, const float b_size);
+	static vec2 Intersection(const float circleRadius, const vec2& circlePosition, const vec2& rectPosition, const vec2& rectSize);
+	static vec2 Intersection(const float cr1, const vec2& c1, const float cr2, const vec2& c2);
 };

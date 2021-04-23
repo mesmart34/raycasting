@@ -19,3 +19,25 @@ uint32_t MathUtils::PackRGBA(const SDL_Color color)
 {
 	return (uint32_t)(color.r << 0 | color.g << 8 | color.b << 16 | color.a << 24);
 }
+
+int MathUtils::GetAngularDifference(const int a1, const int a2)
+{
+	auto result = Modulo((a1 - a2 + 180), 360) - 180;
+	if (result < 0)
+		result += 360;
+	return result;
+}
+
+int MathUtils::Modulo(const int a, const int n)
+{
+	return a - floor(a / n) * n;
+}
+
+float MathUtils::Clamp(const float target, const float min, const float max)
+{
+	if (target < min)
+		return min;
+	if (target > max)
+		return max;
+	return target;
+}

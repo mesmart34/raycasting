@@ -17,13 +17,15 @@ public:
 	vec2& operator*= (const vec2& a);
 	vec2& operator*= (float s);
 	bool operator==(const vec2& a) const;
+	float abs() const;
 	static vec2 lerp(vec2 start, vec2 end, float c);
 	static vec2 get_normalized(vec2 v);
 	static float get_magnitude(vec2 v);
 	static vec2 floor(vec2 v);
 	static float dot_product(const vec2 a, const vec2 b);
-	static vec2 cross_product(const vec2 a, const vec2 b);
+	static float cross_product(const vec2 a, const vec2 b);
 	static float distance(const vec2 a, const vec2 b);
+	static float sqrDistance(const vec2 a, const vec2 b);
 	static vec2 transpose(const vec2& a);
 	float x, y;
 };

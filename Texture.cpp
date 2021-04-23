@@ -1,6 +1,7 @@
 #include "Texture.h"
 
-Texture::Texture(const std::string& path)
+Texture::Texture(const std::string& path, const int columns = 0, const int rows = 0)
+	: m_columns(columns), m_rows(rows)
 {
 	LoadFromFile(path);
 }
@@ -25,12 +26,25 @@ int Texture::GetHeight() const
 	return m_height;
 }
 
-std::vector<uint32_t> Texture::GetScaledColumn(const int screenHeight, const int width, const int height, const int x, const int wallHeight, const vec2& offset) const
+std::vector<uint32_t> Texture::GetScaledColumn(const float wallX, const int screenHeight, const int height, const vec2& textureOffset, const int id) const
 {
-	auto column = std::vector<uint32_t>(height);
-	for (auto y = 0; y < height; y++) {
-		auto _y = (int)((float)(y * 64) / (float)height);
-		column[y] = m_data[(x / 6) + offset.x * 64 + ((_y + offset.y * 64) * m_width)];
+	auto delta = 0;
+	auto trueHeight = height;
+	if (height > screenHeight)
+	{
+		delta = (height - screenHeight) / 2;
+		trueHeight = screenHeight;
+	}
+	auto column = std::vector<uint32_t>(trueHeight);
+	auto offset = vec2((id - 1) % m_columns, (id - 1) / m_columns) * 64;
+	auto fixedWallX = wallX;
+	for (auto i = 0; i < column.size(); i++)
+	{
+		auto _y = (int)((float)((i + delta) * 64) / (float)height);
+		auto x = (fixedWallX - textureOffset.x) * 64 + offset.x;
+		auto y = _y + offset.y;
+		auto index = (int)(x + y * m_width);
+		column[i] = m_data[index];
 	}
 	return column;
 }

@@ -9,7 +9,6 @@
     </ClCompile>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Game.cpp" />
-    <ClCompile Include="Ray.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="Input.cpp">
       <Filter>Event</Filter>
@@ -35,6 +34,16 @@
     <ClCompile Include="Texture.cpp">
       <Filter>Graphics</Filter>
     </ClCompile>
+    <ClCompile Include="Object.cpp">
+      <Filter>Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="Enemy.cpp">
+      <Filter>Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="Sprite.cpp">
+      <Filter>Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Font.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="vec2.h">
@@ -44,7 +53,6 @@
       <Filter>Thirdparty</Filter>
     </ClInclude>
     <ClInclude Include="Game.h" />
-    <ClInclude Include="Ray.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="Input.h">
       <Filter>Event</Filter>
@@ -70,6 +78,16 @@
     <ClInclude Include="Texture.h">
       <Filter>Graphics</Filter>
     </ClInclude>
+    <ClInclude Include="Object.h">
+      <Filter>Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="Enemy.h">
+      <Filter>Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="Sprite.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Font.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Event">
@@ -86,6 +104,9 @@
     </Filter>
     <Filter Include="Graphics">
       <UniqueIdentifier>{123cc308-a248-45a5-9518-247d35a7af90}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Objects">
+      <UniqueIdentifier>{daf4daaf-9546-4a27-8cc4-796b368bd94a}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

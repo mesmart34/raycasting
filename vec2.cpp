@@ -87,6 +87,11 @@ bool vec2::operator==(const vec2& a) const
 	return fabs(this->x - a.x) < 0.0001f && fabs(this->y - a.y) < 0.0001f;
 }
 
+float vec2::abs() const
+{
+	return sqrtf(x * x + y * y);
+}
+
 vec2 vec2::lerp(const vec2 start, const vec2 end, const float c)
 {
 	return start + (end - start) * c;
@@ -110,17 +115,22 @@ vec2 vec2::floor(vec2 v)
 
 float vec2::dot_product(const vec2 a, const vec2 b)
 {
-	return a.x * b.x - a.y * b.y;
+	return a.x * b.x + a.y * b.y;
 }
 
-vec2 vec2::cross_product(const vec2 a, const vec2 b)
+float vec2::cross_product(const vec2 a, const vec2 b)
 {
-	return vec2();
+	return a.x * b.y - a.y * b.x;
 }
 
 float vec2::distance(const vec2 a, const vec2 b)
 {
 	return 1.0f / Q_rsqrt((b.x - a.x) * (b.x - a.x) + (b.y - a.y) * (b.y - a.y));
+}
+
+float vec2::sqrDistance(const vec2 a, const vec2 b)
+{
+	return (b.x - a.x) * (b.x - a.x) + (b.y - a.y) * (b.y - a.y);
 }
 
 vec2 vec2::transpose(const vec2& a)

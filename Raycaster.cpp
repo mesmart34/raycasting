@@ -2,134 +2,188 @@
 
 using namespace std;
 
-Ray Raycaster::CastRay(const int strip, const int width, const vector<vector<int>>& map, const Player& player) const
+Ray Raycaster::CastRay(const int strip, const int width, const vector<vector<int>>& map, const Player& player, const std::map<int, float> doors) const
 {
-	auto camera_x = 2 * strip / (float)width - 1;
-	auto rayDir = vec2(
-		player.GetDirection().x + player.GetPlane().x * camera_x,
-		player.GetDirection().y + player.GetPlane().y * camera_x
+	auto cast = Cast();
+	cast.Rounded = vec2::floor(player.GetPosition());
+	cast.CameraX = 2 * strip / (float)width - 1;
+	cast.Direction = vec2(
+		player.GetDirection().x + player.GetPlane().x * cast.CameraX,
+		player.GetDirection().y + player.GetPlane().y * cast.CameraX
 	);
-	auto deltaDist = vec2(
-		(rayDir.y == 0) ? 0 : ((rayDir.x == 0) ? 1 : fabs(1 / rayDir.x)),
-		(rayDir.x == 0) ? 0 : ((rayDir.y == 0) ? 1 : fabs(1 / rayDir.y))
+	cast.DeltaDistance = vec2(
+		(cast.Direction.y == 0) ? 0 : ((cast.Direction.x == 0) ? 1 : fabs(1 / cast.Direction.x)),
+		(cast.Direction.x == 0) ? 0 : ((cast.Direction.y == 0) ? 1 : fabs(1 / cast.Direction.y))
 	);
-	auto step = vec2(0, 0);
-	auto sideDist = vec2(0, 0);
-	auto horizontal = false;
-	auto roundedCoords = vec2((int)player.GetPosition().x, (int)player.GetPosition().y);
-	if (rayDir.x < 0)
-		sideDist.x = (player.GetPosition().x - roundedCoords.x) * deltaDist.x;
+	if (cast.Direction.x < 0)
+		cast.SideDistance.x = (player.GetPosition().x - cast.Rounded.x) * cast.DeltaDistance.x;
 	else
-		sideDist.x = (roundedCoords.x + 1.0f - player.GetPosition().x) * deltaDist.x;
-	step.x = rayDir.x < 0 ? -1 : 1;
+		cast.SideDistance.x = (cast.Rounded.x + 1.0f - player.GetPosition().x) * cast.DeltaDistance.x;
+	cast.Step.x = cast.Direction.x < 0 ? -1 : 1;
 
-	if (rayDir.y < 0)
-		sideDist.y = (player.GetPosition().y - roundedCoords.y) * deltaDist.y;
+	if (cast.Direction.y < 0)
+		cast.SideDistance.y = (player.GetPosition().y - cast.Rounded.y) * cast.DeltaDistance.y;
 	else
-		sideDist.y = (roundedCoords.y + 1.0f - player.GetPosition().y) * deltaDist.y;
-	step.y = rayDir.y < 0 ? -1 : 1;
-
+		cast.SideDistance.y = (cast.Rounded.y + 1.0f - player.GetPosition().y) * cast.DeltaDistance.y;
+	cast.Step.y = cast.Direction.y < 0 ? -1 : 1;
+	cast.Id = map[(int)cast.Rounded.x][(int)cast.Rounded.y];
 	auto ray = Ray();
-	auto hit = false;
 	do
 	{
-		auto last = map;
-		if (sideDist.x < sideDist.y)
+		MakeStep(cast);
+		if (cast.DoorBox)
 		{
-			sideDist.x += deltaDist.x;
-			roundedCoords.x += step.x;
-			horizontal = false;
+			cast.Hit = true;
 		}
-		else
-		{
-			sideDist.y += deltaDist.y;
-			roundedCoords.y += step.y;
-			horizontal = true;
-		}
-
-
-		if (map[(int)roundedCoords.x][(int)roundedCoords.y] == 99)
-		{
-			auto dir = horizontal;
-			//need to backup by the end
-			auto last_x = roundedCoords.x;
-			auto last_y = roundedCoords.y;
-
-			auto distance = 0.0f;
-			auto hit_point = 0.0f;
-
-			auto state_hit_point = 0.0f;
-			if (horizontal == 0)
-				state_hit_point = player.GetPosition().y + ((roundedCoords.x + step.x * 0.5f - player.GetPosition().x + (1 - step.x) / 2) / rayDir.x) * rayDir.y;
-			else
-				state_hit_point = player.GetPosition().x + ((roundedCoords.y + step.y * 0.5f - player.GetPosition().y + (1 - step.y) / 2) / rayDir.y) * rayDir.x;
-			state_hit_point -= floor((state_hit_point));
-			//do an additional iteration to get next hit point, exactly like in cast_ray function but here we need the distance too
-			if (sideDist.x < sideDist.y)
+		else {
+			cast.Id = map[(int)cast.Rounded.x][(int)cast.Rounded.y];
+			if (cast.Id == 99 || cast.Id == 98)
 			{
-				roundedCoords.x += step.x;
-				horizontal = 0;
-				distance = (roundedCoords.x - player.GetPosition().x + (1 - step.x) / 2) / rayDir.x;
-			}
-			else
-			{
-				roundedCoords.y += step.y;
-				horizontal = 1;
-				distance = (roundedCoords.y - player.GetPosition().y + (1 - step.x) / 2) / rayDir.y;
-			}
-
-			//getting a hit point from an additional iteration 
-			if (horizontal == 0)
-				hit_point = player.GetPosition().y + distance * rayDir.y;
-			else
-				hit_point = player.GetPosition().x + distance * rayDir.x;
-			hit_point -= floor((hit_point));
-
-			// getting the offset relative to the direction a ray is casted with
-			auto offset = (dir == 0 ? rayDir.x : rayDir.y) > 0 ? 0.5 : 0.0;
-
-			auto opening_offset = 0.3f;
-			auto texture_offset = opening_offset;
-
-			//check if ray actually hit a thin wall
-			if (hit_point >= 0.0 + offset && hit_point < 0.5 + offset || (dir == 0 ? (last_x != roundedCoords.x) : (last_y != roundedCoords.y)))
-			{
-				//printf("%f\n", player_frac);
-				if (state_hit_point < opening_offset)
+				if (cast.Vertical)
 				{
-					roundedCoords.x = last_x;
-					roundedCoords.y = last_y;
-					
+					ProcessVerticalDoor(cast, player, doors, map[0].size());
 				}
 				else {
-					horizontal = dir;
-					ray.Door = true;
-					hit = true;
-					roundedCoords.x = last_x + (dir == 0 ? step.x * 0.5f : 0);
-					roundedCoords.y = last_y + (dir == 1 ? step.y * 0.5f : 0);
+					ProcessHorizontalDoor(cast, player, doors, map[0].size());
 				}
 
-
 			}
-		}else if (map[(int)roundedCoords.x][(int)roundedCoords.y] > 0)
-			hit = true;
-	} while (!hit);
-	auto distance = 0.0f;
-	if (horizontal == false)
-		distance = (roundedCoords.x - player.GetPosition().x + (1 - step.x) / 2) / rayDir.x;
-	else
-		distance = (roundedCoords.y - player.GetPosition().y + (1 - step.y) / 2) / rayDir.y;
-	auto wallX = 0.0f;
-	if (horizontal == 0) 
-		wallX = player.GetPosition().y + distance * rayDir.y;
-	else           
-		wallX = player.GetPosition().x + distance * rayDir.x;
-	wallX -= floor((wallX));
-	ray.Distance = distance;
-	ray.Horizontal = horizontal;
-	ray.WallX = wallX;
-	ray.Id = map[(int)roundedCoords.x][(int)roundedCoords.y];
+			else if (cast.Id > 0)
+			{
+				auto coords = vec2::floor(player.GetPosition());
+				if ((map[(int)(coords.x)][(int)(coords.y - 1)] == 5 || map[(int)(coords.x)][(int)(coords.y + 1)] == 5) && cast.Vertical)
+					cast.DoorBox = true;
+				if ((map[(int)(coords.x - 1)][(int)(coords.y)] == 5 || map[(int)(coords.x + 1)][(int)(coords.y)] == 5) && !cast.Vertical)
+					cast.DoorBox = true;
+				cast.Hit = true;
+			}
+		}
+	} while (!cast.Hit);
+	cast.Distance = CalculateDistance(cast, player);
+	cast.WallX = CalculateWallX(cast, player);
+	cast.WallX -= floor(cast.WallX);
+	ray.Distance = cast.Distance;
+	ray.Horizontal = !cast.Vertical;
+	ray.WallX = cast.WallX;
+	ray.Id = cast.Id;
+	ray.Door = cast.Door;
+	ray.DoorBox = cast.DoorBox;
+	ray.TextureOffset = cast.TextureOffset;
 	return ray;
+}
+
+float Raycaster::CalculateDistance(const Cast& cast, const Player& player) const
+{
+	if (cast.Vertical)
+		return (cast.Rounded.y - player.GetPosition().y + (1 - cast.Step.y) / 2) / cast.Direction.y;
+	else
+		return (cast.Rounded.x - player.GetPosition().x + (1 - cast.Step.x) / 2) / cast.Direction.x;
+}
+
+float Raycaster::CalculateWallX(const Cast& cast, const Player& player) const
+{
+	if (!cast.Vertical)
+		return player.GetPosition().y + cast.Distance * cast.Direction.y;
+	else
+		return player.GetPosition().x + cast.Distance * cast.Direction.x;
+}
+
+void Raycaster::ProcessVerticalDoor(Cast& cast, const Player& player, const std::map<int, float> doors, const int mapWidth) const
+{
+	auto temp = cast;
+	MakeStep(temp);
+	temp.Distance = CalculateDistance(temp, player);
+	temp.WallX = CalculateWallX(temp, player);
+	temp.WallX -= floor(temp.WallX);
+	auto playerDirection = cast.Direction.y < 0 ? 1 : -1;
+	auto doorOffset = doors.at(cast.Rounded.x + cast.Rounded.y * mapWidth);
+	//auto doorOffset = 1.0f;
+	auto isDoor = playerDirection > 0 ? temp.WallX < 0.5f : temp.WallX >= 0.5f;
+	auto temp2 = cast;
+	auto distance = CalculateDistance(temp2, player);
+	temp2.Distance = distance;
+	auto wallX = CalculateWallX(temp2, player);
+	wallX -= floorf(wallX);
+	cast.TextureOffset = doorOffset;
+	if ((isDoor || temp.Vertical == cast.Vertical))
+	{
+		temp2 = cast;
+		temp2.Rounded.y += temp2.Step.y * 0.5f;
+		temp2.Distance = CalculateDistance(temp2, player);
+		temp2.WallX = CalculateWallX(temp2, player);
+		temp2.WallX -= floor(temp2.WallX);
+		if (temp2.WallX <= doorOffset && temp2.WallX > 0)
+		{
+			if (cast.Rounded.y == temp.Rounded.y)
+				cast.DoorBox = true;
+			return;
+		}
+		cast.Rounded.y += cast.Step.y * 0.5f;
+		cast.Door = true;
+	}
+	else
+	{
+		cast = temp;
+		cast.DoorBox = true;
+	}
+	cast.Hit = true;
+}
+
+void Raycaster::ProcessHorizontalDoor(Cast& cast, const Player& player, const std::map<int, float> doors, const int mapWidth) const
+{
+	auto temp = cast;
+	MakeStep(temp);
+	temp.Distance = CalculateDistance(temp, player);
+	temp.WallX = CalculateWallX(temp, player);
+	temp.WallX -= floor(temp.WallX);
+	auto playerDirection = cast.Direction.x < 0 ? 1 : -1;
+	auto doorOffset = doors.at(cast.Rounded.x + cast.Rounded.y * mapWidth);
+	auto isDoor = playerDirection > 0 ? temp.WallX < 0.5f : temp.WallX >= 0.5f;
+	auto temp2 = cast;
+	auto distance = CalculateDistance(temp2, player);
+	temp2.Distance = distance;
+	auto wallX = CalculateWallX(temp2, player);
+	wallX -= floorf(wallX);
+	cast.TextureOffset = doorOffset;
+	if ((isDoor || temp.Vertical == cast.Vertical))
+	{
+		temp2 = cast;
+		temp2.Rounded.x += temp2.Step.x * 0.5f;
+		temp2.Distance = CalculateDistance(temp2, player);
+		temp2.WallX = CalculateWallX(temp2, player);
+		temp2.WallX -= floor(temp2.WallX);
+		if (temp2.WallX <= doorOffset && temp2.WallX > 0)
+		{
+
+			if (cast.Rounded.x == temp.Rounded.x)
+				cast.DoorBox = true;
+			return;
+		}
+		cast.Rounded.x += cast.Step.x * 0.5f;
+		cast.Door = true;
+	}
+	else
+	{
+		cast = temp;
+		cast.DoorBox = true;
+	}
+	cast.Hit = true;
+}
+
+void Raycaster::MakeStep(Cast& cast) const
+{
+	if (cast.SideDistance.x < cast.SideDistance.y)
+	{
+		cast.SideDistance.x += cast.DeltaDistance.x;
+		cast.Rounded.x += cast.Step.x;
+		cast.Vertical = false;
+	}
+	else
+	{
+		cast.SideDistance.y += cast.DeltaDistance.y;
+		cast.Rounded.y += cast.Step.y;
+		cast.Vertical = true;
+	}
 }
 
 

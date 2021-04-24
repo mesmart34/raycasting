@@ -15,6 +15,8 @@
 #include "Enemy.h"
 #include "Font.h"
 #include <thread>
+#include <queue>
+#include <mutex>
 
 class Game {
 public:
@@ -38,7 +40,8 @@ private:
 	bool m_running;
 	std::vector<std::vector<int>> m_map;
 	std::vector<Object*> m_objects;
-	std::map<int, float> m_doors;
+	std::map<int, float> m_doors; 
+	std::queue<std::pair<int, Ray>> m_rays;
 	Player m_player;
 	Raycaster m_raycaster;
 	EventHandler m_eventHandler;
@@ -46,4 +49,6 @@ private:
 	Font m_miniFont;
 	Font m_font;
 	float m_fps;
+	std::mutex m;
+
 };

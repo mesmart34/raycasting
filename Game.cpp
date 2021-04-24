@@ -112,6 +112,22 @@ void Game::Update(const float deltaTime)
 		if (x >= 0 && x < m_map.size() && y >= 0 && y < m_map[x].size())
 			return m_map[x][y];
 	};
+
+	auto rayStep = MathUtils::Rotate(m_player.GetDirection(), m_player.GetAngle() + 45);
+	auto ray = m_player.GetPosition();
+	for (auto step = 0.0f; step < 20.0f; step++)
+	{
+		ray += rayStep;
+		auto rounded = vec2::floor(ray);
+		if(rounded.x > 0 && rounded.y > 0 && rounded.x < m_map[0].size() && rounded.y < m_map.size())
+
+		if (m_map[(int)rounded.x][(int)rounded.y] != 0)
+			break;
+	}
+	auto rayDistance = vec2::distance(m_player.GetPosition(), ray);
+	cout << rayDistance << endl;
+
+
 	for (auto obj : m_objects)
 	{
 		if (auto enemy = dynamic_cast<Enemy*>(obj))
@@ -133,11 +149,38 @@ void Game::Render()
 
 void Game::DrawWorld()
 {
-	for (auto strip = 0; strip < m_renderer.GetWidth(); strip++)
+	/*auto t1 = std::thread(&Game::CastRays, this, 0, m_renderer.GetWidth() / 2);
+	auto t2 = std::thread(&Game::CastRays, this, m_renderer.GetWidth() / 2, m_renderer.GetWidth());
+	auto render_thread = std::thread([=]() {
+		while (m_rays.size() > 0)
+		{
+			m.lock();
+			auto ray = m_rays.back();
+			m_renderer.DrawStrip(ray.second, m_wallTexture, ray.first);
+			m_rays.pop();
+			m.unlock();
+		}
+	});
+	t1.join();
+	t2.join();*/
+	//render_thread.join();
+	//for (auto i = 0; i < 4; i++)
+	//{
+	//	auto th1 = std::thread(&Game::CastRays, this, i * (m_renderer.GetWidth() / 4), i * (m_renderer.GetWidth() / 4) + m_renderer.GetWidth() / 4);
+	//	th1.detach();
+	//	//CastRays(i * (m_renderer.GetWidth() / 4), i * (m_renderer.GetWidth() / 4) + m_renderer.GetWidth() / 4);
+
+	//}
+	/*CastRays(0, m_renderer.GetWidth() / 4);
+	CastRays(m_renderer.GetWidth() / 4, m_renderer.GetWidth() / 2);
+	CastRays(m_renderer.GetWidth() / 2, m_renderer.GetWidth() / 2 + m_renderer.GetWidth() / 4);
+	CastRays(m_renderer.GetWidth() / 2 + m_renderer.GetWidth() / 4, m_renderer.GetWidth());*/
+	/*for (auto strip = 0; strip < m_renderer.GetWidth(); strip++)
 	{
 		auto ray = m_raycaster.CastRay(strip, m_renderer.GetWidth(), m_map, m_player, m_doors);
 		m_renderer.DrawStrip(ray, m_wallTexture, strip);
-	}
+	}*/
+	CastRays(0, m_renderer.GetWidth());
 }
 
 void Game::DrawMap()
@@ -210,4 +253,14 @@ void Game::DoPhysics()
 
 void Game::CastRays(const int start, const int end)
 {
+	for (auto strip = start; strip < end; strip++)
+	{
+		auto ray = m_raycaster.CastRay(strip, m_renderer.GetWidth(), m_map, m_player, m_doors);
+
+
+		//m_rays.push(std::pair<int, Ray>(strip, ray));
+		m.lock();
+		m_renderer.DrawStrip(ray, m_wallTexture, strip);
+		m.unlock();
+	}
 }

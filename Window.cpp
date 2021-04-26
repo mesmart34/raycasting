@@ -6,6 +6,11 @@ Window::Window(const WindowProps& props) : m_props(props)
 	m_window = SDL_CreateWindow("Raycasting", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, props.Width, props.Height, windowFlags);
 }
 
+Window::~Window()
+{
+	SDL_DestroyWindow(m_window);
+}
+
 SDL_Window* Window::GetSDLPtr() const
 {
 	return m_window;

@@ -10,12 +10,15 @@ struct WindowProps
 	std::string Title;
 };
 
+
 class Window
 {
 public:
 	Window(const WindowProps& props = WindowProps());
+	~Window();
 
 	SDL_Window* GetSDLPtr() const;
+
 
 	int GetWidth() const;
 	int GetHeight() const;

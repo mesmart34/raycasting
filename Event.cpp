@@ -12,16 +12,6 @@ void EventHandler::Handle()
 	{
 		switch (event.type)
 		{
-		case SDL_KEYDOWN:
-		{
-			auto key = (int)event.key.keysym.scancode;
-			Input::SeyKeyDown(key);
-		} break;
-		case SDL_KEYUP:
-		{
-			auto key = (int)event.key.keysym.scancode;
-			Input::SeyKeyUp(key);
-		} break;
 		case SDL_MOUSEMOTION:
 		{
 			Input::SetMouseAxis(event.motion.xrel, event.motion.yrel);
@@ -31,9 +21,15 @@ void EventHandler::Handle()
 			break;
 		}
 	}
+	for (auto i = 0; i < SDL_NUM_SCANCODES; i++)
+	{
+		Input::m_previousPressed[i] = Input::m_pressed[i];
+		Input::m_pressed[i] = m_keyboard[i];
+	}
 }
 
 void EventHandler::PostUpdate()
 {
 	Input::SetMouseAxis(0, 0);
 }
+

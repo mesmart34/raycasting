@@ -1,8 +1,8 @@
-#include "Game.h"
+#include "RaycastEngine.h"
 
 int main(int argc, char** argv)
 {
-	auto game = new Game(1360, 768);
-	game->Run();
+	auto engine = new RaycastEngine(1920 / 2, 1080 / 2);
+	engine->Run();
 	return 0;
 }

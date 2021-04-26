@@ -17,10 +17,10 @@ Font::Font(const std::string& name)
 	}
 	file.close();
 
-	m_texture = std::make_shared<Texture>("fonts/" + name + ".png", 0, 0);
+	m_texture = CreateRef<Texture>("fonts/" + name + ".png", 0, 0);
 }
 
-std::shared_ptr<Texture> Font::GetTexture() const
+Ref<Texture> Font::GetTexture() const
 {
 	return m_texture;
 }

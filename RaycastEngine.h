@@ -17,10 +17,14 @@
 #include <thread>
 #include <queue>
 #include <mutex>
+#include "Map.h"
+#include "Base.h"
+#include "UIElement.h"
+#include "Label.h"
 
-class Game {
+class RaycastEngine {
 public:
-	Game(const int width, const int height);
+	RaycastEngine(const int width, const int height);
 
 	void Run();
 private:
@@ -32,23 +36,19 @@ private:
 	void DrawObjects();
 	void DrawUI();
 	void DoPhysics();
-	void CastRays(const int start, const int end);
+	void CastRay();
+	void Shutdown();
 
 private:
 	Window m_window;
 	Renderer m_renderer;
 	bool m_running;
-	std::vector<std::vector<int>> m_map;
-	std::vector<Object*> m_objects;
-	std::map<int, float> m_doors; 
-	std::queue<std::pair<int, Ray>> m_rays;
 	Player m_player;
 	Raycaster m_raycaster;
 	EventHandler m_eventHandler;
 	Texture m_wallTexture;
-	Font m_miniFont;
-	Font m_font;
 	float m_fps;
-	std::mutex m;
-
+	Map m_map;
+	int tile;
+	std::vector<Ref<UIElement>> m_uiElements;
 };

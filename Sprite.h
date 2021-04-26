@@ -1,4 +1,5 @@
 #pragma once
+#include "Base.h"
 #include <memory>
 #include <vector>
 #include "vec2.h"
@@ -7,7 +8,7 @@
 
 struct Sprite
 {
-	std::shared_ptr<Texture> Atlas;
+	Ref<Texture> Atlas;
 	int Id;
 };
 

@@ -8,8 +8,7 @@
       <Filter>Thirdparty</Filter>
     </ClCompile>
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Game.cpp" />
-    <ClCompile Include="Player.cpp" />
+    <ClCompile Include="RaycastEngine.cpp" />
     <ClCompile Include="Input.cpp">
       <Filter>Event</Filter>
     </ClCompile>
@@ -43,7 +42,23 @@
     <ClCompile Include="Sprite.cpp">
       <Filter>Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="Font.cpp" />
+    <ClCompile Include="Map.cpp" />
+    <ClCompile Include="Font.cpp">
+      <Filter>Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Player.cpp">
+      <Filter>Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="Door.cpp">
+      <Filter>Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="Base.cpp" />
+    <ClCompile Include="UIElement.cpp">
+      <Filter>UI</Filter>
+    </ClCompile>
+    <ClCompile Include="Label.cpp">
+      <Filter>UI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="vec2.h">
@@ -52,8 +67,7 @@
     <ClInclude Include="stbi_image.h">
       <Filter>Thirdparty</Filter>
     </ClInclude>
-    <ClInclude Include="Game.h" />
-    <ClInclude Include="Player.h" />
+    <ClInclude Include="RaycastEngine.h" />
     <ClInclude Include="Input.h">
       <Filter>Event</Filter>
     </ClInclude>
@@ -87,7 +101,25 @@
     <ClInclude Include="Sprite.h">
       <Filter>Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="Font.h" />
+    <ClInclude Include="Map.h" />
+    <ClInclude Include="Font.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Player.h">
+      <Filter>Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="Door.h">
+      <Filter>Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="Base.h">
+      <Filter>Platform</Filter>
+    </ClInclude>
+    <ClInclude Include="UIElement.h">
+      <Filter>UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Label.h">
+      <Filter>UI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Event">
@@ -107,6 +139,9 @@
     </Filter>
     <Filter Include="Objects">
       <UniqueIdentifier>{daf4daaf-9546-4a27-8cc4-796b368bd94a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UI">
+      <UniqueIdentifier>{50761c00-fe91-4aa8-9965-cf9fe66c8063}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

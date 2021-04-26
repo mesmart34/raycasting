@@ -42,12 +42,29 @@ float Player::GetRadius() const
 
 float Player::GetAngle() const
 {
-	return (int)(m_angle) % 360;
+	return (int)(m_angle + 180) % 360;
 }
 
 void Player::Update(const float deltaTime)
 {
-	Rotate(-Input::GetMouseAxis().x * deltaTime * 50.0f);
+
+	static float mouseX = 0;
+
+	mouseX += -Input::GetMouseAxis().x * deltaTime * 30.0f;
+	mouseX *= 0.75f;
+	static bool cursor = false;
+	if(!cursor)
+		Rotate(mouseX);
+
+
+	if (Input::IsKeyDown(SDL_SCANCODE_C))
+	{
+		if (!cursor)
+			Input::SetCursorMode(CursorMode::Hidden);
+		else
+			Input::SetCursorMode(CursorMode::Show);
+		cursor = !cursor;
+	}
 
 	if (Input::IsKeyPressed(SDL_SCANCODE_W))
 		m_velocity += m_direction * deltaTime * 0.2;
@@ -58,10 +75,14 @@ void Player::Update(const float deltaTime)
 	else if (Input::IsKeyPressed(SDL_SCANCODE_D))
 		m_velocity += vec2(m_direction.y, -m_direction.x) * deltaTime * 0.2;
 
-	m_velocity.x = MathUtils::Clamp(m_velocity.x, -0.5, 0.5);
-	m_velocity.y = MathUtils::Clamp(m_velocity.y, -0.5, 0.5);
 	Move(m_velocity);
-	m_velocity *= 0.9;
+	m_velocity.x = MathUtils::Clamp(m_velocity.x, -0.05, 0.05);
+	m_velocity.y = MathUtils::Clamp(m_velocity.y, -0.05, 0.05);
+	m_velocity *= 0.95;
+	if (fabs(m_velocity.x) < 0.001f)
+		m_velocity.x = 0;
+	if (fabs(m_velocity.y) < 0.001f)
+		m_velocity.y = 0;
 }
 
 void Player::SetPosition(const vec2& position)

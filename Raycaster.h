@@ -4,6 +4,7 @@
 #include <iostream>
 #include <map>
 #include <iostream>
+#include "Map.h"
 
 struct Ray
 {
@@ -42,16 +43,15 @@ public:
 	Ray CastRay(
 		const int strip, 
 		const int width, 
-		const std::vector<std::vector<int>>& map, 
 		const Player& player,
-		const std::map<int, float> doors) const;
+		const Map& map) const;
 
 private:
 	void MakeStep(Cast& cast) const;
 	float CalculateDistance(const Cast& cast, const Player& player) const;
 	float CalculateWallX(const Cast& cast, const Player& player) const;
-	void ProcessVerticalDoor(Cast& cast, const Player& player, const std::map<int, float> doors, const int mapWidth) const;
-	void ProcessHorizontalDoor(Cast& cast, const Player& player, const std::map<int, float> doors, const int mapWidth) const;
+	void ProcessVerticalDoor(Cast& cast, const Player& player, const Map& map) const;
+	void ProcessHorizontalDoor(Cast& cast, const Player& player, const Map& map) const;
 
 };
 

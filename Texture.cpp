@@ -8,7 +8,7 @@ Texture::Texture(const std::string& path, const int columns = 0, const int rows 
 
 void Texture::LoadFromFile(const std::string& path)
 {
-	m_data = std::shared_ptr<uint32_t[]>((uint32_t*)stbi_load(path.c_str(), &m_width, &m_height, &m_channels, 4));
+	m_data = Ref<uint32_t[]>((uint32_t*)stbi_load(path.c_str(), &m_width, &m_height, &m_channels, 4));
 }
 
 uint32_t Texture::operator[](const int idx) const

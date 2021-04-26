@@ -5,6 +5,7 @@
 #include <vector>
 #include <memory>
 #include "vec2.h"
+#include "Base.h"
 
 class Texture
 {
@@ -27,5 +28,5 @@ private:
 	int m_channels;
 	int m_columns;
 	int m_rows;
-	std::shared_ptr<uint32_t[]> m_data;
+	Ref<uint32_t[]> m_data;
 };

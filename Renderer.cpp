@@ -2,14 +2,23 @@
 
 Renderer::Renderer(SDL_Window* window, const int width, const int height) : m_width(width), m_height(height)
 {
-	auto renderFlags = (Uint32)(SDL_RENDERER_ACCELERATED | SDL_RENDERER_TARGETTEXTURE);
+	auto renderFlags = (Uint32)(SDL_RENDERER_ACCELERATED | SDL_RENDERER_TARGETTEXTURE | SDL_RENDERER_PRESENTVSYNC);
 	m_renderer = SDL_CreateRenderer(window, -1, renderFlags);
 	m_texture = SDL_CreateTexture(m_renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, width, height);
 	SDL_RenderSetLogicalSize(m_renderer, width, height);
 	m_data = new uint32_t[width * height];
 	m_zBuffer = std::vector<float>(m_width);
-	m_spriteScale = height / 130.0f;
+	m_scale = height / 130.0f;
 	m_transparentColor = MathUtils::PackRGBA({ 152, 0, 136, 255 });
+	m_renderVerticalOffset = 0;
+	m_miniFont = Font("mini");
+	m_font = Font("font");
+}
+
+Renderer::~Renderer()
+{
+	SDL_DestroyRenderer(m_renderer);
+	delete m_texture;
 }
 
 void Renderer::Clear()
@@ -41,7 +50,7 @@ void Renderer::DrawStrip(const Ray& ray, const Texture& atlas, const int x)
 	if (ray.Horizontal)
 		id++;
 	if (ray.DoorBox)
-		id += ray.Horizontal ? 1 : 2;
+		id = 101 + ray.Horizontal;
 	auto height = (int)floorf(m_height / ray.Distance);
 	auto start = m_height / 2 - height / 2;
 	auto end = m_height / 2 + height / 2;
@@ -65,13 +74,13 @@ void Renderer::Draw()
 	SDL_RenderPresent(m_renderer);
 }
 
-void Renderer::DrawRect(Renderer& renderer, const vec2& start, const vec2& size, const uint32_t color, const int width)
+void Renderer::DrawRect(const vec2& start, const vec2& size, const uint32_t color)
 {
 	for (auto x = (int)start.x; x < (int)start.x + size.y; x++)
 	{
 		for (auto y = (int)start.y; y < (int)start.y + size.y; y++)
 		{
-			renderer.PutPixel(x, y, color);
+			PutPixel(x, y, color);
 		}
 	}
 
@@ -94,7 +103,7 @@ void Renderer::DrawSprite(const Sprite& sprite, const vec2& position, const Play
 	);
 	auto spritePositionX = ((m_width / 2) * (1 + transform.x / transform.y));
 
-	auto spriteSize = ((height / transform.y)) * m_spriteScale * 2;
+	auto spriteSize = ((height / transform.y)) * m_scale * 2;
 	auto drawStartY = m_height / 2 - spriteSize / 2;
 	auto drawEndY = m_height / 2 + spriteSize / 2;
 
@@ -121,7 +130,7 @@ void Renderer::DrawSprite(const Sprite& sprite, const vec2& position, const Play
 
 }
 
-void Renderer::SortObjects(std::vector<Object*>& m_objects, const Player& m_player)
+void Renderer::SortObjects(std::vector<Ref<Object>>& m_objects, const Player& m_player)
 {
 	std::sort(m_objects.begin(), m_objects.end(), [=](auto p1, auto p2)->bool {
 		auto d1 = vec2::sqrDistance(m_player.GetPosition(), p1->GetPosition());
@@ -140,7 +149,7 @@ int Renderer::GetHeight() const
 	return m_height;
 }
 
-void Renderer::DrawText(const std::string& text, const Font& font, const vec2& position, const uint32_t color)
+void Renderer::DrawText(const std::string& text, const Font& font, const vec2& position, const float size, const uint32_t color)
 {
 	auto letterPosition = 0;
 	for (auto s : text)
@@ -154,22 +163,44 @@ void Renderer::DrawText(const std::string& text, const Font& font, const vec2& p
 		auto start = meta.first;
 		auto length = meta.second;
 		auto txt = font.GetTexture();
-		DrawTexture(txt, color, position + vec2(letterPosition, 0), start, length, font.GetTexture()->GetHeight());
-		letterPosition += length + 5;
+		DrawTexture(txt, color, position + vec2(letterPosition, 0), start, length, font.GetTexture()->GetHeight(), vec2(size, size));
+		letterPosition += (length + 5) * m_scale * size;
 	}
 }
 
-void Renderer::DrawTexture(const std::shared_ptr<Texture>& texture, const uint32_t drawColor, const vec2& position, const int start, const int letterWidth, const int letterHeight)
+void Renderer::DrawTexture(const std::shared_ptr<Texture>& texture, const uint32_t drawColor, const vec2& position, const int start, const int letterWidth, const int letterHeight, const vec2& size)
 {
-	for (auto x = 0; x < letterWidth; x++)
+	auto size_x = letterWidth * m_scale * size.x;
+	auto size_y = letterHeight * m_scale * size.y;
+	auto step_x = 1.0f * letterWidth / size_x;
+	auto step_y = 1.0f * letterHeight / size_y;
+	auto tex_x = 0.0f;
+	for (auto x = 0; x < size_x; x++)
 	{
-		for (auto y = 0; y < letterHeight; y++)
+		auto tex_y = 0.0f;
+		for (auto y = 0; y < size_y; y++)
 		{
-			auto index = (x + start) + y * texture->GetWidth();
-			if ((*texture)[index] == m_transparentColor)
-				continue;
-			PutPixel(x + position.x, y + position.y, drawColor);
+			auto index = ((int)tex_x + start) + (int)tex_y * texture->GetWidth();
+			auto color = (uint32_t)(*texture)[index];
+			if (color != (uint32_t)m_transparentColor)
+				PutPixel(x + position.x, y + position.y, drawColor);
+			tex_y += step_y;
 
 		}
+		tex_x += step_x;
+	}
+}
+
+float Renderer::GetScale() const
+{
+	return m_scale;
+}
+
+void Renderer::DrawUIElement(Ref<UIElement> element)
+{
+	if (auto label = dynamic_cast<Label*>(element.get()))
+	{
+		DrawText(label->GetText(), m_miniFont, label->GetPosition(), 1, label->GetColor());
+		//DrawRect(label->GetPosition(), label->GetSize(), label->GetColor());
 	}
 }

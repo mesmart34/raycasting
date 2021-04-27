@@ -1,11 +1,11 @@
 #include "Renderer.h"
 
-Renderer::Renderer(SDL_Window* window, const int width, const int height) : m_width(width), m_height(height)
+Renderer::Renderer(Window& window, const int width, const int height) : m_width(width), m_height(height)
 {
 	auto renderFlags = (Uint32)(SDL_RENDERER_ACCELERATED | SDL_RENDERER_TARGETTEXTURE | SDL_RENDERER_PRESENTVSYNC);
-	m_renderer = SDL_CreateRenderer(window, -1, renderFlags);
+	m_renderer = SDL_CreateRenderer(window.GetSDLPtr(), -1, renderFlags);
 	m_texture = SDL_CreateTexture(m_renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, width, height);
-	SDL_RenderSetLogicalSize(m_renderer, width, height);
+	//SDL_RenderSetLogicalSize(m_renderer, width, height);
 	m_data = new uint32_t[width * height];
 	m_zBuffer = std::vector<float>(m_width);
 	m_scale = height / 130.0f;
@@ -66,10 +66,14 @@ void Renderer::DrawStrip(const Ray& ray, const Texture& atlas, const int x)
 		PutPixel(x, j, txt[j - start]);
 }
 
-void Renderer::Draw()
+void Renderer::Draw(const int screenWidth, const int screenHeight)
 {
+	SDL_RenderClear(m_renderer);
 	SDL_UpdateTexture(m_texture, nullptr, &m_data[0], sizeof(uint32_t) * m_width);
-	auto dst = SDL_Rect{ 0, 0, m_width, m_height };
+	auto ratio = (float)m_width / m_height;
+	auto newWidth = (int)(screenHeight * ratio);
+	auto diff = (screenWidth - newWidth) / 2;
+	auto dst = SDL_Rect{ screenWidth / 2 - newWidth / 2, 0, newWidth, screenHeight };
 	SDL_RenderCopy(m_renderer, m_texture, nullptr, &dst);
 	SDL_RenderPresent(m_renderer);
 }
@@ -200,7 +204,7 @@ void Renderer::DrawUIElement(Ref<UIElement> element)
 {
 	if (auto label = dynamic_cast<Label*>(element.get()))
 	{
-		DrawText(label->GetText(), m_miniFont, label->GetPosition(), 1, label->GetColor());
+		DrawText(label->GetText(), m_miniFont, label->GetPosition(), 0.15, label->GetColor());
 		//DrawRect(label->GetPosition(), label->GetSize(), label->GetColor());
 	}
 }

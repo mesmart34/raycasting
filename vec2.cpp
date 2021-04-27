@@ -137,3 +137,10 @@ vec2 vec2::transpose(const vec2& a)
 {
 	return vec2(a.y, a.x);
 }
+
+float vec2::GetAngleBetweenTwoVectors(const vec2 a, const vec2 b)
+{
+	auto alpha = dot_product(a, b) / (get_magnitude(a) * get_magnitude(b));
+	auto result = acosf(alpha);
+	return result;
+}

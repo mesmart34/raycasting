@@ -49,6 +49,6 @@ private:
 	Texture m_wallTexture;
 	float m_fps;
 	Map m_map;
-	int tile;
+	Ref<Label> m_fpsLabel;
 	std::vector<Ref<UIElement>> m_uiElements;
 };

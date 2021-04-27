@@ -3,7 +3,7 @@
 using namespace std;
 
 
-RaycastEngine::RaycastEngine(const int width, const int height) : m_renderer(Renderer(m_window.GetSDLPtr(), width, height))
+RaycastEngine::RaycastEngine(const int width, const int height) : m_renderer(Renderer(m_window, width, height))
 {
 	Input::SetScale(m_renderer.GetScale());
 	m_eventHandler = EventHandler();
@@ -65,8 +65,8 @@ void RaycastEngine::InitGameWorld()
 	m_map.AddObject(CreateRef<Object>(lampSprite, vec2(5.5, 5.5), false));
 	m_map.AddObject(CreateRef<Object>(sprite, vec2(6.5, 6.5), true));
 	
-	auto lbl = CreateRef<Label>("hello, world!", vec2(0, 0), vec2(100, 100), 0xFFFFFFFF);
-	m_uiElements.push_back(lbl);
+	m_fpsLabel = CreateRef<Label>("fps: ", vec2(0, 0), vec2(100, 100), 0xFFFFFFFF);
+	m_uiElements.push_back(m_fpsLabel);
 }
 
 void RaycastEngine::Update(const float deltaTime)
@@ -102,7 +102,7 @@ void RaycastEngine::Render()
 	DrawObjects();
 	DrawUI();
 	///DrawMap();
-	m_renderer.Draw();
+	m_renderer.Draw(m_window.GetWidth(), m_window.GetHeight());
 }
 
 void RaycastEngine::DrawWorld()
@@ -159,6 +159,7 @@ void RaycastEngine::DrawUI()
 
 	text = to_string((int)tile);
 	m_renderer.DrawText(text, m_miniFont, vec2(10, 50), 0.25f, 0xFFFFFFFF);*/
+	m_fpsLabel->SetText(to_string((int)m_fps));
 	for (auto& ui : m_uiElements)
 		m_renderer.DrawUIElement(ui);
 }
@@ -203,11 +204,11 @@ void RaycastEngine::CastRay()
 			step * cosf(MathUtils::DegToRad(m_player.GetAngle())),
 			step * sinf(MathUtils::DegToRad(m_player.GetAngle()))
 			);
-		tile = m_map.GetIndexAt(ray.x, ray.y);
+		auto tile = m_map.GetIndexAt(ray.x, ray.y);
 		if (tile == -1)
 			break;
 		
-		if (tile == 98)
+		if (tile == 98 && step < 1.25f)
 			m_map.OpenDoorAt(ray.x, ray.y);
 
 		if (tile > 0)

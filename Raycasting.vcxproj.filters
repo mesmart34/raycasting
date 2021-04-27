@@ -52,12 +52,14 @@
     <ClCompile Include="Door.cpp">
       <Filter>Objects</Filter>
     </ClCompile>
-    <ClCompile Include="Base.cpp" />
     <ClCompile Include="UIElement.cpp">
       <Filter>UI</Filter>
     </ClCompile>
     <ClCompile Include="Label.cpp">
       <Filter>UI</Filter>
+    </ClCompile>
+    <ClCompile Include="Base.cpp">
+      <Filter>Platform</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

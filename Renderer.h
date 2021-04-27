@@ -1,4 +1,5 @@
 #pragma once
+#include "Base.h"
 #include "SDL/SDL.h"
 #include "MathUtils.h"
 #include "Window.h"
@@ -18,13 +19,13 @@ class Renderer
 {
 public:
 	Renderer() = default;
-	Renderer(SDL_Window* window, const int width, const int height);
+	Renderer(Window& window, const int width, const int height);
 	~Renderer();
 
 	void Clear();
 	inline void PutPixel(const int x, const int y, const Uint32 color);
 	void DrawStrip(const Ray& ray, const Texture& atlas, const int x);
-	void Draw();
+	void Draw(const int screenWidth, const int screenHeight);
 	void DrawRect(const vec2& start, const vec2& size, const uint32_t color);
 	void DrawColumn(const std::vector<uint32_t>& data, const int x);
 	void DrawSprite(const Sprite& sprite, const vec2& position, const Player& player);

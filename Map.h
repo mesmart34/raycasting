@@ -8,13 +8,12 @@
 
 class Map
 {
-
 public:
 	Map() = default;
 	Map(const vec2& playerSpawnPoint);
 
 	int GetIndexAt(const int x, const int y) const;
-	void AddObject(Ref<Object> obj);
+	void AddObject(const Ref<Object>& obj);
 	float GetDoorInfo(const int x, const int y) const;
 	bool IsDoorOpened(const int x, const int y) const;
 	std::vector<Ref<Object>>& GetObjects();

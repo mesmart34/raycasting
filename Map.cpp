@@ -41,7 +41,7 @@ int Map::GetIndexAt(const int x, const int y) const
 	return -1;
 }
 
-void Map::AddObject(Ref<Object> obj)
+void Map::AddObject(const Ref<Object>& obj)
 {
 	m_objects.push_back(obj);
 }

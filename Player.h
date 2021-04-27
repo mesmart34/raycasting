@@ -7,8 +7,7 @@
 class Player
 {
 public:
-	Player() = default;
-	Player(const vec2& position, const float angle, const vec2& plane);
+	Player(const vec2& position = vec2(), const float angle = 0, const vec2& plane = vec2(1, 0));
 
 	void Move(const vec2& other);
 	void Rotate(const float angle);

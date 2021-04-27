@@ -27,5 +27,6 @@ public:
 	static float distance(const vec2 a, const vec2 b);
 	static float sqrDistance(const vec2 a, const vec2 b);
 	static vec2 transpose(const vec2& a);
+	static float GetAngleBetweenTwoVectors(const vec2 a, const vec2 b);
 	float x, y;
 };

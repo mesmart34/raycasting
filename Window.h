@@ -1,6 +1,8 @@
 #pragma once
 #include "SDL\SDL.h"
+#include "SDL\SDL_events.h"
 #include <string>
+#include "Base.h"
 
 struct WindowProps
 {
@@ -17,8 +19,8 @@ public:
 	Window(const WindowProps& props = WindowProps());
 	~Window();
 
-	SDL_Window* GetSDLPtr() const;
-
+	SDL_Window* GetSDLPtr();
+	static int SDLCALL Resize(void* data, SDL_Event* ev);
 
 	int GetWidth() const;
 	int GetHeight() const;

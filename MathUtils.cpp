@@ -15,6 +15,11 @@ float MathUtils::DegToRad(const float deg)
 	return deg * M_PI / 180.0f;
 }
 
+float MathUtils::RadToDeg(const float rad)
+{
+	return  rad * 180.0f / M_PI;
+}
+
 uint32_t MathUtils::PackRGBA(const SDL_Color color)
 {
 	return (uint32_t)(color.r << 0 | color.g << 8 | color.b << 16 | color.a << 24);

@@ -16,7 +16,7 @@ public:
 	int GetWidth() const;
 	int GetHeight() const;
 
-	std::vector<uint32_t> GetScaledColumn(const float wallX, const int screenHeight, const int height, const vec2& textureOffset, const int id) const;
+	void GetScaledColumn(uint32_t  * column, const float wallX, const int screenHeight, const int height, const vec2& textureOffset, const int id, const float offset) const;
 
 	void LoadFromFile(const std::string& path);
 

@@ -16,7 +16,7 @@ public:
 	Font(const std::string& name);
 
 
-
+	vec2 GetTextSize(const std::string& text) const;
 	Ref<Texture> GetTexture() const;
 	std::pair<int, int> GetMeta(const char symbol) const;
 

@@ -15,6 +15,7 @@ struct Ray
 	bool Door;
 	bool DoorBox;
 	float TextureOffset;
+	vec2 Position;
 };
 
 struct Cast

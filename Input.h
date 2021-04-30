@@ -3,10 +3,11 @@
 #include "Event.h"
 #include <iostream>
 #include <array>
+#include "Event.h"
 #include "vec2.h"
 
 
-enum CursorMode
+enum class CursorMode
 {
 	Show, Hidden
 };
@@ -25,6 +26,8 @@ public:
 	static bool IsMouseDown(const int btn);
 	static vec2 GetMouseAxis();
 	static void SetCursorMode(CursorMode mode);
+	static vec2 GetMousePosition();
+	static void SetTextInputMode(bool enabled, std::string* const currentText);
 
 private:
 	static void SeyKeyDown(const int key);
@@ -35,9 +38,14 @@ private:
 private:
 	static std::array<bool, SDL_NUM_SCANCODES> m_pressed;
 	static std::array<bool, SDL_NUM_SCANCODES> m_previousPressed;
+	static std::array<bool, 10> m_mousePressed;
+	static std::array<bool, 10> m_mousePreviousPressed;
+	static std::string* m_inputString;
 	static int mouseScreenX, mouseScreenY;
 	static vec2 mouseAxis;
 	static float m_scale;
+	static bool m_inputMode;
+
 
 };
 

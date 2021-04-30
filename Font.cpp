@@ -20,6 +20,23 @@ Font::Font(const std::string& name)
 	m_texture = CreateRef<Texture>("fonts/" + name + ".png", 0, 0);
 }
 
+vec2 Font::GetTextSize(const std::string& text) const
+{
+	auto size = vec2();
+	size.y = m_texture.get()->GetHeight();
+	for (auto s : text)
+	{
+		if (s == (char)32)
+		{
+			size.x += 5;
+			continue;
+		}
+		auto meta = GetMeta(s);
+		size.x += (meta.second + 5);
+	}
+	return size;
+}
+
 Ref<Texture> Font::GetTexture() const
 {
 	return m_texture;

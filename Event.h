@@ -4,7 +4,6 @@
 #include "Input.h"
 #include <array>
 
-
 class EventHandler
 {
 public:
@@ -12,11 +11,9 @@ public:
 	void Handle();
 	void PostUpdate();
 
-	
-
+	friend class Input;
 
 private:
 	const Uint8* m_keyboard = SDL_GetKeyboardState(NULL);
-
 };
 

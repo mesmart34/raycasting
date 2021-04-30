@@ -137,10 +137,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Base.cpp" />
+    <ClCompile Include="Button.cpp" />
     <ClCompile Include="Door.cpp" />
     <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="Event.cpp" />
     <ClCompile Include="Font.cpp" />
+    <ClCompile Include="Panel.cpp" />
     <ClCompile Include="RaycastEngine.cpp" />
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="Label.cpp" />
@@ -154,6 +156,7 @@
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="Sprite.cpp" />
     <ClCompile Include="stbi_image.cpp" />
+    <ClCompile Include="TextBox.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="UIElement.cpp" />
     <ClCompile Include="vec2.cpp" />
@@ -161,10 +164,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Base.h" />
+    <ClInclude Include="Button.h" />
     <ClInclude Include="Door.h" />
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="Event.h" />
     <ClInclude Include="Font.h" />
+    <ClInclude Include="Panel.h" />
     <ClInclude Include="RaycastEngine.h" />
     <ClInclude Include="Input.h" />
     <ClInclude Include="Label.h" />
@@ -177,6 +182,7 @@
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="Sprite.h" />
     <ClInclude Include="stbi_image.h" />
+    <ClInclude Include="TextBox.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="UIElement.h" />
     <ClInclude Include="vec2.h" />

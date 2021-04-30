@@ -22,7 +22,9 @@ float MathUtils::RadToDeg(const float rad)
 
 uint32_t MathUtils::PackRGBA(const SDL_Color color)
 {
-	return (uint32_t)(color.r << 0 | color.g << 8 | color.b << 16 | color.a << 24);
+	auto res = *(uint32_t*)&color;
+	return res;
+	//return (uint32_t)(color.a << 24 | color.r << 16 | color.g << 8 | color.b << 0);
 }
 
 int MathUtils::GetAngularDifference(const int a1, const int a2)
@@ -45,4 +47,10 @@ float MathUtils::Clamp(const float target, const float min, const float max)
 	if (target > max)
 		return max;
 	return target;
+}
+
+float MathUtils::Lerp(const float a, const float b, const float t)
+{
+	auto res = a + t * (b - a);
+	return res;
 }

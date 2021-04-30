@@ -21,6 +21,9 @@
 #include "Base.h"
 #include "UIElement.h"
 #include "Label.h"
+#include "Button.h"
+#include "Panel.h"
+#include "TextBox.h"
 
 class RaycastEngine {
 public:
@@ -38,6 +41,8 @@ private:
 	void DoPhysics();
 	void CastRay();
 	void Shutdown();
+	
+	void ThreadRender(const int start, const int end);
 
 private:
 	Window m_window;
@@ -51,4 +56,8 @@ private:
 	Map m_map;
 	Ref<Label> m_fpsLabel;
 	std::vector<Ref<UIElement>> m_uiElements;
+	static std::mutex m_mutex;
+	Ref<Label> playerPosText;
+	Ref<Panel> panel;
+	//std::vector<std::vector<uint32_t>> m_buffer;
 };

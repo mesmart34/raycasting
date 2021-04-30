@@ -2,19 +2,32 @@
 
 std::array<bool, SDL_NUM_SCANCODES> Input::m_pressed;
 std::array<bool, SDL_NUM_SCANCODES> Input::m_previousPressed;
+std::array<bool, 10> Input::m_mousePressed;
+std::array<bool, 10> Input::m_mousePreviousPressed;
 int Input::mouseScreenX;
 int Input::mouseScreenY;
 vec2 Input::mouseAxis;
 float Input::m_scale;
+std::string* Input::m_inputString;
+bool Input::m_inputMode;
 
 void Input::SetCursorMode(CursorMode mode)
 {
-	if (mode == CursorMode::Hidden) {
-		SDL_SetRelativeMouseMode(SDL_FALSE);
-	}
-	else {
+	if (mode == CursorMode::Hidden) 
 		SDL_SetRelativeMouseMode(SDL_TRUE);
-	}
+	else 
+		SDL_SetRelativeMouseMode(SDL_FALSE);
+}
+
+vec2 Input::GetMousePosition()
+{
+	return vec2(mouseScreenX, mouseScreenY);
+}
+
+void Input::SetTextInputMode(bool enabled, std::string* const currentText)
+{
+	m_inputMode = enabled;
+	m_inputString = currentText;
 }
 
 
@@ -25,7 +38,6 @@ void Input::SetScale(const float value)
 
 bool Input::IsKeyDown(const int key)
 {
-	//std::cout << !m_pressed[key] << ", " <<  m_previousPressed[key] << std::endl;
 	return m_pressed[key] && !m_previousPressed[key];
 }
 
@@ -36,12 +48,12 @@ bool Input::IsKeyUp(const int key)
 
 bool Input::IsKeyPressed(const int key)
 {
-	return m_pressed[key];
+	return m_pressed[key] && m_previousPressed[key];
 }
 
 bool Input::IsMouseDown(const int btn)
 {
-	return false;
+	return m_mousePressed[btn] && !m_mousePreviousPressed[btn];
 }
 
 vec2 Input::GetMouseAxis()

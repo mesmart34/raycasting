@@ -2,6 +2,7 @@
 
 using namespace std;
 
+std::mutex RaycastEngine::m_mutex;
 
 RaycastEngine::RaycastEngine(const int width, const int height) : m_renderer(Renderer(m_window, width, height))
 {
@@ -36,7 +37,6 @@ void RaycastEngine::Run()
 void RaycastEngine::InitGameWorld()
 {
 	m_map = Map(vec2(5, 5));
-
 	auto plane = vec2();
 	plane.y = (m_renderer.GetWidth() / 304.0f) * 0.99f;
 	plane.y /= m_renderer.GetHeight() / 152.0f;
@@ -64,21 +64,77 @@ void RaycastEngine::InitGameWorld()
 	m_map.AddObject(CreateRef<Enemy>(trex_sprite, vec2(4.5, 5.5), 0));
 	m_map.AddObject(CreateRef<Object>(lampSprite, vec2(5.5, 5.5), false));
 	m_map.AddObject(CreateRef<Object>(sprite, vec2(6.5, 6.5), true));
-	
-	m_fpsLabel = CreateRef<Label>("fps: ", vec2(0, 0), vec2(100, 100), 0xFFFFFFFF);
+	m_map.AddObject(CreateRef<Enemy>(ss_sprite, vec2(13.5, 6.5), 90));
+	auto fpslabelPos = vec2(m_renderer.GetWidth() - 200, 10);
+	m_fpsLabel = CreateRef<Label>("fps: ", fpslabelPos, vec2(200, 50), 20, 0, 0xFF00FF00);
+	m_fpsLabel->SetBackgroundColor(0x00111111);
+	m_fpsLabel->SetTextAlignment(Right);	
+	playerPosText = CreateRef<Label>("position: ", vec2(10, 10), vec2(200, 50), 20, 0, 0xFF00FF00);
+	playerPosText->SetBackgroundColor(0);
+	playerPosText->SetTextAlignment(Left);
+	auto btn = CreateRef<Button>("Exit", vec2(10, 10), vec2(200, 50),
+		[=](Button* btn) {
+			Shutdown();
+		}
+	);
+	btn->SetFontSize(30);
+	btn->SetBackgroundColor(0xFF551155);
+	panel = CreateRef<Panel>(vec2(), vec2(), 0xAA111111);
+	panel->SetSize(vec2(220, 180));
+	panel->SetLocalPosition(vec2(m_renderer.GetWidth() / 2 - panel->GetSize().x / 2, m_renderer.GetHeight() / 2 - panel->GetSize().y / 2));
+	m_uiElements.push_back(panel);
 	m_uiElements.push_back(m_fpsLabel);
+	m_uiElements.push_back(playerPosText);
+	panel->AddChildren(btn);
+
+	auto textBox = CreateRef<TextBox>(vec2(10, 60), vec2(200, 50));
+	textBox->SetBackgroundColor(0xAA111111);
+	textBox->SetTextAlignment(Left);
+	textBox->SetFontSize(25);
+
+	auto textBox1 = CreateRef<TextBox>(vec2(10, 120), vec2(200, 50));
+	textBox1->SetBackgroundColor(0xAA111111);
+	textBox1->SetTextAlignment(Left);
+	textBox1->SetFontSize(25);
+
+	panel->AddChildren(textBox);
+	panel->AddChildren(textBox1);
+	panel->SetEnable(false);
+	//m_uiElements.push_back(CreateRef<Label>("hello, world", vec2(0, 200), vec2(400, 200), 1, 0xAA0000AA, 0xFFFFFFFF));
+
+	
 }
 
 void RaycastEngine::Update(const float deltaTime)
 {
+	/*if (Input::IsKeyDown(SDL_SCANCODE_ESCAPE))
+		Shutdown();*/
+	
+	static bool cursor = false;
+
 	if (Input::IsKeyDown(SDL_SCANCODE_ESCAPE))
-		Shutdown();
-	m_player.Update(deltaTime);
+	{
+		if (!cursor)
+		{
+			Input::SetCursorMode(CursorMode::Show);
+			panel->SetEnable(true);
+		}
+		else
+		{
+			panel->SetEnable(false);
+			Input::SetCursorMode(CursorMode::Hidden);
+		}
+		cursor = !cursor;
+	}
+	if(!cursor)
+		m_player.Update(deltaTime);
 
 
-	/*static float mouseY = 0.0f;
-	mouseY -= Input::GetMouseAxis().y * deltaTime * 500;
-	m_renderer.SetVerticalOffset(mouseY + 100);*/
+	//static float mouseY = 0.0f;
+	//mouseY -= Input::GetMouseAxis().y * deltaTime * 500;
+	/*static float headMove = 0.0f;
+	headMove += deltaTime * 10;
+	m_renderer.SetVerticalOffset(64 + cosf(headMove) *400 * vec2::get_magnitude(m_player.GetVelocity()));*/
 
 	for (auto obj : m_map.GetObjects())
 	{
@@ -92,26 +148,37 @@ void RaycastEngine::Update(const float deltaTime)
 
 
 	for (auto& ui : m_uiElements)
-		ui->Update();
+	{
+		if (ui->IsEnabled())
+			ui->Update(deltaTime);
+	}
 }
 
 void RaycastEngine::Render()
 {
+	//m_mutex.lock();
 	m_renderer.Clear();
 	DrawWorld();
 	DrawObjects();
 	DrawUI();
-	///DrawMap();
 	m_renderer.Draw(m_window.GetWidth(), m_window.GetHeight());
+	//m_mutex.unlock();
+	///DrawMap();
+	
 }
 
 void RaycastEngine::DrawWorld()
 {
+	auto max = 0;
 	for (auto strip = 0; strip < m_renderer.GetWidth(); strip++)
 	{
 		auto ray = m_raycaster.CastRay(strip, m_renderer.GetWidth(), m_player, m_map);
-		m_renderer.DrawStrip(ray, m_wallTexture, strip);
+		if (ray.Distance > max)
+			max = ray.Distance;
+		auto inside = ray.Position == vec2::floor(m_player.GetPosition());
+		m_renderer.DrawStrip(ray, m_wallTexture, strip, inside);
 	}
+	m_renderer.SetMaxDistance(max);
 }
 
 void RaycastEngine::DrawMap()
@@ -159,9 +226,23 @@ void RaycastEngine::DrawUI()
 
 	text = to_string((int)tile);
 	m_renderer.DrawText(text, m_miniFont, vec2(10, 50), 0.25f, 0xFFFFFFFF);*/
-	m_fpsLabel->SetText(to_string((int)m_fps));
+	auto pos = m_player.GetPosition();
+	auto x = (int)pos.x;
+	auto y = (int)pos.y;
+	auto text = "position: " + to_string(x) + ", " + to_string(y);
+	playerPosText->SetText(text);
+	m_fpsLabel->SetText("fps: " + to_string((int)m_fps));
 	for (auto& ui : m_uiElements)
+	{
+		if (!ui->IsEnabled())
+			continue;
 		m_renderer.DrawUIElement(ui);
+		for(auto child : ui->GetChildren())
+		{
+			m_renderer.DrawUIElement(child);
+		}
+			
+	}
 }
 
 void RaycastEngine::DoPhysics()
@@ -211,11 +292,9 @@ void RaycastEngine::CastRay()
 		if (tile == 98 && step < 1.25f)
 			m_map.OpenDoorAt(ray.x, ray.y);
 
+
 		if (tile > 0)
-		{
-			
 			break;
-		}
 
 	}
 
@@ -224,5 +303,21 @@ void RaycastEngine::CastRay()
 void RaycastEngine::Shutdown()
 {
 	m_running = false;
+}
+
+void RaycastEngine::ThreadRender(const int start, const int end)
+{
+	cout << start << ", " << end << endl;
+	while (true) {
+
+		for (auto strip = start; strip < end; strip++)
+		{
+			auto ray = m_raycaster.CastRay(strip, m_renderer.GetWidth(), m_player, m_map);
+			auto inside = ray.Position == vec2::floor(m_player.GetPosition());
+			//m_mutex.lock();
+			m_renderer.DrawStrip(ray, m_wallTexture, strip, inside);
+			//m_mutex.unlock();
+		}
+	}
 }
 

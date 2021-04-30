@@ -61,6 +61,15 @@
     <ClCompile Include="Base.cpp">
       <Filter>Platform</Filter>
     </ClCompile>
+    <ClCompile Include="Panel.cpp">
+      <Filter>UI</Filter>
+    </ClCompile>
+    <ClCompile Include="Button.cpp">
+      <Filter>UI</Filter>
+    </ClCompile>
+    <ClCompile Include="TextBox.cpp">
+      <Filter>UI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="vec2.h">
@@ -120,6 +129,15 @@
       <Filter>UI</Filter>
     </ClInclude>
     <ClInclude Include="Label.h">
+      <Filter>UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Button.h">
+      <Filter>UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Panel.h">
+      <Filter>UI</Filter>
+    </ClInclude>
+    <ClInclude Include="TextBox.h">
       <Filter>UI</Filter>
     </ClInclude>
   </ItemGroup>

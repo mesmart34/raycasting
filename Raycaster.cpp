@@ -51,6 +51,17 @@ Ray Raycaster::CastRay(const int strip, const int width, const Player& player, c
 			else if (cast.Id > 0)
 			{
 				auto coords = vec2::floor(player.GetPosition());
+				if (map.GetIndexAt(coords.x, coords.y) == 98)
+				{
+					if(coords.x == cast.Rounded.x - 1 && coords.y == cast.Rounded.y)
+						cast.DoorBox = true;
+					if (coords.x == cast.Rounded.x + 1 && coords.y == cast.Rounded.y)
+						cast.DoorBox = true;
+					if (coords.x == cast.Rounded.x && coords.y == cast.Rounded.y - 1)
+						cast.DoorBox = true;
+					if (coords.x == cast.Rounded.x && coords.y == cast.Rounded.y + 1)
+						cast.DoorBox = true;
+				}
 				/*if (map.GetIndexAt(coords.x, coords.y) == 98)
 				{
 					if (map.GetIndexAt((int)coords.x, (int)coords.y - 1) == 98 || map.GetIndexAt((int)coords.x, (int)coords.y + 1) == 98 && !cast.Vertical)
@@ -73,6 +84,7 @@ Ray Raycaster::CastRay(const int strip, const int width, const Player& player, c
 	ray.Door = cast.Door;
 	ray.DoorBox = cast.DoorBox;
 	ray.TextureOffset = cast.TextureOffset;
+	ray.Position = cast.Rounded;
 	return ray;
 }
 

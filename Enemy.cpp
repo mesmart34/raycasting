@@ -15,7 +15,7 @@ void Enemy::Update(const float deltaTime, const Player& player)
 		m_angle += 360;*/
 
 	auto diff = (int)((MathUtils::GetAngularDifference(player.GetAngle(), m_angle - 25.5f)) / 45.0f) + 8 * 0 + 1;
-	printf("%d\n", diff);
+	//printf("%d\n", diff);
 	m_sprite.Id = diff;
 }
 

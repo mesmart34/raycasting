@@ -14,4 +14,5 @@ public:
 	static int GetAngularDifference(const int a1, const int a2);
 	static int Modulo(const int a, const int n);
 	static float Clamp(const float target, const float min, const float max);
+	static float Lerp(const float a, const float b, const float t);
 };

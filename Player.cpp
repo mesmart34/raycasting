@@ -52,19 +52,11 @@ void Player::Update(const float deltaTime)
 
 	mouseX += -Input::GetMouseAxis().x * deltaTime * 30.0f;
 	mouseX *= 0.75f;
-	static bool cursor = false;
-	if(!cursor)
-		Rotate(mouseX);
+
+	Rotate(mouseX);
 
 
-	if (Input::IsKeyDown(SDL_SCANCODE_C))
-	{
-		if (!cursor)
-			Input::SetCursorMode(CursorMode::Hidden);
-		else
-			Input::SetCursorMode(CursorMode::Show);
-		cursor = !cursor;
-	}
+	
 
 	if (Input::IsKeyPressed(SDL_SCANCODE_W))
 		m_velocity += m_direction * deltaTime * 0.2;

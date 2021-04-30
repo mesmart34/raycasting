@@ -41,6 +41,7 @@ public:
 	void SetVerticalOffset(const float value);
 	inline uint32_t GetBlendedColor(const uint32_t a, const uint32_t b) const;
 	void DrawUIElement(Ref<UIElement> element);
+	void DrawUIElementWithChildren(Ref<UIElement> element);
 	void SetMaxDistance(const float maxDistance);
 private:
 	void DrawButton(const Button* const button);

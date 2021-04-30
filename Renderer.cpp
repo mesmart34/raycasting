@@ -2,7 +2,7 @@
 
 Renderer::Renderer(Window& window, const int width, const int height) : m_width(width), m_height(height)
 {
-	auto renderFlags = (Uint32)(SDL_RENDERER_TARGETTEXTURE | SDL_RENDERER_PRESENTVSYNC);
+	auto renderFlags = (Uint32)(SDL_RENDERER_TARGETTEXTURE);
 	m_renderer = SDL_CreateRenderer(window.GetSDLPtr(), -1, renderFlags);
 	m_texture = SDL_CreateTexture(m_renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, width, height);
 	SDL_RenderSetLogicalSize(m_renderer, width, height);
@@ -247,8 +247,15 @@ void Renderer::DrawUIElement(Ref<UIElement> element)
 	}
 	else if (auto panel = dynamic_cast<Panel*>(element.get()))
 	{
-		DrawRect(panel->GetPosition(), panel->GetSize(), panel->GetColor());
+		DrawRect(panel->GetPosition(), panel->GetSize(), panel->GetBackgroundColor());
 	}
+}
+
+void Renderer::DrawUIElementWithChildren(Ref<UIElement> element)
+{
+	DrawUIElement(element);
+	for (auto c : element->GetChildren())
+		DrawUIElementWithChildren(c);
 }
 
 void Renderer::SetMaxDistance(const float maxDistance)

@@ -27,10 +27,9 @@ public:
 
 protected:
 	std::string m_text;
-
-private:
+	TextAlignment m_textAlignment;
 	uint32_t m_fontColor;
 	int m_fontSize;
 	bool m_autoSize;
-	TextAlignment m_textAlignment;
+
 };

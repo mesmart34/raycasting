@@ -82,25 +82,60 @@ void RaycastEngine::InitGameWorld()
 	panel = CreateRef<Panel>(vec2(), vec2(), 0xAA111111);
 	panel->SetSize(vec2(220, 180));
 	panel->SetLocalPosition(vec2(m_renderer.GetWidth() / 2 - panel->GetSize().x / 2, m_renderer.GetHeight() / 2 - panel->GetSize().y / 2));
-	m_uiElements.push_back(panel);
+	//m_uiElements.push_back(panel);
 	m_uiElements.push_back(m_fpsLabel);
 	m_uiElements.push_back(playerPosText);
 	panel->AddChildren(btn);
 
 	auto textBox = CreateRef<TextBox>(vec2(10, 60), vec2(200, 50));
 	textBox->SetBackgroundColor(0xAA111111);
-	textBox->SetTextAlignment(Left);
 	textBox->SetFontSize(25);
 
 	auto textBox1 = CreateRef<TextBox>(vec2(10, 120), vec2(200, 50));
 	textBox1->SetBackgroundColor(0xAA111111);
-	textBox1->SetTextAlignment(Left);
 	textBox1->SetFontSize(25);
 
 	panel->AddChildren(textBox);
 	panel->AddChildren(textBox1);
 	panel->SetEnable(false);
 	//m_uiElements.push_back(CreateRef<Label>("hello, world", vec2(0, 200), vec2(400, 200), 1, 0xAA0000AA, 0xFFFFFFFF));
+
+	auto connectPanel = CreateRef<Panel>(vec2(1, 1), vec2(130, 150), 0xAA0000AA);
+	connectPanel->SetSize(vec2(330, 260));
+	connectPanel->SetLocalPosition(vec2(m_renderer.GetWidth(), m_renderer.GetHeight()) * 0.5f - connectPanel->GetSize() * 0.5f);
+	connectPanel->SetBackgroundColor(0xAA111111);
+	m_uiElements.push_back(connectPanel);
+
+
+
+	//m_uiElements.push_back(textBox);
+	auto titleLabel = CreateRef<Label>("Connect to server", vec2(0, 0), vec2(330, 50), 20, 0, 0xFFFFFFFF);
+	titleLabel->SetTextAlignment(Middle);
+	
+	auto ipLabel = CreateRef<Label>("IP: ", vec2(10, 60), vec2(50, 50));
+	ipLabel->SetFontSize(20);
+	auto textIp = CreateRef<TextBox>(vec2(70, 60), vec2(250, 50));
+	textIp->SetFontSize(20);
+
+	auto portLabel = CreateRef<Label>("Port: ", vec2(10, 130), vec2(80, 50));
+	portLabel->SetFontSize(20);
+	auto textPort = CreateRef<TextBox>(vec2(100, 130), vec2(220, 50));
+	textPort->SetFontSize(20);
+
+	auto connectBtn = CreateRef<Button>("Connect", vec2(10, 200), vec2(310, 50), [=](Button* btn) {
+		auto ip = textIp->GetText();
+		auto port = textPort->GetText();
+		cout << "Connected to " << ip << ":" << port << endl;
+	});
+	connectBtn->SetBackgroundColor(0xFFCCCCFF);
+	connectBtn->SetFontSize(20);
+	connectPanel->AddChildren(titleLabel);
+	connectPanel->AddChildren(connectBtn);
+	connectPanel->AddChildren(ipLabel);
+	connectPanel->AddChildren(textIp);
+	connectPanel->AddChildren(portLabel);
+	connectPanel->AddChildren(textPort);
+	connectPanel->SetEnable(false);
 
 	
 }
@@ -236,11 +271,7 @@ void RaycastEngine::DrawUI()
 	{
 		if (!ui->IsEnabled())
 			continue;
-		m_renderer.DrawUIElement(ui);
-		for(auto child : ui->GetChildren())
-		{
-			m_renderer.DrawUIElement(child);
-		}
+		m_renderer.DrawUIElementWithChildren(ui);
 			
 	}
 }

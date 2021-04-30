@@ -1,7 +1,7 @@
 #include "UIElement.h"
 
 UIElement::UIElement(const vec2& position, const vec2& size, const uint32_t color)
-	: m_position(position), m_size(size), m_color(color), m_enabled(true)
+	: m_position(position), m_size(size), m_backgroundColor(color), m_enabled(true)
 {
 }
 

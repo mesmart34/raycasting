@@ -4,7 +4,7 @@
 TextBox::TextBox(const vec2& position, const vec2& size)
 	: Label("", position, size), m_focused(false)
 {
-
+	m_textAlignment = Left;
 }
 
 void TextBox::Update(const float deltaTime)

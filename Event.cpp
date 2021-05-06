@@ -1,3 +1,4 @@
+#include "pch.h"
 #include "Event.h"
 
 EventHandler::EventHandler()
@@ -8,11 +9,6 @@ EventHandler::EventHandler()
 void EventHandler::Handle()
 {
 	auto event = SDL_Event();
-	if (Input::m_inputMode)
-	{
-		//Input::m_inputString;
-		SDL_StartTextInput();
-	}
 	while (SDL_PollEvent(&event))
 	{
 		switch (event.type)
@@ -66,10 +62,6 @@ void EventHandler::Handle()
 		default:
 			break;
 		}
-	}
-	if(!Input::m_inputMode)
-	{
-		SDL_StopTextInput();
 	}
 	for (auto i = 0; i < SDL_NUM_SCANCODES; i++)
 	{

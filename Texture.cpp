@@ -1,3 +1,4 @@
+#include "pch.h"
 #include "Texture.h"
 
 Texture::Texture(const std::string& path, const int columns = 0, const int rows = 0)

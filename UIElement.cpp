@@ -1,13 +1,25 @@
+#include "pch.h"
 #include "UIElement.h"
 
 UIElement::UIElement(const vec2& position, const vec2& size, const uint32_t color)
-	: m_position(position), m_size(size), m_backgroundColor(color), m_enabled(true)
+	: m_position(position), m_size(size), m_backgroundColor(color), m_enabled(true), m_focused(false)
 {
 }
 
 vec2 UIElement::GetPosition() const
 {
 	return m_position + (m_parent != nullptr ? m_parent->GetPosition() : vec2(0, 0));
+}
+
+bool UIElement::IsFocused() const
+{
+	return m_focused;
+}
+
+bool UIElement::IsMouseInside(const int x, const int y) const
+{
+	auto result = x >= GetPosition().x && x < GetPosition().x + m_size.x && y >= GetPosition().y && y < GetPosition().y + m_size.y;
+	return result;
 }
 
 void UIElement::SetLocalPosition(const vec2& position)
@@ -45,7 +57,7 @@ void UIElement::SetBackgroundColor(const uint32_t color)
 	m_backgroundColor = color;
 }
 
-void UIElement::AddChildren(const Ref<UIElement>& m_child)
+void UIElement::AddChild(const Ref<UIElement>& m_child)
 {
 	m_child->m_parent = Ref<UIElement>(this);
 	m_children.push_back(m_child);

@@ -1,4 +1,5 @@
 #pragma once
+
 #include "Base.h"
 #include "SDL/SDL.h"
 #include "MathUtils.h"
@@ -17,6 +18,7 @@
 #include "Button.h"
 #include "Panel.h"
 #include "TextBox.h"
+
 
 class Renderer
 {
@@ -41,9 +43,9 @@ public:
 	void SetVerticalOffset(const float value);
 	inline uint32_t GetBlendedColor(const uint32_t a, const uint32_t b) const;
 	void DrawUIElement(Ref<UIElement> element);
-	void DrawUIElementWithChildren(Ref<UIElement> element);
 	void SetMaxDistance(const float maxDistance);
 private:
+	void DrawUIElementWithChildren(Ref<UIElement> element);
 	void DrawButton(const Button* const button);
 	void DrawLabel(const Label* const label);
 	void DrawTextBox(const TextBox* const textBox);

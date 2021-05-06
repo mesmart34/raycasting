@@ -1,3 +1,4 @@
+#include "pch.h"
 #include "Input.h"
 
 std::array<bool, SDL_NUM_SCANCODES> Input::m_pressed;
@@ -9,7 +10,6 @@ int Input::mouseScreenY;
 vec2 Input::mouseAxis;
 float Input::m_scale;
 std::string* Input::m_inputString;
-bool Input::m_inputMode;
 
 void Input::SetCursorMode(CursorMode mode)
 {
@@ -24,9 +24,8 @@ vec2 Input::GetMousePosition()
 	return vec2(mouseScreenX, mouseScreenY);
 }
 
-void Input::SetTextInputMode(bool enabled, std::string* const currentText)
+void Input::SetTextInputMode(std::string* const currentText)
 {
-	m_inputMode = enabled;
 	m_inputString = currentText;
 }
 

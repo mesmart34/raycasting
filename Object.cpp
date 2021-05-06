@@ -1,3 +1,4 @@
+#include "pch.h"
 #include "Object.h"
 
 Object::Object(const Sprite& sprite, const vec2& position, const bool isCollidable)

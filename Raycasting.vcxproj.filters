@@ -70,6 +70,10 @@
     <ClCompile Include="TextBox.cpp">
       <Filter>UI</Filter>
     </ClCompile>
+    <ClCompile Include="pch.cpp" />
+    <ClCompile Include="UIManager.cpp">
+      <Filter>UI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="vec2.h">
@@ -138,6 +142,10 @@
       <Filter>UI</Filter>
     </ClInclude>
     <ClInclude Include="TextBox.h">
+      <Filter>UI</Filter>
+    </ClInclude>
+    <ClInclude Include="pch.h" />
+    <ClInclude Include="UIManager.h">
       <Filter>UI</Filter>
     </ClInclude>
   </ItemGroup>

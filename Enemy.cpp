@@ -1,3 +1,4 @@
+#include "pch.h"
 #include "Enemy.h"
 
 Enemy::Enemy(const Sprite& sprite, const vec2& position, const float angle)

@@ -1,5 +1,4 @@
 #pragma once
-
 #include "MathUtils.h"
 
 class Door

@@ -1,4 +1,5 @@
-﻿#include "vec2.h"
+﻿#include "pch.h"
+#include "vec2.h"
 
 static float Q_rsqrt(float number)
 {

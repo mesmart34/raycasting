@@ -1,3 +1,4 @@
+#include "pch.h"
 #include "Physics.h"
 
 vec2 Physics::Intersection(const float circleRadius, const vec2& circlePosition, const vec2& rectPosition, const vec2& rectSize)

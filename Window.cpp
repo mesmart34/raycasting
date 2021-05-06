@@ -1,9 +1,10 @@
+#include "pch.h"
 #include "Window.h"
 
 Window::Window(const WindowProps& props) : m_props(props)
 {
 	auto windowFlags = (Uint32)(SDL_WINDOW_RESIZABLE | SDL_WINDOW_MAXIMIZED);
-	m_window = SDL_CreateWindow("Ray casting", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1920 / 2, 1080 / 2, windowFlags);
+	m_window = SDL_CreateWindow("Ray casting", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1920, 1080, windowFlags);
 	SDL_AddEventWatch(Window::Resize, this);
 }
 
@@ -24,6 +25,7 @@ int SDLCALL Window::Resize(void* data, SDL_Event* ev)
 	{
 		window->m_props.Width = ev->window.data1;
 		window->m_props.Height = ev->window.data2;
+		std::cout << window->m_props.Width << ", " << window->m_props.Height << std::endl;
 		return 0;
 	}
 	return -1;

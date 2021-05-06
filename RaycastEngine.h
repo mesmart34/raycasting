@@ -24,6 +24,8 @@
 #include "Button.h"
 #include "Panel.h"
 #include "TextBox.h"
+#include <future>
+#include "UIManager.h"
 
 class RaycastEngine {
 public:
@@ -35,14 +37,12 @@ private:
 	void Update(const float deltaTime);
 	void Render();
 	void DrawWorld();
-	void DrawMap();
 	void DrawObjects();
 	void DrawUI();
 	void DoPhysics();
 	void CastRay();
 	void Shutdown();
-	
-	void ThreadRender(const int start, const int end);
+	void ThreadRender(const int start, const int end, const int threadIndex);
 
 private:
 	Window m_window;
@@ -52,6 +52,7 @@ private:
 	Raycaster m_raycaster;
 	EventHandler m_eventHandler;
 	Texture m_wallTexture;
+	UIManager m_uiManager;
 	float m_fps;
 	Map m_map;
 	Ref<Label> m_fpsLabel;
@@ -59,5 +60,11 @@ private:
 	static std::mutex m_mutex;
 	Ref<Label> playerPosText;
 	Ref<Panel> panel;
+	int m_threadCount;
+	std::vector<std::thread*> m_threads;
+	std::vector<std::condition_variable*> m_cvs;
+	std::vector<std::mutex*> m_mutexes;
+	std::vector<std::unique_lock<std::mutex>*> m_uniqueLocks;
+	std::vector<bool> m_threadState;
 	//std::vector<std::vector<uint32_t>> m_buffer;
 };

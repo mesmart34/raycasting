@@ -1,3 +1,4 @@
+#include "pch.h"
 #include "MathUtils.h"
 
 #define M_PI 3.1415926535897

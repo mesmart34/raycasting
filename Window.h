@@ -3,6 +3,7 @@
 #include "SDL\SDL_events.h"
 #include <string>
 #include "Base.h"
+#include <iostream>
 
 struct WindowProps
 {

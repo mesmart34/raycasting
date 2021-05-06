@@ -27,7 +27,7 @@ public:
 	static vec2 GetMouseAxis();
 	static void SetCursorMode(CursorMode mode);
 	static vec2 GetMousePosition();
-	static void SetTextInputMode(bool enabled, std::string* const currentText);
+	static void SetTextInputMode(std::string* const currentText);
 
 private:
 	static void SeyKeyDown(const int key);

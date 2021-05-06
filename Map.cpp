@@ -1,3 +1,4 @@
+#include "pch.h"
 #include "Map.h"
 
 Map::Map(const vec2& playerSpawnPoint) : m_playerSpawnPoint(playerSpawnPoint)

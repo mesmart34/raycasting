@@ -1,4 +1,5 @@
 #pragma once
+
 #include "vec2.h"
 #include "Object.h"
 #include "Player.h"

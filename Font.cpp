@@ -1,3 +1,4 @@
+#include "pch.h"
 #include "Font.h"
 
 Font::Font(const std::string& name)

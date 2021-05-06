@@ -1,11 +1,13 @@
+#include "pch.h"
 #include "Renderer.h"
 
 Renderer::Renderer(Window& window, const int width, const int height) : m_width(width), m_height(height)
 {
-	auto renderFlags = (Uint32)(SDL_RENDERER_TARGETTEXTURE);
+	auto renderFlags = (Uint32)(SDL_RENDERER_TARGETTEXTURE | SDL_RENDERER_PRESENTVSYNC);
 	m_renderer = SDL_CreateRenderer(window.GetSDLPtr(), -1, renderFlags);
 	m_texture = SDL_CreateTexture(m_renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, width, height);
 	SDL_RenderSetLogicalSize(m_renderer, width, height);
+	//std::cout << width << std::endl;
 	m_data = new uint32_t[width * height];
 	m_zBuffer = std::vector<float>(m_width);
 	m_scale = height / 130.0f;
@@ -237,6 +239,15 @@ inline uint32_t Renderer::GetBlendedColor(const uint32_t a, const uint32_t b) co
 
 void Renderer::DrawUIElement(Ref<UIElement> element)
 {
+	if (!element->IsEnabled())
+		return;
+	DrawUIElementWithChildren(element);
+	for (auto c : element->GetChildren())
+		DrawUIElement(c);
+}
+
+void Renderer::DrawUIElementWithChildren(Ref<UIElement> element)
+{
 	if (auto textBox = dynamic_cast<TextBox*>(element.get()))
 	{
 		DrawTextBox(textBox);
@@ -249,13 +260,6 @@ void Renderer::DrawUIElement(Ref<UIElement> element)
 	{
 		DrawRect(panel->GetPosition(), panel->GetSize(), panel->GetBackgroundColor());
 	}
-}
-
-void Renderer::DrawUIElementWithChildren(Ref<UIElement> element)
-{
-	DrawUIElement(element);
-	for (auto c : element->GetChildren())
-		DrawUIElementWithChildren(c);
 }
 
 void Renderer::SetMaxDistance(const float maxDistance)

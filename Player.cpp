@@ -1,3 +1,4 @@
+#include "pch.h"
 #include "Player.h"
 
 Player::Player(const vec2& position, const float angle, const vec2& plane) : m_position(position), m_angle(angle), m_radius(0.3f), m_fieldOfView(90.0f), m_plane(plane), m_direction(-1, 0)
@@ -66,7 +67,6 @@ void Player::Update(const float deltaTime)
 		m_velocity += vec2(-m_direction.y, m_direction.x) * deltaTime * 0.2;
 	else if (Input::IsKeyPressed(SDL_SCANCODE_D))
 		m_velocity += vec2(m_direction.y, -m_direction.x) * deltaTime * 0.2;
-
 	Move(m_velocity);
 	m_velocity.x = MathUtils::Clamp(m_velocity.x, -0.05, 0.05);
 	m_velocity.y = MathUtils::Clamp(m_velocity.y, -0.05, 0.05);

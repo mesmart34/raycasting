@@ -13,13 +13,13 @@ public:
 	TextBox() = default;
 	TextBox(const vec2& position, const vec2& size);
 
+
 	virtual void Update(const float deltaTime) override;
-	bool IsFocused() const;
 	bool IsPointerVisible() const;
 
 private:
-	bool m_focused;
 	bool m_pointerVisibile;
 	float m_timer;
+	static int m_focusedGlobalCount;
 
 };

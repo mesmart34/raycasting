@@ -25,12 +25,12 @@ class Renderer
 public:
 	Renderer() = default;
 	Renderer(Window& window, const int width, const int height);
-	~Renderer();
 
 	void Clear();
 	inline void PutPixel(const int x, const int y, const Uint32 color);
+	inline uint32_t GetPixel(const int x, const int y);
 	void DrawStrip(const Ray& ray, const Texture& atlas, const int x, const bool isPlayerInside);
-	void Draw(const int screenWidth, const int screenHeight);
+	void Draw();
 	void DrawRect(const vec2& start, const vec2& size, const uint32_t color);
 	void DrawColumn(const std::vector<uint32_t>& data, const int x);
 	void DrawSprite(const Sprite& sprite, const vec2& position, const Player& player);
@@ -44,6 +44,8 @@ public:
 	inline uint32_t GetBlendedColor(const uint32_t a, const uint32_t b) const;
 	void DrawUIElement(Ref<UIElement> element);
 	void SetMaxDistance(const float maxDistance);
+	SDL_Renderer* GetRenderer();
+	void Present();
 private:
 	void DrawUIElementWithChildren(Ref<UIElement> element);
 	void DrawButton(const Button* const button);
@@ -53,6 +55,7 @@ private:
 	SDL_Renderer* m_renderer;
 	SDL_Texture* m_texture;
 	uint32_t* m_data;
+	GLuint m_quadTextureId;
 	int m_width, m_height;
 	std::vector<float> m_zBuffer;
 	float m_scale;

@@ -3,37 +3,38 @@
 
 Renderer::Renderer(Window& window, const int width, const int height) : m_width(width), m_height(height)
 {
-	auto renderFlags = (Uint32)(SDL_RENDERER_TARGETTEXTURE | SDL_RENDERER_PRESENTVSYNC);
-	m_renderer = SDL_CreateRenderer(window.GetSDLPtr(), -1, renderFlags);
-	m_texture = SDL_CreateTexture(m_renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, width, height);
-	SDL_RenderSetLogicalSize(m_renderer, width, height);
-	//std::cout << width << std::endl;
-	m_data = new uint32_t[width * height];
+	m_data = new uint32_t[m_width * m_height]();
 	m_zBuffer = std::vector<float>(m_width);
 	m_scale = height / 130.0f;
 	m_transparentColor = MathUtils::PackRGBA({ 152, 0, 136, 255});
 	m_renderVerticalOffset = 0;
 	m_miniFont = Font("mini");
 	m_font = Font("font");
-}
 
-Renderer::~Renderer()
-{
-	SDL_DestroyRenderer(m_renderer);
-	delete m_texture;
+	glGenTextures(1, &m_quadTextureId);
+	glBindTexture(GL_TEXTURE_2D, m_quadTextureId); 
+	glEnable(GL_TEXTURE_2D);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_width, m_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, (void*)m_data);
+	glGenerateMipmap(GL_TEXTURE_2D);
 }
 
 void Renderer::Clear()
 {
+	glClear(GL_COLOR_BUFFER_BIT);
 	//memset(m_data, 0, m_width * m_height);
 	auto floor = MathUtils::PackRGBA(SDL_Color{ 56, 56, 56, 255 });
 	auto ceil = MathUtils::PackRGBA(SDL_Color{ 113, 113, 113, 255 });
 	auto middle = m_height / 2 + m_renderVerticalOffset / m_maxDistance;
-	auto color = floor;
+	auto color = ceil;
 	for (auto y = 0; y < m_height; y++)
 	{
 		if (y > middle)
-			color = ceil;
+			color = floor;
 		memset(m_data + y * m_width, color, m_width * sizeof(uint32_t));
 	}
 }
@@ -41,9 +42,12 @@ void Renderer::Clear()
 inline void Renderer::PutPixel(const int x, const int y, const Uint32 color)
 {
 	if (x >= 0 && y >= 0 && x < m_width && y < m_height)
-			m_data[x + y * m_width] = color;
-	/*else
-		std::cout << "Put ERR!!!!" << std::endl;*/
+			m_data[x + (m_height - y - 1) * m_width] = color;
+}
+
+inline uint32_t Renderer::GetPixel(const int x, const int y)
+{
+	return m_data[x + (m_height - 1 - y) * m_width];
 }
 
 void Renderer::DrawStrip(const Ray& ray, const Texture& atlas, const int x, const bool isPlayerInside)
@@ -81,16 +85,23 @@ void Renderer::DrawStrip(const Ray& ray, const Texture& atlas, const int x, cons
 	}
 }
 
-void Renderer::Draw(const int screenWidth, const int screenHeight)
+void Renderer::Draw()
 {
-	//SDL_RenderClear(m_renderer);
-	SDL_UpdateTexture(m_texture, nullptr, &m_data[0], sizeof(uint32_t) * m_width);
-	//auto ratio = (float)m_width / m_height;
-	//auto newWidth = (int)(screenHeight * ratio);
-	//auto diff = (screenWidth - newWidth) / 2;
-	//auto dst = SDL_Rect{ screenWidth / 2 - newWidth / 2, 0, newWidth, screenHeight };
-	SDL_RenderCopy(m_renderer, m_texture, nullptr, nullptr);
-	SDL_RenderPresent(m_renderer);
+	glUseProgram(0);
+	glBindTexture(GL_TEXTURE_2D, m_quadTextureId);
+	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, m_width, m_height, GL_RGBA, GL_UNSIGNED_BYTE, m_data);
+	glGenerateMipmap(GL_TEXTURE_2D);
+	glBegin(GL_QUADS);
+	static float scale = 1.0f;
+	glVertex2f(-1.0f * scale, -1.0f * scale);
+	glTexCoord2f(1.0f, 0.0f);
+	glVertex2f(1.0f * scale, -1.0f * scale);
+	glTexCoord2f(1.0f, 1.0f);
+	glVertex2f(1.0f * scale, 1.0f * scale);
+	glTexCoord2f(0.0f, 1.0f);
+	glVertex2f(-1.0f * scale, 1.0f * scale);
+	glTexCoord2f(0.0f, 0.0f);
+	glEnd();
 }
 
 void Renderer::DrawRect(const vec2& start, const vec2& size, const uint32_t color)
@@ -99,7 +110,7 @@ void Renderer::DrawRect(const vec2& start, const vec2& size, const uint32_t colo
 	{
 		for (auto y = (int)start.y; y < (int)start.y + size.y; y++)
 		{
-			PutPixel(x, y, GetBlendedColor(m_data[x + y * m_width], color));
+			PutPixel(x, y, GetBlendedColor(GetPixel(x, y), color));
 			//PutPixel(x, y, color);
 		}
 	}
@@ -265,6 +276,16 @@ void Renderer::DrawUIElementWithChildren(Ref<UIElement> element)
 void Renderer::SetMaxDistance(const float maxDistance)
 {
 	m_maxDistance = maxDistance;
+}
+
+SDL_Renderer* Renderer::GetRenderer()
+{
+	return m_renderer;
+}
+
+void Renderer::Present()
+{
+	SDL_RenderPresent(m_renderer);
 }
 
 void Renderer::DrawButton(const Button* const button)

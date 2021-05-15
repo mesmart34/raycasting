@@ -11,6 +11,7 @@ void EventHandler::Handle()
 	auto event = SDL_Event();
 	while (SDL_PollEvent(&event))
 	{
+		ImGui_ImplSDL2_ProcessEvent(&event);
 		switch (event.type)
 		{
 		case SDL_MOUSEMOTION:

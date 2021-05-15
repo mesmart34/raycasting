@@ -3,12 +3,25 @@
 
 using namespace std;
 
-std::mutex RaycastEngine::m_mutex;
 
-RaycastEngine::RaycastEngine(const int width, const int height) : m_renderer(Renderer(m_window, width, height))
+RaycastEngine::RaycastEngine(const int width, const int height) :
+	m_window(WindowProps(width, height)),
+	m_renderer(Renderer(m_window, width, height))
 {
+	m_console = CreateRef<Console>(Ref<RaycastEngine>(this));
 	Input::SetScale(m_renderer.GetScale());
 	InitGameWorld();
+	SDL_AddEventWatch(Quit, this);
+}
+
+int SDLCALL RaycastEngine::Quit(void* data, SDL_Event* ev)
+{
+	if (ev->type == SDL_QUIT)
+	{
+		auto engine = (RaycastEngine*)data;
+		engine->Shutdown();
+	}
+	return 0;
 }
 
 void RaycastEngine::Run()
@@ -24,12 +37,18 @@ void RaycastEngine::Run()
 		if (m_fps < 1.0f / deltaTime)
 			m_fps += 0.1f;
 		else m_fps -= 0.1f;
-		SDL_SetWindowTitle(m_window.GetSDLPtr(), to_string(m_fps).c_str());
 		Update(deltaTime);
 		m_eventHandler.PostUpdate();
-		Render();	
+		Render();
 		lastTime = currentTime;
 	}
+}
+
+void RaycastEngine::ConnectToServer(const std::string& ip, const int port)
+{
+	m_client = CreateScope<UDPClient>(ip, port);
+	m_client->Connect();
+	m_console->AddLog("Trying to connect to " + ip + ":" + to_string(port));
 }
 
 void RaycastEngine::InitGameWorld()
@@ -66,7 +85,7 @@ void RaycastEngine::InitGameWorld()
 	auto fpslabelPos = vec2(m_renderer.GetWidth() - 200, 10);
 	m_fpsLabel = CreateRef<Label>("fps: ", fpslabelPos, vec2(200, 50), 20, 0, 0xFF00FF00);
 	m_fpsLabel->SetBackgroundColor(0x00111111);
-	m_fpsLabel->SetTextAlignment(Right);	
+	m_fpsLabel->SetTextAlignment(Right);
 	playerPosText = CreateRef<Label>("position: ", vec2(10, 10), vec2(200, 50), 20, 0, 0xFF00FF00);
 	playerPosText->SetBackgroundColor(0);
 	playerPosText->SetTextAlignment(Left);
@@ -106,7 +125,7 @@ void RaycastEngine::InitGameWorld()
 
 	auto titleLabel = CreateRef<Label>("Connect to server", vec2(0, 0), vec2(330, 50), 20, 0, 0xFFFFFFFF);
 	titleLabel->SetTextAlignment(Middle);
-	
+
 	auto ipLabel = CreateRef<Label>("IP: ", vec2(10, 60), vec2(50, 50));
 	ipLabel->SetFontSize(20);
 	auto textIp = CreateRef<TextBox>(vec2(70, 60), vec2(250, 50));
@@ -121,7 +140,7 @@ void RaycastEngine::InitGameWorld()
 		auto ip = textIp->GetText();
 		auto port = textPort->GetText();
 		cout << "Connected to " << ip << ":" << port << endl;
-	});
+		});
 	connectBtn->SetBackgroundColor(0xFFCCCCFF);
 	connectBtn->SetFontSize(20);
 	connectPanel->AddChild(titleLabel);
@@ -136,29 +155,13 @@ void RaycastEngine::InitGameWorld()
 	m_uiManager.AddElementToRoot(m_fpsLabel);
 	m_uiManager.AddElementToRoot(playerPosText);
 
-	m_threadCount = thread::hardware_concurrency();
-	for (auto i = 0; i < m_threadCount; i++)
-	{
-		auto start = i * (m_renderer.GetWidth() / m_threadCount);
-		auto end = (i + 1) * (m_renderer.GetWidth() / m_threadCount);
-		auto th = new std::thread(&RaycastEngine::ThreadRender, this, start, end, i);
-		th->detach();
-		m_threads.push_back(th);
-		m_cvs.push_back(new std::condition_variable());
-		m_mutexes.push_back(new std::mutex());
-		m_threadState.push_back(false);
-		m_uniqueLocks.push_back(new std::unique_lock<std::mutex>(*m_mutexes[i]));
-	}
-
 }
 
 void RaycastEngine::Update(const float deltaTime)
 {
-	/*if (Input::IsKeyDown(SDL_SCANCODE_ESCAPE))
-		Shutdown();*/
-	
+	if (m_console->IsOpened())
+		return;
 	static bool cursor = false;
-
 	if (Input::IsKeyDown(SDL_SCANCODE_ESCAPE))
 	{
 		if (!cursor)
@@ -173,7 +176,7 @@ void RaycastEngine::Update(const float deltaTime)
 		}
 		cursor = !cursor;
 	}
-	if(!cursor)
+	if (!cursor)
 		m_player.Update(deltaTime);
 
 
@@ -188,8 +191,10 @@ void RaycastEngine::Update(const float deltaTime)
 		if (auto enemy = dynamic_cast<Enemy*>(obj.get()))
 			enemy->Update(deltaTime, m_player);
 	}
+	if (Input::IsKeyDown(SDL_SCANCODE_E))
+		Use();
 	if (Input::IsKeyDown(SDL_SCANCODE_SPACE))
-		CastRay();
+		Attack();
 	m_map.UpdateDoors(deltaTime);
 	DoPhysics();
 
@@ -198,25 +203,25 @@ void RaycastEngine::Update(const float deltaTime)
 
 void RaycastEngine::Render()
 {
+	glViewport(0, 0, m_window.GetWidth(), m_window.GetHeight());
 	m_renderer.Clear();
-	for (auto i = 0; i < m_threads.size(); i++)
-	{
-		m_threadState[i] = true;
-		m_cvs[i]->notify_all();
-	}
-	for (auto i = 0; i < m_threads.size(); i++)
-	{
-		m_cvs[i]->notify_one();
-		auto lk = m_uniqueLocks[i];
-		while (m_threadState[i])
-			m_cvs[i]->wait(*lk);
-	}
 
-	//DrawWorld();
+	DrawWorld();
 	DrawObjects();
+
+	//ImGui::NewFrame();
+	//m_renderer.Draw(m_window.GetWidth(), m_window.GetHeight());
+	//ImGui::ShowDemoWindow();
+
+	//ImGui::Begin("Image");
+	//ImGui::Image(texture, ImVec2(100, 100));
+	//ImGui::End();
+	//ImGui::Render();
+
+	m_renderer.Draw();
 	DrawUI();
-	m_renderer.Draw(m_window.GetWidth(), m_window.GetHeight());
-	
+
+	SDL_GL_SwapWindow(m_window.GetSDLPtr());
 }
 
 void RaycastEngine::DrawWorld()
@@ -244,13 +249,122 @@ void RaycastEngine::DrawObjects()
 
 void RaycastEngine::DrawUI()
 {
-	auto pos = m_player.GetPosition();
-	auto x = (int)pos.x;
-	auto y = (int)pos.y;
-	auto text = "position: " + to_string(x) + ", " + to_string(y);
-	playerPosText->SetText(text);
-	m_fpsLabel->SetText("fps: " + to_string((int)m_fps));
-	m_renderer.DrawUIElement(m_uiManager.GetRootElement());
+	ImGui_ImplOpenGL3_NewFrame();
+	ImGui_ImplSDL2_NewFrame(m_window.GetSDLPtr());
+	ImGui::NewFrame();
+
+	const float PAD = 10.0f;
+	static int corner = 0;
+	static bool open = false;
+	ImGuiIO& io = ImGui::GetIO();
+	ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
+	if (corner != -1)
+	{
+		const ImGuiViewport* viewport = ImGui::GetMainViewport();
+		ImVec2 work_pos = viewport->WorkPos; 
+		ImVec2 work_size = viewport->WorkSize;
+		ImVec2 window_pos, window_pos_pivot;
+		window_pos.x = (corner & 1) ? (work_pos.x + work_size.x - PAD) : (work_pos.x + PAD);
+		window_pos.y = (corner & 2) ? (work_pos.y + work_size.y - PAD) : (work_pos.y + PAD);
+		window_pos_pivot.x = (corner & 1) ? 1.0f : 0.0f;
+		window_pos_pivot.y = (corner & 2) ? 1.0f : 0.0f;
+		ImGui::SetNextWindowPos(window_pos, ImGuiCond_Always, window_pos_pivot);
+		window_flags |= ImGuiWindowFlags_NoMove;
+	}
+	ImGui::SetNextWindowBgAlpha(0.35f); 
+	if (ImGui::Begin("Example: Simple overlay", &open, window_flags))
+	{
+		auto fps = "FPS: " + to_string(m_fps);
+		auto playerPos = "Position: " + to_string(m_player.GetPosition().x) + ", " + to_string(m_player.GetPosition().y);
+		auto angle = "Angle: " + to_string(m_player.GetAngle());
+		ImGui::Text(fps.c_str());
+		ImGui::Text(playerPos.c_str());
+		ImGui::Text(angle.c_str());
+	}
+	ImGui::End();
+
+
+
+
+	static bool menu_opened = false;
+	static bool network_open = false;
+	static bool client_window = false;
+
+	if (Input::IsKeyDown(SDL_SCANCODE_ESCAPE))
+	{
+		menu_opened = !menu_opened;
+	}
+
+	if (menu_opened)
+	{
+		ImGui::Begin("Menu");
+		ImGui::SetWindowSize(ImVec2(250, 350));
+		//ImGui::SetWindowPos(ImVec2(m_window.GetWidth() / 2 - 250, m_window.GetHeight() / 2 - 350));
+		if (ImGui::Button("Connect", ImVec2(ImGui::GetWindowWidth(), 25)))
+		{
+			network_open = true;
+			client_window = true;
+		}
+		if (ImGui::Button("Start server", ImVec2(ImGui::GetWindowWidth(), 25)))
+		{
+
+			network_open = true;
+			client_window = false;
+		}
+
+		if (ImGui::Button("Exit", ImVec2(ImGui::GetWindowWidth(), 25)))
+		{
+			Shutdown();
+		}
+		ImGui::End();
+	}
+
+
+
+
+	if (network_open && menu_opened)
+	{
+
+
+		ImGui::Begin("Networking", &network_open, ImGuiWindowFlags_NoCollapse);
+		if (client_window)
+		{
+			ImGui::SetNextWindowSize(ImVec2(250, 250));
+			static char ip[256] = { 0 };
+
+			ImGui::InputText("Ip", ip, 256);
+			ImGui::SameLine();
+			static auto port = 0;
+
+			ImGui::InputInt("Port", &port);
+			if (ImGui::Button("Connect"))
+			{
+				ConnectToServer(ip, port);
+				std::cout << ip << ", " << port << std::endl;
+			}
+		}
+		else {
+			if (ImGui::Button("Start server"))
+			{
+
+			}
+		}
+		ImGui::End();
+	}
+
+	if (Input::IsKeyDown(SDL_SCANCODE_GRAVE))
+	{
+		if(m_console->IsOpened())
+			m_console->Close();
+		else 
+			m_console->Open();
+		Input::SetCursorMode(m_console->IsOpened() ? CursorMode::Show : CursorMode::Hidden);
+
+
+	}
+	m_console->Draw(m_window);
+	ImGui::Render();
+	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
 
 void RaycastEngine::DoPhysics()
@@ -267,7 +381,7 @@ void RaycastEngine::DoPhysics()
 				continue;
 			if (m_map.GetIndexAt(x, y) == 98)
 			{
-				if(m_map.IsDoorOpened(x, y))
+				if (m_map.IsDoorOpened(x, y))
 					continue;
 			}
 			auto delta = Physics::Intersection(m_player.GetRadius(), m_player.GetPosition(), vec2(x, y), vec2(1, 1));
@@ -283,25 +397,58 @@ void RaycastEngine::DoPhysics()
 	}
 }
 
-void RaycastEngine::CastRay()
+void RaycastEngine::Use()
 {
 	auto ray = m_player.GetPosition();
-
 	for (auto step = 0.0f; step < 20; step += 0.5f)
 	{
 		ray += vec2(
 			step * cosf(MathUtils::DegToRad(m_player.GetAngle())),
 			step * sinf(MathUtils::DegToRad(m_player.GetAngle()))
-			);
+		);
 		auto tile = m_map.GetIndexAt(ray.x, ray.y);
 		if (tile == -1)
 			break;
-		
+
 		if (tile == 98 && step < 1.25f)
 			m_map.OpenDoorAt(ray.x, ray.y);
 
-
 		if (tile > 0)
+			break;
+
+	}
+
+}
+
+void RaycastEngine::Attack()
+{
+	auto ray = m_player.GetPosition();
+	auto stop = false;
+	for (auto step = 0.0f; step < 40; step += 0.25f)
+	{
+		ray += vec2(
+			step * cosf(MathUtils::DegToRad(m_player.GetAngle())),
+			step * sinf(MathUtils::DegToRad(m_player.GetAngle()))
+		);
+		auto tile = m_map.GetIndexAt(ray.x, ray.y);
+		if (tile == -1)
+			break;
+		for (auto& obj : m_map.GetObjects())
+		{
+			if (obj->IsCollidable())
+			{
+				auto distance = vec2::distance(obj->GetPosition(), ray);
+				//cout << distance << endl;
+				if (vec2::distance(obj->GetPosition(), ray) < 0.3f)
+				{
+					obj->OnRaycastHit(10);
+					stop = true;
+					break;
+				}
+			}
+		}
+
+		if (tile > 0 || stop)
 			break;
 
 	}
@@ -312,27 +459,3 @@ void RaycastEngine::Shutdown()
 {
 	m_running = false;
 }
-
-void RaycastEngine::ThreadRender(const int start, const int end, const int threadIndex)
-{
-	while (true) {
-
-		std::unique_lock<std::mutex> lk(*m_mutexes[threadIndex]);
-		while (!m_threadState[threadIndex])
-			m_cvs[threadIndex]->wait(lk);
-
-		auto max = 0;
-		for (auto strip = start; strip < end; strip++)
-		{
-			auto ray = m_raycaster.CastRay(strip, m_renderer.GetWidth(), m_player, m_map);
-			if (ray.Distance > max)
-				max = ray.Distance;
-			auto inside = ray.Position == vec2::floor(m_player.GetPosition());
-			m_renderer.DrawStrip(ray, m_wallTexture, strip, inside);
-		}
-		m_renderer.SetMaxDistance(max);
-		m_threadState[threadIndex] = false;
-		m_cvs[threadIndex]->notify_one();
-	}
-}
-

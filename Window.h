@@ -4,10 +4,13 @@
 #include <string>
 #include "Base.h"
 #include <iostream>
+#include "imgui_impl_sdl.h"
+#include "imgui_impl_opengl3.h"
+#include "GL/glew.h"
 
 struct WindowProps
 {
-	WindowProps(const int width = 1920 / 2, const int height = 1080 / 2, const std::string& title = "Raycaster") : Width(width), Height(height), Title(title) {}
+	WindowProps(const int width = 1920, const int height = 1080, const std::string& title = "Raycaster") : Width(width), Height(height), Title(title) {}
 	int Width;
 	int Height;
 	std::string Title;
@@ -29,5 +32,6 @@ public:
 private:
 	SDL_Window* m_window;
 	WindowProps m_props;
+	SDL_GLContext m_context;
 };
 

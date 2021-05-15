@@ -4,9 +4,6 @@
     <ClCompile Include="vec2.cpp">
       <Filter>Math</Filter>
     </ClCompile>
-    <ClCompile Include="stbi_image.cpp">
-      <Filter>Thirdparty</Filter>
-    </ClCompile>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="RaycastEngine.cpp" />
     <ClCompile Include="Input.cpp">
@@ -74,13 +71,50 @@
     <ClCompile Include="UIManager.cpp">
       <Filter>UI</Filter>
     </ClCompile>
+    <ClCompile Include="stbi_image.cpp">
+      <Filter>Thirdparty\stbi</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui_sdl.cpp">
+      <Filter>Thirdparty\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui.cpp">
+      <Filter>Thirdparty\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui_draw.cpp">
+      <Filter>Thirdparty\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui_tables.cpp">
+      <Filter>Thirdparty\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui_widgets.cpp">
+      <Filter>Thirdparty\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui_impl_opengl3.cpp">
+      <Filter>Thirdparty\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui_impl_sdl.cpp">
+      <Filter>Thirdparty\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui_demo.cpp">
+      <Filter>Thirdparty\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="UDPClient.cpp">
+      <Filter>Networking\Client</Filter>
+    </ClCompile>
+    <ClCompile Include="SafeQueue.cpp">
+      <Filter>Networking</Filter>
+    </ClCompile>
+    <ClCompile Include="UDPServer.cpp">
+      <Filter>Networking\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="ClientMessage.cpp">
+      <Filter>Networking</Filter>
+    </ClCompile>
+    <ClCompile Include="Console.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="vec2.h">
       <Filter>Math</Filter>
-    </ClInclude>
-    <ClInclude Include="stbi_image.h">
-      <Filter>Thirdparty</Filter>
     </ClInclude>
     <ClInclude Include="RaycastEngine.h" />
     <ClInclude Include="Input.h">
@@ -148,6 +182,49 @@
     <ClInclude Include="UIManager.h">
       <Filter>UI</Filter>
     </ClInclude>
+    <ClInclude Include="stbi_image.h">
+      <Filter>Thirdparty\stbi</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui_sdl.h">
+      <Filter>Thirdparty\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui.h">
+      <Filter>Thirdparty\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="imconfig.h">
+      <Filter>Thirdparty\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui_internal.h">
+      <Filter>Thirdparty\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="imstb_rectpack.h">
+      <Filter>Thirdparty\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="imstb_textedit.h">
+      <Filter>Thirdparty\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="imstb_truetype.h">
+      <Filter>Thirdparty\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui_impl_opengl3.h">
+      <Filter>Thirdparty\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui_impl_sdl.h">
+      <Filter>Thirdparty\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="UDPClient.h">
+      <Filter>Networking\Client</Filter>
+    </ClInclude>
+    <ClInclude Include="SafeQueue.h">
+      <Filter>Networking</Filter>
+    </ClInclude>
+    <ClInclude Include="UDPServer.h">
+      <Filter>Networking\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="ClientMessage.h">
+      <Filter>Networking</Filter>
+    </ClInclude>
+    <ClInclude Include="Console.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Event">
@@ -170,6 +247,21 @@
     </Filter>
     <Filter Include="UI">
       <UniqueIdentifier>{50761c00-fe91-4aa8-9965-cf9fe66c8063}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Thirdparty\stbi">
+      <UniqueIdentifier>{b5227998-ec89-4cd5-956b-35f1afa55acd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Thirdparty\imgui">
+      <UniqueIdentifier>{1589d752-4a62-4dcf-977a-13c1a68c2d77}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Networking">
+      <UniqueIdentifier>{376f3e0e-6d7c-4ecc-ace6-761ca812a0f3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Networking\Client">
+      <UniqueIdentifier>{d6f357c3-f4ed-4fa1-b850-9f5f43d0c1c4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Networking\Server">
+      <UniqueIdentifier>{b2ae396f-0ee0-4d88-94ad-bd03d396745f}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

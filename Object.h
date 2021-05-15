@@ -15,6 +15,8 @@ public:
 	vec2 GetPosition() const;
 	bool IsCollidable() const;
 
+	virtual void OnRaycastHit(int damage) { }
+
 protected:
 	Sprite m_sprite;
 	vec2 m_position;

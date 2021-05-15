@@ -6,7 +6,7 @@ UIManager::UIManager()
 {
 	m_root = CreateRef<UIElement>();
 	m_root->SetEnable(true);
-	SDL_StartTextInput();
+	//SDL_StartTextInput();
 }
 
 void UIManager::Update(const float deltaTime)

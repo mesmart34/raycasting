@@ -26,13 +26,21 @@
 #include "TextBox.h"
 #include <future>
 #include "UIManager.h"
+#include "imgui.h"
+#include "imgui_impl_sdl.h"
+#include "imgui_impl_opengl3.h"
+#include "UDPServer.h"
+#include "UDPClient.h"
+#include "Console.h"
 
 class RaycastEngine {
 public:
 	RaycastEngine(const int width, const int height);
 
+	static int SDLCALL Quit(void* data, SDL_Event* ev);
 	void Run();
 private:
+	void ConnectToServer(const std::string& ip, const int port);
 	void InitGameWorld();
 	void Update(const float deltaTime);
 	void Render();
@@ -40,9 +48,11 @@ private:
 	void DrawObjects();
 	void DrawUI();
 	void DoPhysics();
-	void CastRay();
+	void Use();
+	void Attack();
 	void Shutdown();
-	void ThreadRender(const int start, const int end, const int threadIndex);
+
+	friend class Console;
 
 private:
 	Window m_window;
@@ -53,18 +63,14 @@ private:
 	EventHandler m_eventHandler;
 	Texture m_wallTexture;
 	UIManager m_uiManager;
+	Ref<Console> m_console;
 	float m_fps;
 	Map m_map;
 	Ref<Label> m_fpsLabel;
 	std::vector<Ref<UIElement>> m_uiElements;
-	static std::mutex m_mutex;
 	Ref<Label> playerPosText;
 	Ref<Panel> panel;
-	int m_threadCount;
-	std::vector<std::thread*> m_threads;
-	std::vector<std::condition_variable*> m_cvs;
-	std::vector<std::mutex*> m_mutexes;
-	std::vector<std::unique_lock<std::mutex>*> m_uniqueLocks;
-	std::vector<bool> m_threadState;
-	//std::vector<std::vector<uint32_t>> m_buffer;
+	Scope<UDPClient> m_client;
+	Scope<UDPServer> m_server;
+
 };

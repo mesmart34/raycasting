@@ -94,12 +94,13 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>F:\Users\artem\Documents\vs projects\SDL\include;F:\Users\artem\Documents\vs projects\SDL2_ttf-2.0.15\include;F:\Users\artem\Documents\vs projects\GLFW\GLFW\GLFW;F:\Users\artem\Documents\vs projects\glew-2.1.0\include;F:\Users\artem\Documents\SDL2-2.0.14\include;C:\Users\artem\Documents\SDL2-2.0.12\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>F:\Users\artem\Documents\vs projects\SDL\include;F:\Users\artem\Documents\vs projects\SDL2_ttf-2.0.15\include;F:\Users\artem\Documents\vs projects\GLFW\GLFW\GLFW;F:\Users\artem\Documents\vs projects\glew-2.1.0\include;F:\Users\artem\Documents\SDL2-2.0.14\include;C:\Users\artem\Documents\SDL2-2.0.12\include;%(AdditionalIncludeDirectories);C:\Users\artem\Documents\GLEW\include;C:\Users\artem\Documents\GitHub\Server;C:\Users\artem\Documents\GitHub\Client</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_WINSOCK_DEPRECATED_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
-      <AdditionalLibraryDirectories>F:\Users\artem\Documents\vs projects\SDL\lib\x64;F:\Users\artem\Documents\vs projects\SDL2_ttf-2.0.15\lib\x64;F:\Users\artem\Documents\vs projects\GLFW\lib;F:\Users\artem\Documents\vs projects\glew-2.1.0\lib\Release\x64;F:\Users\artem\Documents\SDL2-2.0.14\lib\x64;C:\Users\artem\Documents\SDL2-2.0.12\lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>F:\Users\artem\Documents\vs projects\SDL\lib\x64;F:\Users\artem\Documents\vs projects\SDL2_ttf-2.0.15\lib\x64;F:\Users\artem\Documents\vs projects\GLFW\lib;F:\Users\artem\Documents\vs projects\glew-2.1.0\lib\Release\x64;F:\Users\artem\Documents\SDL2-2.0.14\lib\x64;C:\Users\artem\Documents\SDL2-2.0.12\lib\x64;%(AdditionalLibraryDirectories);C:\Users\artem\Documents\GLEW\lib\Release\x64;C:\Users\artem\Documents\GitHub\Client\x64\Release</AdditionalLibraryDirectories>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;glew32.lib;opengl32.lib;glu32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -125,26 +126,37 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Users\artem\Documents\SDL2-2.0.12\include;F:\Users\artem\Documents\SDL2-2.0.14\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\artem\Documents\SDL2-2.0.12\include;F:\Users\artem\Documents\SDL2-2.0.14\include;%(AdditionalIncludeDirectories);C:\Users\artem\Documents\GLEW\include;C:\Users\artem\Documents\GitHub\Server;C:\Users\artem\Documents\GitHub\Client</AdditionalIncludeDirectories>
       <PrecompiledHeader>Create</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <PrecompiledHeaderOutputFile>$(TargetName).pch</PrecompiledHeaderOutputFile>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_WINSOCK_DEPRECATED_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>C:\Users\artem\Documents\SDL2-2.0.12\lib\x64;F:\Users\artem\Documents\SDL2-2.0.14\lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\Users\artem\Documents\SDL2-2.0.12\lib\x64;F:\Users\artem\Documents\SDL2-2.0.14\lib\x64;%(AdditionalLibraryDirectories);C:\Users\artem\Documents\GLEW\lib\Release\x64;C:\Users\artem\Documents\GitHub\Client\x64\Release</AdditionalLibraryDirectories>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;glew32.lib;opengl32.lib;glu32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Base.cpp" />
     <ClCompile Include="Button.cpp" />
+    <ClCompile Include="ClientMessage.cpp" />
+    <ClCompile Include="Console.cpp" />
     <ClCompile Include="Door.cpp" />
     <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="Event.cpp" />
     <ClCompile Include="Font.cpp" />
+    <ClCompile Include="imgui.cpp" />
+    <ClCompile Include="imgui_demo.cpp" />
+    <ClCompile Include="imgui_draw.cpp" />
+    <ClCompile Include="imgui_impl_opengl3.cpp" />
+    <ClCompile Include="imgui_impl_sdl.cpp" />
+    <ClCompile Include="imgui_sdl.cpp" />
+    <ClCompile Include="imgui_tables.cpp" />
+    <ClCompile Include="imgui_widgets.cpp" />
     <ClCompile Include="Panel.cpp" />
     <ClCompile Include="pch.cpp" />
     <ClCompile Include="RaycastEngine.cpp" />
@@ -158,10 +170,13 @@
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="Raycaster.cpp" />
     <ClCompile Include="Renderer.cpp" />
+    <ClCompile Include="SafeQueue.cpp" />
     <ClCompile Include="Sprite.cpp" />
     <ClCompile Include="stbi_image.cpp" />
     <ClCompile Include="TextBox.cpp" />
     <ClCompile Include="Texture.cpp" />
+    <ClCompile Include="UDPClient.cpp" />
+    <ClCompile Include="UDPServer.cpp" />
     <ClCompile Include="UIElement.cpp" />
     <ClCompile Include="UIManager.cpp" />
     <ClCompile Include="vec2.cpp" />
@@ -170,10 +185,21 @@
   <ItemGroup>
     <ClInclude Include="Base.h" />
     <ClInclude Include="Button.h" />
+    <ClInclude Include="ClientMessage.h" />
+    <ClInclude Include="Console.h" />
     <ClInclude Include="Door.h" />
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="Event.h" />
     <ClInclude Include="Font.h" />
+    <ClInclude Include="imconfig.h" />
+    <ClInclude Include="imgui.h" />
+    <ClInclude Include="imgui_impl_opengl3.h" />
+    <ClInclude Include="imgui_impl_sdl.h" />
+    <ClInclude Include="imgui_internal.h" />
+    <ClInclude Include="imgui_sdl.h" />
+    <ClInclude Include="imstb_rectpack.h" />
+    <ClInclude Include="imstb_textedit.h" />
+    <ClInclude Include="imstb_truetype.h" />
     <ClInclude Include="Panel.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="RaycastEngine.h" />
@@ -186,10 +212,13 @@
     <ClInclude Include="Player.h" />
     <ClInclude Include="Raycaster.h" />
     <ClInclude Include="Renderer.h" />
+    <ClInclude Include="SafeQueue.h" />
     <ClInclude Include="Sprite.h" />
     <ClInclude Include="stbi_image.h" />
     <ClInclude Include="TextBox.h" />
     <ClInclude Include="Texture.h" />
+    <ClInclude Include="UDPClient.h" />
+    <ClInclude Include="UDPServer.h" />
     <ClInclude Include="UIElement.h" />
     <ClInclude Include="UIManager.h" />
     <ClInclude Include="vec2.h" />

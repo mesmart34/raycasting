@@ -2,6 +2,7 @@
 #include "SDL/SDL.h"
 #include "Input.h"
 #include <array>
+#include "imgui_impl_sdl.h"
 
 class EventHandler
 {

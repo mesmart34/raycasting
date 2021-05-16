@@ -67,10 +67,10 @@ void Player::Update(const float deltaTime)
 		m_velocity += vec2(-m_direction.y, m_direction.x) * deltaTime * 0.2;
 	else if (Input::IsKeyPressed(SDL_SCANCODE_D))
 		m_velocity += vec2(m_direction.y, -m_direction.x) * deltaTime * 0.2;
-	Move(m_velocity);
 	m_velocity.x = MathUtils::Clamp(m_velocity.x, -0.05, 0.05);
 	m_velocity.y = MathUtils::Clamp(m_velocity.y, -0.05, 0.05);
 	m_velocity *= 0.95;
+	Move(m_velocity);
 	if (fabs(m_velocity.x) < 0.001f)
 		m_velocity.x = 0;
 	if (fabs(m_velocity.y) < 0.001f)

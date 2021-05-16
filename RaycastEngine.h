@@ -32,6 +32,7 @@
 #include "UDPServer.h"
 #include "UDPClient.h"
 #include "Console.h"
+#include "NetPlayer.h"
 
 class RaycastEngine {
 public:
@@ -42,6 +43,7 @@ public:
 private:
 	void ConnectToServer(const std::string& ip, const int port);
 	void InitGameWorld();
+	void InitNetworking();
 	void Update(const float deltaTime);
 	void Render();
 	void DrawWorld();
@@ -72,5 +74,5 @@ private:
 	Ref<Panel> panel;
 	Scope<UDPClient> m_client;
 	Scope<UDPServer> m_server;
-
+	Ref<NetPlayer> m_secondPlayer;
 };

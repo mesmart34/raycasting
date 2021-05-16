@@ -38,8 +38,7 @@ void UDPServer::Run()
 			{
 				if (c.first == next->Id)
 					continue;
-				Send(c.first, (char*)next,
-					sizeof(ClientMessage));
+				Send(c.first, (char*)next, sizeof(ClientMessage));
 			}
 		}
 	}

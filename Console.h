@@ -31,6 +31,7 @@ private:
 private:
 	Ref<RaycastEngine> m_engine;
 	std::stringstream m_stream;
+	std::vector<std::string> m_consoleHistory;
 	bool m_opened;
 	
 };

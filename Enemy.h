@@ -22,12 +22,14 @@ public:
 protected:
 	virtual void OnRaycastHit(int damage) override;
 
-private:
+protected:
 	float m_angle = 0.0f;
+	int m_health;
+
+private:
+	bool m_isAlive;
 	int m_spriteRowIndex;
 	float m_spriteIndexCounter;
 	EnemyState m_state;
-	bool m_isAlive;
-	int m_health;
 };
 

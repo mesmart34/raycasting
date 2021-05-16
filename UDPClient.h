@@ -9,6 +9,9 @@
 #include <cstdint>
 #include "ClientMessage.h"
 #include <thread>
+#include <chrono>
+#include <functional>
+#include <atomic>
 #pragma comment(lib, "ws2_32.lib")
 
 #define MAX_PACKET_SIZE 512
@@ -18,11 +21,20 @@ class UDPClient
 {
 public:
 	UDPClient(UDPClient&&) {};
-	UDPClient(const std::string& ip, const int port);
+	UDPClient();
 	~UDPClient();
 
-	void Connect();
+	void Connect(const std::string& ip, const int port);
 	void Send(const char* data, const int length);
+	void Close();
+	void SetOnConnectCallback(std::function<void(UDPClient*)>);
+	void SetOnDisconnectCallback(std::function<void(UDPClient*)>);
+	void SetFailedToConnectCallback(std::function<void(UDPClient*)>);
+	ClientMessage BuildMessage(const char* data) const;
+	bool IsConnected() const;
+	ClientMessage* PollMessage();
+
+	int GetID() const;
 
 private:
 	void Run();
@@ -42,5 +54,12 @@ private:
 	SafeQueue<ClientMessage> m_clientMessages;
 	std::thread m_receiveThread;
 	std::thread m_runThread;
+	std::chrono::high_resolution_clock::time_point m_lastPacketTime;
+	bool m_connected;
+	std::function<void(UDPClient*)> m_onConnectCallback;
+	std::function<void(UDPClient*)> m_onDisconnectCallback;
+	std::function<void(UDPClient*)> m_failedToConnectCallback;
+	std::atomic<bool> m_running;
+
 };
 

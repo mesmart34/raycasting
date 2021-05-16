@@ -6,11 +6,12 @@ using namespace std;
 
 RaycastEngine::RaycastEngine(const int width, const int height) :
 	m_window(WindowProps(width, height)),
-	m_renderer(Renderer(m_window, width, height))
+	m_renderer(Renderer(m_window, width * 0.7, height * 0.7))
 {
 	m_console = CreateRef<Console>(Ref<RaycastEngine>(this));
 	Input::SetScale(m_renderer.GetScale());
 	InitGameWorld();
+	InitNetworking();
 	SDL_AddEventWatch(Quit, this);
 }
 
@@ -46,9 +47,8 @@ void RaycastEngine::Run()
 
 void RaycastEngine::ConnectToServer(const std::string& ip, const int port)
 {
-	m_client = CreateScope<UDPClient>(ip, port);
-	m_client->Connect();
 	m_console->AddLog("Trying to connect to " + ip + ":" + to_string(port));
+	m_client->Connect(ip, port);
 }
 
 void RaycastEngine::InitGameWorld()
@@ -68,6 +68,8 @@ void RaycastEngine::InitGameWorld()
 	auto trex_sprite = Sprite();
 	trex_sprite.Atlas = CreateRef<Texture>("textures/trex.bmp", 8, 7);
 
+	m_secondPlayer = CreateRef<NetPlayer>(ss_sprite, vec2(3, 3), 0);
+	m_map.AddObject(m_secondPlayer);
 	auto sprite = Sprite();
 	sprite.Id = 11;
 	sprite.Atlas = atlas;
@@ -157,8 +159,53 @@ void RaycastEngine::InitGameWorld()
 
 }
 
+void RaycastEngine::InitNetworking()
+{
+	m_client = CreateScope<UDPClient>();
+	m_client->SetOnConnectCallback([=](UDPClient*) {
+		m_console->AddLog("Connected successfully!");
+		});
+	m_client->SetOnDisconnectCallback([=](UDPClient*) {
+		m_console->AddLog("You are disconnected!");
+		});
+	m_client->SetFailedToConnectCallback([=](UDPClient*) {
+		m_console->AddLog("Failed To Connect!");
+	});
+}
+
 void RaycastEngine::Update(const float deltaTime)
 {
+
+	if (m_client->IsConnected())
+	{
+		static float timer = 0;
+		timer += deltaTime * 100;
+		
+		//int id = ((ClientMessage*)&msg)->Id;
+		//m_console->AddLog(to_string(id));
+		if (timer > 2)
+		{
+			auto player = PlayerInfo();
+			player.Angle = m_player.GetAngle();
+			player.Position = m_player.GetPosition();
+			auto msg = m_client->BuildMessage((char*)&player);
+			m_client->Send((char*)&msg, sizeof(ClientMessage));
+			timer = 0;
+		}
+		while (auto msg = m_client->PollMessage())
+		{
+			auto player = *(PlayerInfo*)&(msg->Message);
+			//std::cout << clientMessage->Id << std::endl;
+			if (msg->Id != m_client->GetID())
+			{
+				
+				m_secondPlayer->SetPosition(player.Position);
+				m_secondPlayer->SetAngle(player.Angle);
+				
+				m_console->AddLog(to_string(msg->Id) + ": " + to_string(player.Position.x) + ", " + to_string(player.Position.y));
+			}
+		}
+	}
 	if (m_console->IsOpened())
 		return;
 	static bool cursor = false;
@@ -197,6 +244,7 @@ void RaycastEngine::Update(const float deltaTime)
 		Attack();
 	m_map.UpdateDoors(deltaTime);
 	DoPhysics();
+
 
 	m_uiManager.Update(deltaTime);
 }

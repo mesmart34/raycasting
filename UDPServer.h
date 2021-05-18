@@ -32,9 +32,10 @@ struct Client
 class UDPServer
 {
 public:
-	UDPServer(const std::string& ip, const int port);
+	UDPServer(UDPServer&&) {}
+	UDPServer();
 
-	void Start();
+	void Start(const std::string& ip, const int port);
 
 private:
 	void Run();
@@ -55,6 +56,7 @@ private:
 	char m_buffer[MAX_PACKET_SIZE];
 	SafeQueue<ClientMessage> m_messageQueue;
 	std::thread m_receiveThread;
+	std::thread m_runThread;
 	std::map<uint32_t, Client> m_clients;
 };
 

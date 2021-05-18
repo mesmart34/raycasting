@@ -87,6 +87,7 @@ void Map::UpdateDoors(const float deltaTime)
 {
 	for (auto& d : m_doors)
 	{
+	//std::cout << deltaTime << std::endl;
 		d.second->Update(deltaTime);
 	}
 }

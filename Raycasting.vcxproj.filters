@@ -111,7 +111,9 @@
       <Filter>Networking</Filter>
     </ClCompile>
     <ClCompile Include="Console.cpp" />
-    <ClCompile Include="NetPlayer.cpp" />
+    <ClCompile Include="NetPlayer.cpp">
+      <Filter>Objects</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="vec2.h">
@@ -226,7 +228,9 @@
       <Filter>Networking</Filter>
     </ClInclude>
     <ClInclude Include="Console.h" />
-    <ClInclude Include="NetPlayer.h" />
+    <ClInclude Include="NetPlayer.h">
+      <Filter>Objects</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Event">

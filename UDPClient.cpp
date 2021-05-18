@@ -90,11 +90,22 @@ void UDPClient::SetFailedToConnectCallback(std::function<void(UDPClient*)> callb
 	m_failedToConnectCallback = callback;
 }
 
-ClientMessage UDPClient::BuildMessage(const char* data) const
+void UDPClient::SetOtherPlayerConnectCallback(std::function<void(UDPClient*, int)> callback)
+{
+	m_otherPlayerConnect = callback;
+}
+
+void UDPClient::SetOtherPlayerDisconnectCallback(std::function<void(UDPClient*, int)> callback)
+{
+	m_otherPlayerDisconnect = callback;
+}
+
+ClientMessage UDPClient::BuildMessage(const MessageType type, const char* data) const
 {
 	auto clientMessage = ClientMessage();
 	clientMessage.Id = m_id;
-	clientMessage.Message = data;
+	clientMessage.Type = type;
+	//clientMessage.Message = data;
 	return clientMessage;
 }
 
@@ -118,25 +129,31 @@ void UDPClient::Receive()
 	while (m_running) {
 		auto length = recvfrom(m_socket, m_buffer, MAX_PACKET_SIZE, 0, (sockaddr*)&m_info, &m_infoSize);
 		m_lastPacketTime = std::chrono::high_resolution_clock::now();
-		if(m_connected)
-		{
-			auto message = (ClientMessage*)(m_buffer);
-			//std::cout << message->Id << ": " << message->Message << std::endl;
-			m_clientMessages.push(message);
-		}
-		else {
-			auto id = atol(m_buffer);
-			m_id = id;
+		auto message = (ClientMessage*)(m_buffer);
+		if (message->Type == MessageType::HELLO) {
+			m_id = message->Id;
 			m_connected = true;
 			m_onConnectCallback(this);
+		} else if (message->Type == MessageType::ON_PLAYER_CONNECT) {
+			std::cout << message->Id << " is connected" << std::endl;
+			m_otherPlayerConnect(this, message->Id);
+		}
+		else if (message->Type == MessageType::ON_PLAYER_DISCONNECT) {
+			std::cout << message->Id << " is disconnected" << std::endl;
+			m_otherPlayerDisconnect(this, message->Id);
+		}
+		if(m_connected)
+		{
+			m_clientMessages.push(message);
 		}
 	}
 }
 
 void UDPClient::DoHandshake()
 {
-	auto message = std::string("hello");
-	if ((sendto(m_socket, message.c_str(), message.size(), 0, (sockaddr*)&m_info, m_infoSize)) == SOCKET_ERROR)
+	auto message = ClientMessage();
+	message.Type = MessageType::HELLO;
+	if ((sendto(m_socket, (char*)&message, sizeof(ClientMessage), 0, (sockaddr*)&m_info, m_infoSize)) == SOCKET_ERROR)
 	{
 		std::cout << WSAGetLastError() << std::endl;
 	}

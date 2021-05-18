@@ -30,7 +30,9 @@ public:
 	void SetOnConnectCallback(std::function<void(UDPClient*)>);
 	void SetOnDisconnectCallback(std::function<void(UDPClient*)>);
 	void SetFailedToConnectCallback(std::function<void(UDPClient*)>);
-	ClientMessage BuildMessage(const char* data) const;
+	void SetOtherPlayerConnectCallback(std::function<void(UDPClient*,int)>);
+	void SetOtherPlayerDisconnectCallback(std::function<void(UDPClient*, int)>);
+	ClientMessage BuildMessage(const MessageType type, const char* data) const;
 	bool IsConnected() const;
 	ClientMessage* PollMessage();
 
@@ -59,6 +61,8 @@ private:
 	std::function<void(UDPClient*)> m_onConnectCallback;
 	std::function<void(UDPClient*)> m_onDisconnectCallback;
 	std::function<void(UDPClient*)> m_failedToConnectCallback;
+	std::function<void(UDPClient*, int)> m_otherPlayerConnect;
+	std::function<void(UDPClient*, int)> m_otherPlayerDisconnect;
 	std::atomic<bool> m_running;
 
 };

@@ -8,6 +8,8 @@ public:
 	void SetPosition(const vec2& position);
 	void SetAngle(const float angle);
 
+
+
 private:
 
 };

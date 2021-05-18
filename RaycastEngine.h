@@ -42,9 +42,11 @@ public:
 	void Run();
 private:
 	void ConnectToServer(const std::string& ip, const int port);
+	//void StartServer(const std::string& ip, const int port);
 	void InitGameWorld();
 	void InitNetworking();
 	void Update(const float deltaTime);
+	void UpdateNetwork(const float deltaTime);
 	void Render();
 	void DrawWorld();
 	void DrawObjects();
@@ -73,6 +75,8 @@ private:
 	Ref<Label> playerPosText;
 	Ref<Panel> panel;
 	Scope<UDPClient> m_client;
-	Scope<UDPServer> m_server;
-	Ref<NetPlayer> m_secondPlayer;
+	//Scope<UDPServer> m_server;
+	std::map<int, Ref<NetPlayer>> m_players;
+
+	Sprite m_ssSprite;
 };

@@ -19,6 +19,8 @@ void Player::Rotate(const float angle)
 	m_angle += angle;
 	if (m_angle < 0)
 		m_angle += 360;
+	if (m_angle > 360)
+		m_angle -= 360;
 }
 
 vec2 Player::GetPosition() const
@@ -43,7 +45,7 @@ float Player::GetRadius() const
 
 float Player::GetAngle() const
 {
-	return (int)(m_angle + 180) % 360;
+	return m_angle;
 }
 
 void Player::Update(const float deltaTime)
@@ -57,8 +59,8 @@ void Player::Update(const float deltaTime)
 	Rotate(mouseX);
 
 
-	
 
+	
 	if (Input::IsKeyPressed(SDL_SCANCODE_W))
 		m_velocity += m_direction * deltaTime * 0.2;
 	else if (Input::IsKeyPressed(SDL_SCANCODE_S))

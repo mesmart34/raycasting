@@ -30,6 +30,10 @@ private:
 	bool m_isAlive;
 	int m_spriteRowIndex;
 	float m_spriteIndexCounter;
+	bool m_isDamaged;
+	int m_diff;
+	bool m_end;
+
 	EnemyState m_state;
 };
 

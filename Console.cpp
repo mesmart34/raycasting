@@ -105,7 +105,7 @@ void Console::ProcessCommand(const std::string& line)
 	{
 		AddLog(line);
 		m_engine->m_client->Close();
-	}
+	} 
 	else {
 		AddLog("Unknown command \'" + line + "\'");
 	}

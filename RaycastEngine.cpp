@@ -62,14 +62,15 @@ void RaycastEngine::InitGameWorld()
 	m_wallTexture = Texture("textures/walls.png", 6, 19);
 
 	auto atlas = CreateRef<Texture>("textures/atlas.png", 5, 10);
-	auto ss_sprite = Sprite();
-	ss_sprite.Atlas = CreateRef<Texture>("textures/ss.bmp", 8, 7);
+	m_ssSprite = Sprite();
+	m_ssSprite.Atlas = CreateRef<Texture>("textures/ss.bmp", 8, 7);
 
 	auto trex_sprite = Sprite();
 	trex_sprite.Atlas = CreateRef<Texture>("textures/trex.bmp", 8, 7);
 
-	m_secondPlayer = CreateRef<NetPlayer>(ss_sprite, vec2(3, 3), 0);
-	m_map.AddObject(m_secondPlayer);
+	/*m_secondPlayer = CreateRef<NetPlayer>(ss_sprite, vec2(3, 3), 0);
+	m_secondPlayer->SetEnable(false);*/
+	//m_map.AddObject(m_secondPlayer);
 	auto sprite = Sprite();
 	sprite.Id = 11;
 	sprite.Atlas = atlas;
@@ -79,11 +80,11 @@ void RaycastEngine::InitGameWorld()
 	lampSprite.Atlas = atlas;
 	m_map.AddObject(CreateRef<Object>(sprite, vec2(1.5, 1.5), true));
 	m_map.AddObject(CreateRef<Object>(sprite, vec2(3.5, 3.5), true));
-	m_map.AddObject(CreateRef<Enemy>(ss_sprite, vec2(4.5, 4.5), 0));
+	m_map.AddObject(CreateRef<Enemy>(m_ssSprite, vec2(4.5, 4.5), 0));
 	m_map.AddObject(CreateRef<Enemy>(trex_sprite, vec2(4.5, 5.5), 0));
 	m_map.AddObject(CreateRef<Object>(lampSprite, vec2(5.5, 5.5), false));
 	m_map.AddObject(CreateRef<Object>(sprite, vec2(6.5, 6.5), true));
-	m_map.AddObject(CreateRef<Enemy>(ss_sprite, vec2(13.5, 6.5), 90));
+	m_map.AddObject(CreateRef<Enemy>(m_ssSprite, vec2(13.5, 6.5), 0));
 	auto fpslabelPos = vec2(m_renderer.GetWidth() - 200, 10);
 	m_fpsLabel = CreateRef<Label>("fps: ", fpslabelPos, vec2(200, 50), 20, 0, 0xFF00FF00);
 	m_fpsLabel->SetBackgroundColor(0x00111111);
@@ -101,9 +102,6 @@ void RaycastEngine::InitGameWorld()
 	panel = CreateRef<Panel>(vec2(), vec2(), 0xAA111111);
 	panel->SetSize(vec2(220, 180));
 	panel->SetLocalPosition(vec2(m_renderer.GetWidth() / 2 - panel->GetSize().x / 2, m_renderer.GetHeight() / 2 - panel->GetSize().y / 2));
-	//m_uiElements.push_back(panel);
-	//m_uiElements.push_back(m_fpsLabel);
-	//m_uiElements.push_back(playerPosText);
 	panel->AddChild(btn);
 
 	auto textBox = CreateRef<TextBox>(vec2(10, 60), vec2(200, 50));
@@ -162,52 +160,32 @@ void RaycastEngine::InitGameWorld()
 void RaycastEngine::InitNetworking()
 {
 	m_client = CreateScope<UDPClient>();
-	m_client->SetOnConnectCallback([=](UDPClient*) {
-		m_console->AddLog("Connected successfully!");
-		});
+	m_client->SetOnConnectCallback([=](UDPClient* c) {
+		m_console->AddLog("Connected successfully with id " + to_string(c->GetID()));
+	});
 	m_client->SetOnDisconnectCallback([=](UDPClient*) {
 		m_console->AddLog("You are disconnected!");
-		});
+	});
 	m_client->SetFailedToConnectCallback([=](UDPClient*) {
 		m_console->AddLog("Failed To Connect!");
+	});
+	m_client->SetOtherPlayerConnectCallback([=](UDPClient*, int id) {
+		if (m_client->GetID() != id)
+		{
+			m_console->AddLog("Player " + to_string(id) + " is connected");
+		}
+	});
+	m_client->SetOtherPlayerDisconnectCallback([=](UDPClient*, int id) {
+		if (m_client->GetID() != id)
+		{
+			m_console->AddLog("Player " + to_string(id) + " is disconnected");
+			m_players.erase(id);
+		}
 	});
 }
 
 void RaycastEngine::Update(const float deltaTime)
 {
-
-	if (m_client->IsConnected())
-	{
-		static float timer = 0;
-		timer += deltaTime * 100;
-		
-		//int id = ((ClientMessage*)&msg)->Id;
-		//m_console->AddLog(to_string(id));
-		if (timer > 2)
-		{
-			auto player = PlayerInfo();
-			player.Angle = m_player.GetAngle();
-			player.Position = m_player.GetPosition();
-			auto msg = m_client->BuildMessage((char*)&player);
-			m_client->Send((char*)&msg, sizeof(ClientMessage));
-			timer = 0;
-		}
-		while (auto msg = m_client->PollMessage())
-		{
-			auto player = *(PlayerInfo*)&(msg->Message);
-			//std::cout << clientMessage->Id << std::endl;
-			if (msg->Id != m_client->GetID())
-			{
-				
-				m_secondPlayer->SetPosition(player.Position);
-				m_secondPlayer->SetAngle(player.Angle);
-				
-				m_console->AddLog(to_string(msg->Id) + ": " + to_string(player.Position.x) + ", " + to_string(player.Position.y));
-			}
-		}
-	}
-	if (m_console->IsOpened())
-		return;
 	static bool cursor = false;
 	if (Input::IsKeyDown(SDL_SCANCODE_ESCAPE))
 	{
@@ -223,30 +201,86 @@ void RaycastEngine::Update(const float deltaTime)
 		}
 		cursor = !cursor;
 	}
-	if (!cursor)
+
+	if (!m_console->IsOpened())
+	{
 		m_player.Update(deltaTime);
-
-
-	//static float mouseY = 0.0f;
-	//mouseY -= Input::GetMouseAxis().y * deltaTime * 500;
-	/*static float headMove = 0.0f;
-	headMove += deltaTime * 10;
-	m_renderer.SetVerticalOffset(64 + cosf(headMove) *400 * vec2::get_magnitude(m_player.GetVelocity()));*/
+		if (Input::IsKeyDown(SDL_SCANCODE_E))
+			Use();
+		if (Input::IsKeyDown(SDL_SCANCODE_SPACE))
+			Attack();
+	}
 
 	for (auto obj : m_map.GetObjects())
 	{
+		if(!obj->IsEnabled())
+			continue;
 		if (auto enemy = dynamic_cast<Enemy*>(obj.get()))
 			enemy->Update(deltaTime, m_player);
 	}
-	if (Input::IsKeyDown(SDL_SCANCODE_E))
-		Use();
-	if (Input::IsKeyDown(SDL_SCANCODE_SPACE))
-		Attack();
 	m_map.UpdateDoors(deltaTime);
 	DoPhysics();
-
+	UpdateNetwork(deltaTime);
 
 	m_uiManager.Update(deltaTime);
+}
+
+void RaycastEngine::UpdateNetwork(const float deltaTime)
+{
+	if (m_client->IsConnected())
+	{
+		static float timer = 0;
+		timer += deltaTime * 100;
+
+		//int id = ((ClientMessage*)&msg)->Id;
+		//m_console->AddLog(to_string(id));
+		if (timer > 2)
+		{
+			auto msg = ClientMessage();
+			msg.Position = m_player.GetPosition();
+			msg.Velocity = m_player.GetVelocity();
+			msg.Angle = m_player.GetAngle();
+			std::cout << msg.Angle << std::endl;
+			msg.Id = m_client->GetID();
+			msg.Type = MessageType::PLAYER_INFO;
+			//m_console->AddLog(to_string(sizeof(msg.Message)));
+			m_client->Send((char*)&msg, sizeof(ClientMessage));
+
+			timer = 0;
+		}
+		else {
+			auto msg = ClientMessage();
+			msg.Id = m_client->GetID();
+			msg.Type = MessageType::HEARTBEAT;
+		}
+		while (auto msg = m_client->PollMessage())
+		{
+			///auto player = *(PlayerInfo*)&(msg->Message);
+			if (msg->Id != m_client->GetID())
+			{
+				if (msg->Type == MessageType::PLAYER_INFO)
+				{
+					if (m_players.find(msg->Id) == m_players.end())
+					{
+						m_players.insert(std::pair<int, Ref<NetPlayer>>(msg->Id, CreateRef<NetPlayer>(m_ssSprite, msg->Position, msg->Angle)));
+						m_players[msg->Id]->SetVelocity(msg->Velocity);
+						m_map.AddObject(m_players[msg->Id]);
+						m_players[msg->Id]->SetEnable(true);
+					}
+					else {
+						auto otherPlayer = m_players[msg->Id];
+						otherPlayer->SetPosition(msg->Position);
+						otherPlayer->SetVelocity(msg->Velocity);
+						otherPlayer->SetAngle(msg->Angle);
+					}
+
+
+				}
+
+				//m_console->AddLog(to_string(msg->Id) + ": " + to_string(player.Position.x) + ", " + to_string(player.Position.y));
+			}
+		}
+	}
 }
 
 void RaycastEngine::Render()
@@ -291,6 +325,8 @@ void RaycastEngine::DrawObjects()
 	m_renderer.SortObjects(m_map.GetObjects(), m_player);
 	for (auto obj : m_map.GetObjects())
 	{
+		if (!obj->IsEnabled())
+			continue;
 		m_renderer.DrawSprite(obj->GetSprite(), obj->GetPosition(), m_player);
 	}
 }
@@ -447,12 +483,13 @@ void RaycastEngine::DoPhysics()
 
 void RaycastEngine::Use()
 {
+	m_console->AddLog("working");
 	auto ray = m_player.GetPosition();
 	for (auto step = 0.0f; step < 20; step += 0.5f)
 	{
 		ray += vec2(
-			step * cosf(MathUtils::DegToRad(m_player.GetAngle())),
-			step * sinf(MathUtils::DegToRad(m_player.GetAngle()))
+			step * cosf(MathUtils::DegToRad(m_player.GetAngle() + 180)),
+			step * sinf(MathUtils::DegToRad(m_player.GetAngle() + 180))
 		);
 		auto tile = m_map.GetIndexAt(ray.x, ray.y);
 		if (tile == -1)
@@ -475,8 +512,8 @@ void RaycastEngine::Attack()
 	for (auto step = 0.0f; step < 40; step += 0.25f)
 	{
 		ray += vec2(
-			step * cosf(MathUtils::DegToRad(m_player.GetAngle())),
-			step * sinf(MathUtils::DegToRad(m_player.GetAngle()))
+			step * cosf(MathUtils::DegToRad(m_player.GetAngle() + 180)),
+			step * sinf(MathUtils::DegToRad(m_player.GetAngle() + 180))
 		);
 		auto tile = m_map.GetIndexAt(ray.x, ray.y);
 		if (tile == -1)

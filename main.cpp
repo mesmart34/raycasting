@@ -3,7 +3,7 @@
 
 int main(int argc, char** argv)
 {
-	auto engine = new RaycastEngine(800, 600);
+	auto engine = new RaycastEngine(1360, 768);
 	engine->Run();
 	return 0;
 }

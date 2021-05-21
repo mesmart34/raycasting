@@ -6,6 +6,7 @@
 #include <string>
 #include <iostream>
 #include <fstream>
+#include "ResourceManager.h"
 #include "Base.h"
 #include <sstream>
 

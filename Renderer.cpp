@@ -3,16 +3,25 @@
 
 Renderer::Renderer(Window& window, const int width, const int height) : m_width(width), m_height(height)
 {
-	m_data = new uint32_t[m_width * m_height]();
-	m_zBuffer = std::vector<float>(m_width);
-	m_scale = height / 130.0f;
+	Init(m_width, m_height);
+	
 	m_transparentColor = MathUtils::PackRGBA({ 152, 0, 136, 255});
 	m_renderVerticalOffset = 0;
 	m_miniFont = Font("mini");
 	m_font = Font("font");
 
+}
+
+void Renderer::Init(const int width, const int height)
+{
+	float scale = 0.8f;
+	m_scale = height / 130.0f;
+	m_width = width * scale;
+	m_height = height * scale;
+	m_data = new uint32_t[m_width * m_height]();
+	m_zBuffer = std::vector<float>(m_width);
 	glGenTextures(1, &m_quadTextureId);
-	glBindTexture(GL_TEXTURE_2D, m_quadTextureId); 
+	glBindTexture(GL_TEXTURE_2D, m_quadTextureId);
 	glEnable(GL_TEXTURE_2D);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
@@ -21,6 +30,7 @@ Renderer::Renderer(Window& window, const int width, const int height) : m_width(
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_width, m_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, (void*)m_data);
 	glGenerateMipmap(GL_TEXTURE_2D);
+	glViewport(0, 0, width, height);
 }
 
 void Renderer::Clear()
@@ -50,7 +60,7 @@ inline uint32_t Renderer::GetPixel(const int x, const int y)
 	return m_data[x + (m_height - 1 - y) * m_width];
 }
 
-void Renderer::DrawStrip(const Ray& ray, const Texture& atlas, const int x, const bool isPlayerInside)
+void Renderer::DrawStrip(const Ray& ray, const Ref<Texture>& atlas, const int x, const bool isPlayerInside)
 {
 	m_zBuffer[x] = ray.Distance;
 	auto id = ray.Id + 1;
@@ -70,7 +80,7 @@ void Renderer::DrawStrip(const Ray& ray, const Texture& atlas, const int x, cons
 		end = m_height;
 	}
 	static auto column = new uint32_t[m_height];
-	atlas.GetScaledColumn(column, ray.WallX, m_height, height, textureOffset, id, offset);
+	atlas->GetScaledColumn(column, ray.WallX, m_height, height, textureOffset, id, offset);
 	/*float density = 0.2;
 	float gradient = 3.0;
 	auto visibility = expf(-powf(ray.Distance * density, -gradient));
@@ -286,6 +296,11 @@ SDL_Renderer* Renderer::GetRenderer()
 void Renderer::Present()
 {
 	SDL_RenderPresent(m_renderer);
+}
+
+void Renderer::Resize(const int width, const int height)
+{
+
 }
 
 void Renderer::DrawButton(const Button* const button)

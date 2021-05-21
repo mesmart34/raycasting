@@ -15,7 +15,7 @@
 #pragma comment(lib, "ws2_32.lib")
 
 #define MAX_PACKET_SIZE 512
-
+#define MAX_CLIENTS 4
 
 class UDPClient
 {
@@ -25,6 +25,7 @@ public:
 	~UDPClient();
 
 	void Connect(const std::string& ip, const int port);
+	void Disconnect();
 	void Send(const char* data, const int length);
 	void Close();
 	void SetOnConnectCallback(std::function<void(UDPClient*)>);
@@ -32,15 +33,14 @@ public:
 	void SetFailedToConnectCallback(std::function<void(UDPClient*)>);
 	void SetOtherPlayerConnectCallback(std::function<void(UDPClient*,int)>);
 	void SetOtherPlayerDisconnectCallback(std::function<void(UDPClient*, int)>);
-	ClientMessage BuildMessage(const MessageType type, const char* data) const;
+	void SetOnMessage(std::function<void(UDPClient*,char*, int, ServerMessage)>);
 	bool IsConnected() const;
-	ClientMessage* PollMessage();
+	PlayerData* PollMessage();
 
-	int GetID() const;
+	uint16_t GetID() const;
+	void Receive();
 
 private:
-	void Run();
-	void Receive();
 	void DoHandshake();
 
 
@@ -52,8 +52,8 @@ private:
 	sockaddr_in m_info;
 	int m_infoSize;
 	char m_buffer[MAX_PACKET_SIZE];
-	uint32_t m_id;
-	SafeQueue<ClientMessage> m_clientMessages;
+	uint16_t m_id;
+	SafeQueue<PlayerData> m_clientMessages;
 	std::thread m_receiveThread;
 	std::thread m_runThread;
 	std::chrono::high_resolution_clock::time_point m_lastPacketTime;
@@ -63,6 +63,7 @@ private:
 	std::function<void(UDPClient*)> m_failedToConnectCallback;
 	std::function<void(UDPClient*, int)> m_otherPlayerConnect;
 	std::function<void(UDPClient*, int)> m_otherPlayerDisconnect;
+	std::function<void(UDPClient*, char*, int, ServerMessage)> m_onMessage;
 	std::atomic<bool> m_running;
 
 };

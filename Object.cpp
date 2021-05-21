@@ -2,9 +2,13 @@
 #include "Object.h"
 
 Object::Object(const Sprite& sprite, const vec2& position, const bool isCollidable)
-    : m_sprite(sprite), m_position(position), m_isCollidable(isCollidable), m_isEnabled(true), m_velocity(vec2())
+    : m_sprite(sprite),
+    m_position(position), 
+    m_isCollidable(isCollidable), 
+    m_isEnabled(true), 
+    m_velocity(vec2()), 
+    m_type(ObjectType::OBJECT)
 {
-
 }
 
 Sprite Object::GetSprite() const
@@ -40,4 +44,9 @@ bool Object::IsEnabled() const
 void Object::SetEnable(const bool value)
 {
     m_isEnabled = value;
+}
+
+ObjectType Object::GetType() const
+{
+    return m_type;
 }

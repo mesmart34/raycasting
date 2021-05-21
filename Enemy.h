@@ -4,17 +4,19 @@
 #include "Object.h"
 #include "Player.h"
 
+enum class EnemyState
+{
+	Idle, Walk, Attack, Die, Damaged
+};
+
 class Enemy : public Object
 {
 public:
 
-	enum class EnemyState
-	{
-		Idle, Walk, Attack, Die, Damaged
-	};
+	
 	Enemy(const Sprite& sprite, const vec2& position, const float angle);
 
-	void Update(const float deltaTime, const Player& player);
+	virtual void Update(const float deltaTime, const Player& player);
 
 	float GetAngle() const;
 	void Die();
@@ -25,15 +27,14 @@ protected:
 protected:
 	float m_angle = 0.0f;
 	int m_health;
-
-private:
+	int m_diff;
+	EnemyState m_state;
 	bool m_isAlive;
 	int m_spriteRowIndex;
 	float m_spriteIndexCounter;
 	bool m_isDamaged;
-	int m_diff;
 	bool m_end;
 
-	EnemyState m_state;
+
 };
 

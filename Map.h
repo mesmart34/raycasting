@@ -5,12 +5,19 @@
 #include <map>
 #include "vec2.h"
 #include "Door.h"
+#include "Enemy.h"
+#include "tinyxml2.h"
+#include "Map.h"
+#include "NetPlayer.h"
+#include "StringUtils.h"
+#include "ResourceManager.h"
 
 class Map
 {
 public:
 	Map() = default;
-	Map(const vec2& playerSpawnPoint);
+	static Map* LoadMap(const std::string& name);
+	static void SaveMap(const std::string& name, Map* map);
 
 	int GetIndexAt(const int x, const int y) const;
 	void AddObject(const Ref<Object>& obj);
@@ -18,12 +25,14 @@ public:
 	bool IsDoorOpened(const int x, const int y) const;
 	std::vector<Ref<Object>>& GetObjects();
 	int GetWidth() const;
+	int GetHeight() const;
 	vec2 GetPlayerSpawnPoint() const;
 
 	void OpenDoorAt(const int x, const int y);
 	void UpdateDoors(const float deltaTime);
 
 private:
+	void InitDoors();
 	bool IsInBounds(const int x, const int y) const;
 
 private:

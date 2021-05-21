@@ -11,7 +11,7 @@ class Texture
 {
 public:
 	Texture() = default;
-	Texture(const std::string& path, const int columns, const int rows);
+	Texture(const std::string& name, const std::string& path, const int columns, const int rows);
 
 	int GetWidth() const;
 	int GetHeight() const;
@@ -22,6 +22,8 @@ public:
 
 	uint32_t operator[](const int idx) const;
 
+	std::string GetName() const;
+
 private:
 	int m_width;
 	int m_height;
@@ -29,4 +31,5 @@ private:
 	int m_columns;
 	int m_rows;
 	Ref<uint32_t[]> m_data;
+	std::string m_name;
 };

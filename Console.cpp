@@ -40,13 +40,13 @@ void Console::Draw(const Window& window)
 	memset(buffer, 0, 256);
 	const float footer_height_to_reserve = ImGui::GetStyle().ItemSpacing.y + ImGui::GetFrameHeightWithSpacing();
 	ImGui::BeginChild("Console", ImVec2(0, -footer_height_to_reserve), false, ImGuiWindowFlags_HorizontalScrollbar);
-	
+
 	for (auto i = m_consoleHistory.begin(); i != m_consoleHistory.end(); i++)
 	{
 		ImGui::Text(i->c_str());
 	}
 
-	
+
 
 	if (ScrollToBottom || (AutoScroll && ImGui::GetScrollY() >= ImGui::GetScrollMaxY()))
 		ImGui::SetScrollHereY(1.0f);
@@ -84,7 +84,7 @@ bool Console::IsOpened() const
 
 void Console::ProcessCommand(const std::string& line)
 {
-	auto command = ParseCommand(line, ' ');
+	auto command = StringUtils::ParseCommand(line, " ");
 	if (command[0] == "quit")
 	{
 		m_engine->Shutdown();
@@ -95,7 +95,7 @@ void Console::ProcessCommand(const std::string& line)
 	}
 	else if (command[0] == "connect")
 	{
-		auto clientInfo = ParseCommand(command[1], ':');
+		auto clientInfo = StringUtils::ParseCommand(command[1], ":");
 		auto ip = clientInfo[0];
 		auto port = atoi(clientInfo[1].c_str());
 		AddLog(line);
@@ -104,26 +104,26 @@ void Console::ProcessCommand(const std::string& line)
 	else if (command[0] == "disconnect")
 	{
 		AddLog(line);
-		m_engine->m_client->Close();
-	} 
+		m_engine->DisconnectFromServer();
+	}
+	else if (command[0] == "load")
+	{
+		if (command[1] == "level")
+		{
+			AddLog(line);
+			auto level = Map::LoadMap("maps/" + command[2] + ".xml");
+
+			if (level == nullptr)
+				AddLog("Failed");
+			else
+			{
+				m_engine->LoadLevel(level);
+				AddLog("The level " + command[2] + " is successfully loaded!");
+			}
+
+		}
+	}
 	else {
 		AddLog("Unknown command \'" + line + "\'");
 	}
-}
-
-std::vector<std::string> Console::ParseCommand(const std::string& command, const char delim)
-{
-	auto splitted = std::vector<std::string>();
-	auto char_cmd = command.c_str();
-	auto spaceIndex = 0;
-	for (auto i = 0; i <= command.size(); i++)
-	{
-		if (command[i] == delim || i == command.size())
-		{
-			auto element = std::string(&char_cmd[spaceIndex], &char_cmd[i]);
-			splitted.push_back(element);
-			spaceIndex = i + 1;
-		}
-	}
-	return splitted;
 }

@@ -8,6 +8,7 @@
 #include "Window.h"
 #include "Base.h"
 #include "RaycastEngine.h"
+#include "StringUtils.h"
 
 class RaycastEngine;
 
@@ -26,7 +27,7 @@ public:
 
 private:
 	void ProcessCommand(const std::string& command);
-	std::vector<std::string> ParseCommand(const std::string& command, const char delim);
+	
 
 private:
 	Ref<RaycastEngine> m_engine;

@@ -2,9 +2,16 @@
 #include "Enemy.h"
 
 Enemy::Enemy(const Sprite& sprite, const vec2& position, const float angle)
-	: Object(sprite, position, true), m_angle(angle), m_state(EnemyState::Walk), m_isAlive(true), m_health(100), m_spriteIndexCounter(0), m_end(false)
+	: Object(sprite, position, true),
+	m_angle(angle), 
+	m_state(EnemyState::Idle), 
+	m_isAlive(true), 
+	m_health(100), 
+	m_spriteIndexCounter(0), 
+	m_end(false)
 {
 	m_spriteRowIndex = rand() % 8;
+	m_type = ObjectType::ENEMY;
 }
 
 void Enemy::Update(const float deltaTime, const Player& player)
@@ -13,8 +20,7 @@ void Enemy::Update(const float deltaTime, const Player& player)
 		return;
 	auto angle = atan2(m_position.x - player.GetPosition().x, m_position.y - player.GetPosition().y) / float(M_PI) / 2 - .5f - (360 - GetAngle() - 45.0f / 2) / 360.0f;
 	m_diff = (((angle * 360)) / -45);
-	m_spriteIndexCounter += deltaTime * 3;
-		
+	m_spriteIndexCounter += deltaTime * 5;
 	if (!m_isAlive)
 	{
 		
@@ -28,9 +34,14 @@ void Enemy::Update(const float deltaTime, const Player& player)
 		}
 		else {
 			if (vec2::get_magnitude(m_velocity) > 0.001f)
+			{
 				m_state = EnemyState::Walk;
+			}
 			else
+			{
+				
 				m_state = EnemyState::Idle;
+			}
 		}
 	}
 
@@ -39,14 +50,15 @@ void Enemy::Update(const float deltaTime, const Player& player)
 	case EnemyState::Idle:
 	{
 		m_spriteRowIndex = 0;
-		m_sprite.Id = m_diff + 8 * (m_spriteRowIndex);
+		m_sprite.Id = m_diff - 8;
+		
 	} break;
 	case EnemyState::Walk:
 	{
 		if (m_spriteIndexCounter > 4)
 			m_spriteIndexCounter = 0;
 		m_spriteRowIndex = (int)m_spriteIndexCounter + 1;
-		m_sprite.Id = m_diff + 8 * (m_spriteRowIndex);
+		m_sprite.Id = m_diff + 8 * 2 + m_spriteRowIndex;
 	} break;
 	case EnemyState::Attack:
 	{

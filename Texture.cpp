@@ -1,8 +1,8 @@
 #include "pch.h"
 #include "Texture.h"
 
-Texture::Texture(const std::string& path, const int columns = 0, const int rows = 0)
-	: m_columns(columns), m_rows(rows)
+Texture::Texture(const std::string& name, const std::string& path, const int columns = 0, const int rows = 0)
+	: m_columns(columns), m_rows(rows), m_name(name)
 {
 	LoadFromFile(path);
 }
@@ -15,6 +15,11 @@ void Texture::LoadFromFile(const std::string& path)
 uint32_t Texture::operator[](const int idx) const
 {
 	return m_data[idx];
+}
+
+std::string Texture::GetName() const
+{
+	return m_name;
 }
 
 int Texture::GetWidth() const

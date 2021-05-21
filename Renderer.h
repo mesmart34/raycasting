@@ -26,10 +26,12 @@ public:
 	Renderer() = default;
 	Renderer(Window& window, const int width, const int height);
 
+	void Init(const int width, const int height);
+	void Resize(const int width, const int height);
 	void Clear();
 	inline void PutPixel(const int x, const int y, const Uint32 color);
 	inline uint32_t GetPixel(const int x, const int y);
-	void DrawStrip(const Ray& ray, const Texture& atlas, const int x, const bool isPlayerInside);
+	void DrawStrip(const Ray& ray, const Ref<Texture>& atlas, const int x, const bool isPlayerInside);
 	void Draw();
 	void DrawRect(const vec2& start, const vec2& size, const uint32_t color);
 	void DrawColumn(const std::vector<uint32_t>& data, const int x);

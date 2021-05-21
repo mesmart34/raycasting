@@ -25,23 +25,12 @@ Window::Window(const WindowProps& props) : m_props(props)
 	if (glewInit() != GLEW_OK)
 		throw std::runtime_error("glewInit failed");
 	SDL_GL_SetSwapInterval(1);
-	SDL_AddEventWatch(Window::Resize, this);
 	ImGui::CreateContext();
 	ImGuiIO& io = ImGui::GetIO(); (void)io;
 	ImGui::StyleColorsDark();
 	ImGui_ImplSDL2_InitForOpenGL(m_window, m_context);
 	ImGui_ImplOpenGL3_Init(glsl_version.c_str());
 	glClearColor(0, 0, 0, 0);
-
-
-
-	//float SCALE = 2.0f;
-	//ImFontConfig cfg;
-	//cfg.SizePixels = 13 * SCALE;
-	////ImGui::GetIO().Fonts->AddFontDefault(&cfg)->
-
-	//ImGui::GetIO().DisplaySize = ImVec2(props.Width * 2, props.Height * 2);
-	//ImGui::GetIO().DisplayFramebufferScale = ImVec2(2.0f, 2.0f);
 }
 
 Window::~Window()
@@ -58,17 +47,10 @@ SDL_Window* Window::GetSDLPtr()
 	return m_window;
 }
 
-int SDLCALL Window::Resize(void* data, SDL_Event* ev)
+void Window::Resize(const int width, const int height)
 {
-	if(ev->window.event == SDL_WINDOWEVENT_RESIZED)
-	if (auto window = static_cast<Window*>(data))
-	{
-		window->m_props.Width = ev->window.data1;
-		window->m_props.Height = ev->window.data2;
-		//std::cout << window->m_props.Width << ", " << window->m_props.Height << std::endl;
-		return 0;
-	}
-	return -1;
+	m_props.Width = width;
+	m_props.Height = height;
 }
 
 int Window::GetWidth() const

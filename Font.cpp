@@ -17,8 +17,7 @@ Font::Font(const std::string& name)
 		m_meta.push_back(std::pair<int, int>(start, length));
 	}
 	file.close();
-
-	m_texture = CreateRef<Texture>("fonts/" + name + ".png", 0, 0);
+	m_texture = ResourceManager::GetTexture("font");
 }
 
 vec2 Font::GetTextSize(const std::string& text) const

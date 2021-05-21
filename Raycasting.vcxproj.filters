@@ -104,9 +104,6 @@
     <ClCompile Include="SafeQueue.cpp">
       <Filter>Networking</Filter>
     </ClCompile>
-    <ClCompile Include="UDPServer.cpp">
-      <Filter>Networking\Server</Filter>
-    </ClCompile>
     <ClCompile Include="ClientMessage.cpp">
       <Filter>Networking</Filter>
     </ClCompile>
@@ -114,6 +111,11 @@
     <ClCompile Include="NetPlayer.cpp">
       <Filter>Objects</Filter>
     </ClCompile>
+    <ClCompile Include="tinyxml2.cpp">
+      <Filter>Thirdparty\tinyxml2</Filter>
+    </ClCompile>
+    <ClCompile Include="ResourceManager.cpp" />
+    <ClCompile Include="StringUtils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="vec2.h">
@@ -221,9 +223,6 @@
     <ClInclude Include="SafeQueue.h">
       <Filter>Networking</Filter>
     </ClInclude>
-    <ClInclude Include="UDPServer.h">
-      <Filter>Networking\Server</Filter>
-    </ClInclude>
     <ClInclude Include="ClientMessage.h">
       <Filter>Networking</Filter>
     </ClInclude>
@@ -231,6 +230,11 @@
     <ClInclude Include="NetPlayer.h">
       <Filter>Objects</Filter>
     </ClInclude>
+    <ClInclude Include="tinyxml2.h">
+      <Filter>Thirdparty\tinyxml2</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourceManager.h" />
+    <ClInclude Include="StringUtils.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Event">
@@ -244,9 +248,6 @@
     </Filter>
     <Filter Include="Platform">
       <UniqueIdentifier>{ac854cae-6268-4132-ab11-64c2de9f2f2a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Graphics">
-      <UniqueIdentifier>{123cc308-a248-45a5-9518-247d35a7af90}</UniqueIdentifier>
     </Filter>
     <Filter Include="Objects">
       <UniqueIdentifier>{daf4daaf-9546-4a27-8cc4-796b368bd94a}</UniqueIdentifier>
@@ -266,8 +267,11 @@
     <Filter Include="Networking\Client">
       <UniqueIdentifier>{d6f357c3-f4ed-4fa1-b850-9f5f43d0c1c4}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Networking\Server">
-      <UniqueIdentifier>{b2ae396f-0ee0-4d88-94ad-bd03d396745f}</UniqueIdentifier>
+    <Filter Include="Graphics">
+      <UniqueIdentifier>{123cc308-a248-45a5-9518-247d35a7af90}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Thirdparty\tinyxml2">
+      <UniqueIdentifier>{a68d8a42-f827-4fc7-872c-5e96ff3adc82}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

@@ -3,6 +3,11 @@
 #include "Sprite.h"
 #include "vec2.h"
 
+enum class ObjectType
+{
+	OBJECT, ENEMY, NET_PLAYER
+};
+
 class Object
 {
 public:
@@ -19,6 +24,7 @@ public:
 
 	bool IsEnabled() const;
 	void SetEnable(const bool value);
+	ObjectType GetType() const;
 
 	virtual void OnRaycastHit(int damage) { }
 
@@ -28,4 +34,5 @@ protected:
 	vec2 m_velocity;
 	bool m_isCollidable;
 	bool m_isEnabled;
+	ObjectType m_type;
 };

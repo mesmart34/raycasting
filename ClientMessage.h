@@ -2,37 +2,45 @@
 #include <cstdint>
 #include <string>
 #include "Player.h"
+#include "Enemy.h"
 
-enum class MessageType
+
+struct IPEndPoint
 {
-	ID,
-	PLAYER_INFO,
-	DOOR_STATE,
-	ON_PLAYER_CONNECT,
-	ON_PLAYER_DISCONNECT,
-	RAY_CAST_EVENT,
-	HEARTBEAT,
-	HELLO
+	uint32_t IpAddress = 0;
+	uint16_t Port = 0;
 };
 
-struct PlayerInfo
+struct PlayerData
 {
-	vec2 Velocity;
+	uint16_t Id;
 	vec2 Position;
-	float Angle;
-};
-
-struct ServerMessage
-{
-	MessageType Type;
-	std::string Message;
-};
-
-struct ClientMessage
-{
-	MessageType Type;
-	uint32_t Id;
 	vec2 Velocity;
-	vec2 Position;
 	float Angle;
+	EnemyState State;
+};
+
+struct Client
+{
+	IPEndPoint EndPoint = {};
+	std::chrono::time_point<std::chrono::high_resolution_clock> HeardTime = {};
+	float Angle = 0.0;
+	vec2 Position = vec2();
+	vec2 Velocity = vec2();
+	EnemyState State;
+};
+
+struct DoorInfo
+{
+	int x, y;
+};
+
+enum class ClientMessage : int8_t
+{
+	Join, Leave, Input, Door
+};
+
+enum class ServerMessage : int8_t
+{
+	JoinResult, PlayersState, ClientConnect, ClientDisconnect, Door
 };

@@ -15,6 +15,7 @@ UDPClient::~UDPClient()
 
 void UDPClient::Connect(const std::string& ip, const int port)
 {
+
 	m_info.sin_family = AF_INET;
 	m_info.sin_port = htons(port);
 	m_info.sin_addr.s_addr = inet_addr(ip.c_str());
@@ -25,44 +26,29 @@ void UDPClient::Connect(const std::string& ip, const int port)
 	m_socket = socket(AF_INET, SOCK_DGRAM, 0);
 	if (m_socket == SOCKET_ERROR)
 		throw "WSA Error";
+	bind(m_socket, (sockaddr*)&m_info, m_infoSize);
 
-	//bind(m_socket, (sockaddr*)&m_info, m_infoSize);
-	//std::cout << "wdad" << std::endl;
+
+	u_long iMode = 1;
+	ioctlsocket(m_socket, FIONBIO, &iMode);
+
 	DoHandshake();
-	m_receiveThread = std::thread(&UDPClient::Receive, this);
-	m_receiveThread.detach();
-	m_runThread = std::thread(&UDPClient::Run, this);
-	m_runThread.detach();
-	m_running = true;
 }
 
-void UDPClient::Run()
+void UDPClient::Disconnect()
 {
-	while (m_running)
-	{
-		auto currentTime = std::chrono::high_resolution_clock::now();
-		auto delta = std::chrono::duration_cast<std::chrono::milliseconds>(currentTime - m_lastPacketTime);
-		if (delta.count() > 5000)
-		{
-			if (!m_connected)
-			{
-				//m_failedToConnectCallback(this);
-				m_running = false;
-				m_failedToConnectCallback(this);
-			}
-			else {
-				m_connected = false;
-				Close();
-			}
-		}
-	}
+	m_buffer[0] = (char)ClientMessage::Leave;
+	m_buffer[1] = m_id;
+	std::cout << m_buffer[1] << std::endl;
+	Send(&m_buffer[0], 2);
+	Close();
 }
 
 void UDPClient::Send(const char* data, const int length)
 {
 	if ((sendto(m_socket, data, length, 0, (sockaddr*)&m_info, m_infoSize)) == SOCKET_ERROR)
 	{
-		std::cout << WSAGetLastError() << std::endl;
+		//std::cout << WSAGetLastError() << std::endl;
 	}
 }
 
@@ -100,13 +86,9 @@ void UDPClient::SetOtherPlayerDisconnectCallback(std::function<void(UDPClient*, 
 	m_otherPlayerDisconnect = callback;
 }
 
-ClientMessage UDPClient::BuildMessage(const MessageType type, const char* data) const
+void UDPClient::SetOnMessage(std::function<void(UDPClient*, char*, int, ServerMessage)> callback)
 {
-	auto clientMessage = ClientMessage();
-	clientMessage.Id = m_id;
-	clientMessage.Type = type;
-	//clientMessage.Message = data;
-	return clientMessage;
+	m_onMessage = callback;
 }
 
 bool UDPClient::IsConnected() const
@@ -114,48 +96,69 @@ bool UDPClient::IsConnected() const
 	return m_connected;
 }
 
-ClientMessage* UDPClient::PollMessage()
+PlayerData* UDPClient::PollMessage()
 {
 	return m_clientMessages.next();
 }
 
-int UDPClient::GetID() const
+uint16_t UDPClient::GetID() const
 {
 	return m_id;
 }
 
 void UDPClient::Receive()
 {
-	while (m_running) {
-		auto length = recvfrom(m_socket, m_buffer, MAX_PACKET_SIZE, 0, (sockaddr*)&m_info, &m_infoSize);
-		m_lastPacketTime = std::chrono::high_resolution_clock::now();
-		auto message = (ClientMessage*)(m_buffer);
-		if (message->Type == MessageType::HELLO) {
-			m_id = message->Id;
-			m_connected = true;
-			m_onConnectCallback(this);
-		} else if (message->Type == MessageType::ON_PLAYER_CONNECT) {
-			std::cout << message->Id << " is connected" << std::endl;
-			m_otherPlayerConnect(this, message->Id);
-		}
-		else if (message->Type == MessageType::ON_PLAYER_DISCONNECT) {
-			std::cout << message->Id << " is disconnected" << std::endl;
-			m_otherPlayerDisconnect(this, message->Id);
-		}
-		if(m_connected)
+	while (true)
+	{
+		char dataBuffer[MAX_PACKET_SIZE];
+		auto len = recvfrom(m_socket, m_buffer, MAX_PACKET_SIZE, 0, 0, 0);
+		if (len == SOCKET_ERROR)
+			break;
+		auto type = m_buffer[0];
+		if (type == (char)ServerMessage::JoinResult)
 		{
-			m_clientMessages.push(message);
+			if (m_buffer[1] == 1)
+			{
+				m_id = m_buffer[2];
+				m_onConnectCallback(this);
+				m_connected = true;
+			}
+			else {
+				m_failedToConnectCallback(this);
+			}
+		}
+		else if (type == (char)ServerMessage::PlayersState)
+		{
+			auto bytes = 1;
+			while (bytes < len)
+			{
+				memcpy(&dataBuffer[0], &m_buffer[bytes], sizeof(PlayerData));
+				m_onMessage(this, &dataBuffer[0], sizeof(PlayerData), (ServerMessage)type);
+				bytes += sizeof(PlayerData);
+			}
+		}
+		else if (m_buffer[0] == (char)ServerMessage::Door)
+		{
+			auto bytes = 1;
+			while (bytes < len)
+			{
+				memcpy(&dataBuffer[0], &m_buffer[bytes], sizeof(DoorInfo));
+				m_onMessage(this, &dataBuffer[0], sizeof(DoorInfo), (ServerMessage)type);
+				bytes += sizeof(DoorInfo);
+			}
+		}
+		else if (m_buffer[0] == (char)ServerMessage::ClientDisconnect)
+		{
+			auto id = 0;
+			memcpy(&id, &m_buffer[1], sizeof(uint16_t));
+			m_otherPlayerDisconnect(this, id);
 		}
 	}
 }
 
 void UDPClient::DoHandshake()
 {
-	auto message = ClientMessage();
-	message.Type = MessageType::HELLO;
-	if ((sendto(m_socket, (char*)&message, sizeof(ClientMessage), 0, (sockaddr*)&m_info, m_infoSize)) == SOCKET_ERROR)
-	{
-		std::cout << WSAGetLastError() << std::endl;
-	}
-	m_lastPacketTime = std::chrono::high_resolution_clock::now();
+	memset(&m_buffer[0], 0, MAX_PACKET_SIZE);
+	m_buffer[0] = (char)ClientMessage::Join;
+	Send(&m_buffer[0], 1);
 }

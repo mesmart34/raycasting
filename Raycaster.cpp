@@ -3,7 +3,7 @@
 
 using namespace std;
 
-Ray Raycaster::CastRay(const int strip, const int width, const Player& player, const Map& map) const
+Ray Raycaster::CastRay(const int strip, const int width, const Player& player, Map* map) const
 {
 	auto cast = Cast();
 	cast.Rounded = vec2::floor(player.GetPosition());
@@ -27,7 +27,7 @@ Ray Raycaster::CastRay(const int strip, const int width, const Player& player, c
 	else
 		cast.SideDistance.y = (cast.Rounded.y + 1.0f - player.GetPosition().y) * cast.DeltaDistance.y;
 	cast.Step.y = cast.Direction.y < 0 ? -1 : 1;
-	cast.Id = map.GetIndexAt((int)cast.Rounded.x, (int)cast.Rounded.y);
+	cast.Id = map->GetIndexAt((int)cast.Rounded.x, (int)cast.Rounded.y);
 	auto ray = Ray();
 
 	auto steps = 0;
@@ -40,7 +40,7 @@ Ray Raycaster::CastRay(const int strip, const int width, const Player& player, c
 		if (cast.DoorBox)
 			cast.Hit = true;
 		else {
-			cast.Id = map.GetIndexAt((int)cast.Rounded.x, (int)cast.Rounded.y);
+			cast.Id = map->GetIndexAt((int)cast.Rounded.x, (int)cast.Rounded.y);
 			if (cast.Id == 99 || cast.Id == 98)
 			{
 				if (cast.Vertical)
@@ -52,7 +52,7 @@ Ray Raycaster::CastRay(const int strip, const int width, const Player& player, c
 			else if (cast.Id > 0)
 			{
 				auto coords = vec2::floor(player.GetPosition());
-				if (map.GetIndexAt(coords.x, coords.y) == 98)
+				if (map->GetIndexAt(coords.x, coords.y) == 98)
 				{
 					if(coords.x == cast.Rounded.x - 1 && coords.y == cast.Rounded.y)
 						cast.DoorBox = true;
@@ -63,11 +63,11 @@ Ray Raycaster::CastRay(const int strip, const int width, const Player& player, c
 					if (coords.x == cast.Rounded.x && coords.y == cast.Rounded.y + 1)
 						cast.DoorBox = true;
 				}
-				/*if (map.GetIndexAt(coords.x, coords.y) == 98)
+				/*if (map->GetIndexAt(coords.x, coords.y) == 98)
 				{
-					if (map.GetIndexAt((int)coords.x, (int)coords.y - 1) == 98 || map.GetIndexAt((int)coords.x, (int)coords.y + 1) == 98 && !cast.Vertical)
+					if (map->GetIndexAt((int)coords.x, (int)coords.y - 1) == 98 || map->GetIndexAt((int)coords.x, (int)coords.y + 1) == 98 && !cast.Vertical)
 						cast.DoorBox = true;
-					if ((map.GetIndexAt((int)coords.x - 1, (int)coords.y) == 98 || map.GetIndexAt((int)coords.x + 1, (int)coords.y) == 98) && cast.Vertical)
+					if ((map->GetIndexAt((int)coords.x - 1, (int)coords.y) == 98 || map->GetIndexAt((int)coords.x + 1, (int)coords.y) == 98) && cast.Vertical)
 						cast.DoorBox = true;
 				}*/
 				
@@ -105,7 +105,7 @@ float Raycaster::CalculateWallX(const Cast& cast, const Player& player) const
 		return player.GetPosition().x + cast.Distance * cast.Direction.x;
 }
 
-void Raycaster::ProcessVerticalDoor(Cast& cast, const Player& player, const Map& map) const
+void Raycaster::ProcessVerticalDoor(Cast& cast, const Player& player, Map* map) const
 {
 	auto temp = cast;
 	MakeStep(temp);
@@ -113,7 +113,7 @@ void Raycaster::ProcessVerticalDoor(Cast& cast, const Player& player, const Map&
 	temp.WallX = CalculateWallX(temp, player);
 	temp.WallX -= floor(temp.WallX);
 	auto playerDirection = cast.Direction.y < 0 ? 1 : -1;
-	auto doorOffset = map.GetDoorInfo(cast.Rounded.x, cast.Rounded.y);
+	auto doorOffset = map->GetDoorInfo(cast.Rounded.x, cast.Rounded.y);
 	//auto doorOffset = 1.0f;
 	auto isDoor = playerDirection > 0 ? temp.WallX < 0.5f : temp.WallX >= 0.5f;
 	auto temp2 = cast;
@@ -146,7 +146,7 @@ void Raycaster::ProcessVerticalDoor(Cast& cast, const Player& player, const Map&
 	cast.Hit = true;
 }
 
-void Raycaster::ProcessHorizontalDoor(Cast& cast, const Player& player, const Map& map) const
+void Raycaster::ProcessHorizontalDoor(Cast& cast, const Player& player, Map* map) const
 {
 	auto temp = cast;
 	MakeStep(temp);
@@ -154,7 +154,7 @@ void Raycaster::ProcessHorizontalDoor(Cast& cast, const Player& player, const Ma
 	temp.WallX = CalculateWallX(temp, player);
 	temp.WallX -= floor(temp.WallX);
 	auto playerDirection = cast.Direction.x < 0 ? 1 : -1;
-	auto doorOffset = map.GetDoorInfo(cast.Rounded.x, cast.Rounded.y);
+	auto doorOffset = map->GetDoorInfo(cast.Rounded.x, cast.Rounded.y);
 	auto isDoor = playerDirection > 0 ? temp.WallX < 0.5f : temp.WallX >= 0.5f;
 	auto temp2 = cast;
 	auto distance = CalculateDistance(temp2, player);

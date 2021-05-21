@@ -29,22 +29,24 @@
 #include "imgui.h"
 #include "imgui_impl_sdl.h"
 #include "imgui_impl_opengl3.h"
-#include "UDPServer.h"
 #include "UDPClient.h"
 #include "Console.h"
 #include "NetPlayer.h"
+#include "ResourceManager.h"
 
 class RaycastEngine {
 public:
 	RaycastEngine(const int width, const int height);
 
-	static int SDLCALL Quit(void* data, SDL_Event* ev);
+	static int SDLCALL WindowEventListener(void* data, SDL_Event* ev);
 	void Run();
 private:
 	void ConnectToServer(const std::string& ip, const int port);
+	void DisconnectFromServer();
 	//void StartServer(const std::string& ip, const int port);
 	void InitGameWorld();
 	void InitNetworking();
+	void InitUI();
 	void Update(const float deltaTime);
 	void UpdateNetwork(const float deltaTime);
 	void Render();
@@ -55,6 +57,7 @@ private:
 	void Use();
 	void Attack();
 	void Shutdown();
+	void LoadLevel(Map* map);
 
 	friend class Console;
 
@@ -65,18 +68,15 @@ private:
 	Player m_player;
 	Raycaster m_raycaster;
 	EventHandler m_eventHandler;
-	Texture m_wallTexture;
+	Ref<Texture> m_wallTexture;
 	UIManager m_uiManager;
 	Ref<Console> m_console;
 	float m_fps;
-	Map m_map;
+	Map* m_map;
 	Ref<Label> m_fpsLabel;
 	std::vector<Ref<UIElement>> m_uiElements;
 	Ref<Label> playerPosText;
 	Ref<Panel> panel;
 	Scope<UDPClient> m_client;
-	//Scope<UDPServer> m_server;
 	std::map<int, Ref<NetPlayer>> m_players;
-
-	Sprite m_ssSprite;
 };

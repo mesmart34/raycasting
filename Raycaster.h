@@ -45,14 +45,14 @@ public:
 		const int strip, 
 		const int width, 
 		const Player& player,
-		const Map& map) const;
+		Map* map) const;
 
 private:
 	void MakeStep(Cast& cast) const;
 	float CalculateDistance(const Cast& cast, const Player& player) const;
 	float CalculateWallX(const Cast& cast, const Player& player) const;
-	void ProcessVerticalDoor(Cast& cast, const Player& player, const Map& map) const;
-	void ProcessHorizontalDoor(Cast& cast, const Player& player, const Map& map) const;
+	void ProcessVerticalDoor(Cast& cast, const Player& player, Map* map) const;
+	void ProcessHorizontalDoor(Cast& cast, const Player& player, Map* map) const;
 
 };
 

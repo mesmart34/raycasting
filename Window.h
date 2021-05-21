@@ -24,7 +24,7 @@ public:
 	~Window();
 
 	SDL_Window* GetSDLPtr();
-	static int SDLCALL Resize(void* data, SDL_Event* ev);
+	void Resize(const int width, const int height);
 
 	int GetWidth() const;
 	int GetHeight() const;

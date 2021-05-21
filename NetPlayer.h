@@ -8,7 +8,10 @@ public:
 	void SetPosition(const vec2& position);
 	void SetAngle(const float angle);
 
+	void SetState(const EnemyState state);
 
+	virtual void Update(const float deltaTime, const Player& player) final;
+	virtual void OnRaycastHit(int damage) final;
 
 private:
 

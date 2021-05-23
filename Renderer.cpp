@@ -1,8 +1,10 @@
 #include "pch.h"
 #include "Renderer.h"
 
-Renderer::Renderer(Window& window, const int width, const int height) : m_width(width), m_height(height)
+Renderer::Renderer(const int width, const int height) : m_width(width), m_height(height)
 {
+	
+	//m_scale = height / 130.0f;
 	Init(m_width, m_height);
 	
 	m_transparentColor = MathUtils::PackRGBA({ 152, 0, 136, 255});
@@ -12,12 +14,18 @@ Renderer::Renderer(Window& window, const int width, const int height) : m_width(
 
 }
 
+Renderer::~Renderer()
+{
+	glDeleteTextures(1, &m_quadTextureId);
+	delete[] m_data;
+}
+
 void Renderer::Init(const int width, const int height)
 {
-	float scale = 0.8f;
-	m_scale = height / 130.0f;
-	m_width = width * scale;
-	m_height = height * scale;
+
+	m_width = width * 0.8;
+	m_height = height * 0.8;
+	m_scale = m_height / 130.0f;
 	m_data = new uint32_t[m_width * m_height]();
 	m_zBuffer = std::vector<float>(m_width);
 	glGenTextures(1, &m_quadTextureId);
@@ -25,7 +33,6 @@ void Renderer::Init(const int width, const int height)
 	glEnable(GL_TEXTURE_2D);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_width, m_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, (void*)m_data);
@@ -36,7 +43,6 @@ void Renderer::Init(const int width, const int height)
 void Renderer::Clear()
 {
 	glClear(GL_COLOR_BUFFER_BIT);
-	//memset(m_data, 0, m_width * m_height);
 	auto floor = MathUtils::PackRGBA(SDL_Color{ 56, 56, 56, 255 });
 	auto ceil = MathUtils::PackRGBA(SDL_Color{ 113, 113, 113, 255 });
 	auto middle = m_height / 2 + m_renderVerticalOffset / m_maxDistance;
@@ -68,7 +74,9 @@ void Renderer::DrawStrip(const Ray& ray, const Ref<Texture>& atlas, const int x,
 		id = 101;
 	if (ray.Horizontal)
 		id++;   
-	auto height = (int)floorf(m_height / ray.Distance);
+
+	
+	auto height = (int)(floorf((m_height) / ray.Distance));
 	auto offset = m_renderVerticalOffset / m_zBuffer[x];
 	auto start = m_height / 2 - height / 2;
 	auto end = m_height / 2 + height / 2;
@@ -132,15 +140,15 @@ void Renderer::DrawColumn(const std::vector<uint32_t>& data, const int x)
 	memcpy(m_data + x * m_height, data.data(), data.size());
 }
 
-void Renderer::DrawSprite(const Sprite& sprite, const vec2& position, const Player& player)
+void Renderer::DrawSprite(const Sprite& sprite, const vec2& position, const Scope<Player>& player)
 {
 	auto width = 64;
 	auto height = 64;
-	auto spritePos = position - player.GetPosition();
-	auto invDet = 1.0f / (player.GetPlane().x * player.GetDirection().y - player.GetDirection().x * player.GetPlane().y);
+	auto spritePos = position - player->GetPosition();
+	auto invDet = 1.0f / (player->GetPlane().x * player->GetDirection().y - player->GetDirection().x * player->GetPlane().y);
 	auto transform = vec2(
-		invDet * (player.GetDirection().y * spritePos.x  - player.GetDirection().x * spritePos.y),
-		invDet * (-player.GetPlane().y * spritePos.x + player.GetPlane().x * spritePos.y)
+		invDet * (player->GetDirection().y * spritePos.x  - player->GetDirection().x * spritePos.y),
+		invDet * (-player->GetPlane().y * spritePos.x + player->GetPlane().x * spritePos.y)
 	);
 	auto spritePositionX = ((m_width / 2) * (1 + transform.x / transform.y));
 
@@ -172,11 +180,11 @@ void Renderer::DrawSprite(const Sprite& sprite, const vec2& position, const Play
 
 }
 
-void Renderer::SortObjects(std::vector<Ref<Object>>& m_objects, const Player& m_player)
+void Renderer::SortObjects(std::vector<Ref<Object>>& m_objects, const vec2& cameraPosition)
 {
-	std::sort(m_objects.begin(), m_objects.end(), [=](auto p1, auto p2)->bool {
-		auto d1 = vec2::sqrDistance(m_player.GetPosition(), p1->GetPosition());
-		auto d2 = vec2::sqrDistance(m_player.GetPosition(), p2->GetPosition());
+	std::sort(m_objects.begin(), m_objects.end(), [=](Ref<Object> p1, Ref<Object> p2)->bool {
+		auto d1 = vec2::sqrDistance(cameraPosition, p1->GetPosition());
+		auto d2 = vec2::sqrDistance(cameraPosition, p2->GetPosition());
 		return d1 > d2;
 	});
 }
@@ -210,7 +218,7 @@ void Renderer::DrawText(const std::string& text, const Font& font, const vec2& p
 	}
 }
 
-void Renderer::DrawTexture(const std::shared_ptr<Texture>& texture, const uint32_t drawColor, const vec2& position, const int start, const int letterWidth, const int letterHeight, const vec2& size)
+void Renderer::DrawTexture(const Ref<Texture>& texture, const uint32_t drawColor, const vec2& position, const int start, const int letterWidth, const int letterHeight, const vec2& size)
 {
 	auto size_x = letterWidth * m_scale * size.x;
 	auto size_y = letterHeight * m_scale * size.y;
@@ -286,16 +294,6 @@ void Renderer::DrawUIElementWithChildren(Ref<UIElement> element)
 void Renderer::SetMaxDistance(const float maxDistance)
 {
 	m_maxDistance = maxDistance;
-}
-
-SDL_Renderer* Renderer::GetRenderer()
-{
-	return m_renderer;
-}
-
-void Renderer::Present()
-{
-	SDL_RenderPresent(m_renderer);
 }
 
 void Renderer::Resize(const int width, const int height)

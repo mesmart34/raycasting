@@ -45,7 +45,7 @@ void Texture::GetScaledColumn(uint32_t  *column, const float wallX, const int sc
 	auto fixedWallX = wallX;
 	auto oldIndex = 0;
 	auto cache = (uint32_t)0;
-	auto x = (fixedWallX - textureOffset.x) * 64 + offset.x;
+	auto x = fabs((fixedWallX - textureOffset.x) * 64 + offset.x);
 	for (auto i = 0; i < trueHeight; i++)
 	{
 		auto _y = (int)((float)((i + delta) * 64) / (float)height);

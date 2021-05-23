@@ -63,6 +63,11 @@ enum class ServerMessage : int8_t
 	JoinResult, PlayersState, ClientConnect, ClientDisconnect, Door
 };
 
+struct Map
+{
+	
+};
+
 class UDPServer
 {
 public:

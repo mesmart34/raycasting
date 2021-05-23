@@ -39,7 +39,6 @@
     <ClCompile Include="Sprite.cpp">
       <Filter>Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="Map.cpp" />
     <ClCompile Include="Font.cpp">
       <Filter>Graphics</Filter>
     </ClCompile>
@@ -107,15 +106,24 @@
     <ClCompile Include="ClientMessage.cpp">
       <Filter>Networking</Filter>
     </ClCompile>
-    <ClCompile Include="Console.cpp" />
     <ClCompile Include="NetPlayer.cpp">
       <Filter>Objects</Filter>
     </ClCompile>
     <ClCompile Include="tinyxml2.cpp">
       <Filter>Thirdparty\tinyxml2</Filter>
     </ClCompile>
-    <ClCompile Include="ResourceManager.cpp" />
-    <ClCompile Include="StringUtils.cpp" />
+    <ClCompile Include="StringUtils.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Console.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="ResourceManager.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Map.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="vec2.h">
@@ -155,7 +163,6 @@
     <ClInclude Include="Sprite.h">
       <Filter>Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="Map.h" />
     <ClInclude Include="Font.h">
       <Filter>Graphics</Filter>
     </ClInclude>
@@ -226,15 +233,24 @@
     <ClInclude Include="ClientMessage.h">
       <Filter>Networking</Filter>
     </ClInclude>
-    <ClInclude Include="Console.h" />
     <ClInclude Include="NetPlayer.h">
       <Filter>Objects</Filter>
     </ClInclude>
     <ClInclude Include="tinyxml2.h">
       <Filter>Thirdparty\tinyxml2</Filter>
     </ClInclude>
-    <ClInclude Include="ResourceManager.h" />
-    <ClInclude Include="StringUtils.h" />
+    <ClInclude Include="StringUtils.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Console.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourceManager.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Map.h">
+      <Filter>Objects</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Event">
@@ -272,6 +288,9 @@
     </Filter>
     <Filter Include="Thirdparty\tinyxml2">
       <UniqueIdentifier>{a68d8a42-f827-4fc7-872c-5e96ff3adc82}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utils">
+      <UniqueIdentifier>{095bbbc7-e27d-4f27-bb51-76bbdc619194}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

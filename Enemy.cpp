@@ -14,13 +14,11 @@ Enemy::Enemy(const Sprite& sprite, const vec2& position, const float angle)
 	m_type = ObjectType::ENEMY;
 }
 
-void Enemy::Update(const float deltaTime, const Player& player)
+void Enemy::Update(const float deltaTime)
 {
 	if (m_end)
 		return;
-	auto angle = atan2(m_position.x - player.GetPosition().x, m_position.y - player.GetPosition().y) / float(M_PI) / 2 - .5f - (360 - GetAngle() - 45.0f / 2) / 360.0f;
-	m_diff = (((angle * 360)) / -45);
-	m_spriteIndexCounter += deltaTime * 5;
+	m_spriteIndexCounter += deltaTime * 3;
 	if (!m_isAlive)
 	{
 		
@@ -44,14 +42,32 @@ void Enemy::Update(const float deltaTime, const Player& player)
 			}
 		}
 	}
+	
+	
+	/*if (vec2::get_magnitude(m_velocity) > 0.001f && m_state != EnemyState::Die && m_state != EnemyState::Damaged)
+	{
+		m_state = EnemyState::Walk;
+	}
+	else {
 
+		m_state = EnemyState::Idle;
+	}*/
+	m_position += m_velocity;
+}
+
+void Enemy::CalculateSprite(const vec2& position)
+{
+	if (m_end)
+		return;
+	auto angle = atan2(m_position.x - position.x, m_position.y - position.y) / float(M_PI) / 2 - .5f - (360 - GetAngle() - 45.0f / 2) / 360.0f;
+	m_diff = (((angle * 360)) / -45);
 	switch (m_state)
 	{
 	case EnemyState::Idle:
 	{
 		m_spriteRowIndex = 0;
 		m_sprite.Id = m_diff - 8;
-		
+
 	} break;
 	case EnemyState::Walk:
 	{
@@ -81,7 +97,7 @@ void Enemy::Update(const float deltaTime, const Player& player)
 	} break;
 	case EnemyState::Damaged:
 	{
-		m_spriteIndexCounter += deltaTime;
+		//m_spriteIndexCounter += deltaTime;
 		if (m_spriteIndexCounter > 3)
 		{
 			m_spriteIndexCounter = 0;
@@ -92,15 +108,6 @@ void Enemy::Update(const float deltaTime, const Player& player)
 	default:
 		break;
 	}
-	/*if (vec2::get_magnitude(m_velocity) > 0.001f && m_state != EnemyState::Die && m_state != EnemyState::Damaged)
-	{
-		m_state = EnemyState::Walk;
-	}
-	else {
-
-		m_state = EnemyState::Idle;
-	}*/
-	m_position += m_velocity;
 }
 
 float Enemy::GetAngle() const

@@ -3,8 +3,14 @@
 
 using namespace std;
 
-Console::Console(const Ref<RaycastEngine>& engine) : m_opened(false), m_engine(engine)
+Ref<RaycastEngine> Console::m_engine;
+stringstream  Console::m_stream;
+vector<std::string> Console::m_consoleHistory;
+bool Console::m_opened;
+
+void Console::Init(const Ref<RaycastEngine>& engine)
 {
+	m_engine = engine;
 }
 
 void Console::Open()
@@ -22,17 +28,16 @@ void Console::AddLog(const std::string& data)
 	if (m_consoleHistory.size() > 100)
 		m_consoleHistory.erase(m_consoleHistory.begin());
 	m_consoleHistory.push_back(data);
-	//m_stream << data << (char)0xa;
 }
 
-void Console::Draw(const Window& window)
+void Console::Draw(const Scope<Window>& window)
 {
 	static bool reclaim_focus = true;
 	if (!m_opened)
 		return;
 	ImGui::Begin("Console", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove);
 	ImGui::SetWindowPos(ImVec2(0, 0));
-	ImGui::SetWindowSize(ImVec2(window.GetWidth(), 400));
+	ImGui::SetWindowSize(ImVec2(window->GetWidth(), window->GetHeight() / 2.5));
 	static const char* label = "";
 	static char buffer[256];
 	static bool AutoScroll = true;
@@ -77,7 +82,7 @@ void Console::Draw(const Window& window)
 	ImGui::End();
 }
 
-bool Console::IsOpened() const
+bool Console::IsOpened()
 {
 	return m_opened;
 }

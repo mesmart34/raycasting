@@ -10,7 +10,8 @@ public:
 
 	void SetState(const EnemyState state);
 
-	virtual void Update(const float deltaTime, const Player& player) final;
+	virtual void Update(const float deltaTime) final;
+	virtual void CalculateSprite(const vec2& position) final;
 	virtual void OnRaycastHit(int damage) final;
 
 private:

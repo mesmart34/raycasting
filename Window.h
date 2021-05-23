@@ -16,7 +16,6 @@ struct WindowProps
 	std::string Title;
 };
 
-
 class Window
 {
 public:
@@ -30,7 +29,7 @@ public:
 	int GetHeight() const;
 
 private:
-	SDL_Window* m_window;
+	std::unique_ptr<SDL_Window, std::function<void(SDL_Window*)>> m_window;
 	WindowProps m_props;
 	SDL_GLContext m_context;
 };

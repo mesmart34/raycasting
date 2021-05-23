@@ -2,7 +2,6 @@
 
 #include "vec2.h"
 #include "Object.h"
-#include "Player.h"
 
 enum class EnemyState
 {
@@ -16,7 +15,8 @@ public:
 	
 	Enemy(const Sprite& sprite, const vec2& position, const float angle);
 
-	virtual void Update(const float deltaTime, const Player& player);
+	virtual void Update(const float deltaTime) override;
+	virtual void CalculateSprite(const vec2& position) override;
 
 	float GetAngle() const;
 	void Die();

@@ -23,13 +23,19 @@ void NetPlayer::SetState(const EnemyState state)
 	m_state = state;
 }
 
-void NetPlayer::Update(const float deltaTime, const Player& player)
+void NetPlayer::Update(const float deltaTime)
+{
+	m_spriteIndexCounter += deltaTime * 5;
+	m_position += m_velocity * deltaTime;
+}
+
+void NetPlayer::CalculateSprite(const vec2& position)
 {
 	if (m_end)
 		return;
-	auto angle = atan2(m_position.x - player.GetPosition().x, m_position.y - player.GetPosition().y) / float(M_PI) / 2 - .5f - (360 - GetAngle() - 45.0f / 2) / 360.0f;
+	auto angle = atan2(m_position.x - position.x, m_position.y - position.y) / float(M_PI) / 2 - .5f - (360 - GetAngle() - 45.0f / 2) / 360.0f;
 	m_diff = (((angle * 360)) / -45);
-	m_spriteIndexCounter += deltaTime * 5;
+	
 	switch (m_state)
 	{
 	case EnemyState::Idle:
@@ -49,7 +55,6 @@ void NetPlayer::Update(const float deltaTime, const Player& player)
 	default:
 		break;
 	}
-	m_position += m_velocity * deltaTime;
 }
 
 void NetPlayer::OnRaycastHit(int damage)

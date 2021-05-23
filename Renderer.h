@@ -18,13 +18,15 @@
 #include "Button.h"
 #include "Panel.h"
 #include "TextBox.h"
+#include "Player.h"
 
 
 class Renderer
 {
 public:
 	Renderer() = default;
-	Renderer(Window& window, const int width, const int height);
+	Renderer(const int width, const int height);
+	~Renderer();
 
 	void Init(const int width, const int height);
 	void Resize(const int width, const int height);
@@ -35,27 +37,23 @@ public:
 	void Draw();
 	void DrawRect(const vec2& start, const vec2& size, const uint32_t color);
 	void DrawColumn(const std::vector<uint32_t>& data, const int x);
-	void DrawSprite(const Sprite& sprite, const vec2& position, const Player& player);
-	void SortObjects(std::vector<Ref<Object>>& m_objects, const Player& m_player);
+	void DrawSprite(const Sprite& sprite, const vec2& position, const Scope<Player>& player);
+	void SortObjects(std::vector<Ref<Object>>& m_objects, const vec2& cameraPosition);
 	int GetWidth() const;
 	int GetHeight() const;
 	void DrawText(const std::string& text, const Font& font, const vec2& position, const float size, const uint32_t color);
-	void DrawTexture(const std::shared_ptr<Texture>& texture, const uint32_t drawColor, const vec2& position, const int start, const int letterWidth, const int letterHeight, const vec2& size);
+	void DrawTexture(const Ref<Texture>& texture, const uint32_t drawColor, const vec2& position, const int start, const int letterWidth, const int letterHeight, const vec2& size);
 	float GetScale() const;
 	void SetVerticalOffset(const float value);
 	inline uint32_t GetBlendedColor(const uint32_t a, const uint32_t b) const;
 	void DrawUIElement(Ref<UIElement> element);
 	void SetMaxDistance(const float maxDistance);
-	SDL_Renderer* GetRenderer();
-	void Present();
 private:
 	void DrawUIElementWithChildren(Ref<UIElement> element);
 	void DrawButton(const Button* const button);
 	void DrawLabel(const Label* const label);
 	void DrawTextBox(const TextBox* const textBox);
 
-	SDL_Renderer* m_renderer;
-	SDL_Texture* m_texture;
 	uint32_t* m_data;
 	GLuint m_quadTextureId;
 	int m_width, m_height;

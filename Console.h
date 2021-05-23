@@ -15,25 +15,26 @@ class RaycastEngine;
 class Console
 {
 public:
-	Console(const Ref<RaycastEngine>& engine);
+	Console() = delete;
+	static void Init(const Ref<RaycastEngine>& engine);
 
-	void Open();
-	void Close();
-	void AddLog(const std::string& data);
+	static void Open();
+	static void Close();
+	static void AddLog(const std::string& data);
 
-	void Draw(const Window& window);
+	static void Draw(const Scope<Window>& window);
 
-	bool IsOpened() const;
+	static bool IsOpened();
 
 private:
-	void ProcessCommand(const std::string& command);
+	static void ProcessCommand(const std::string& command);
 	
 
 private:
-	Ref<RaycastEngine> m_engine;
-	std::stringstream m_stream;
-	std::vector<std::string> m_consoleHistory;
-	bool m_opened;
+	static Ref<RaycastEngine> m_engine;
+	static std::stringstream m_stream;
+	static std::vector<std::string> m_consoleHistory;
+	static bool m_opened;
 	
 };
 

@@ -44,15 +44,15 @@ public:
 	Ray CastRay(
 		const int strip, 
 		const int width, 
-		const Player& player,
-		Map* map) const;
+		const Scope<Player>& player,
+		const Scope<Map>& map) const;
 
 private:
 	void MakeStep(Cast& cast) const;
-	float CalculateDistance(const Cast& cast, const Player& player) const;
-	float CalculateWallX(const Cast& cast, const Player& player) const;
-	void ProcessVerticalDoor(Cast& cast, const Player& player, Map* map) const;
-	void ProcessHorizontalDoor(Cast& cast, const Player& player, Map* map) const;
+	float CalculateDistance(const Cast& cast, const Scope<Player>& player) const;
+	float CalculateWallX(const Cast& cast, const Scope<Player>& player) const;
+	void ProcessVerticalDoor(Cast& cast, const Scope<Player>& player, const Scope<Map>& map) const;
+	void ProcessHorizontalDoor(Cast& cast, const Scope<Player>& player, const Scope<Map>& map) const;
 
 };
 

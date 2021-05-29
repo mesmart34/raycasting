@@ -3,7 +3,7 @@
 #include <queue>
 #include <iostream>
 template<class T>
-class SafeQueue
+class __declspec(dllexport) SafeQueue
 {
 public:
 	SafeQueue() = default;

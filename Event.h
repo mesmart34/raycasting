@@ -4,7 +4,7 @@
 #include <array>
 #include "imgui_impl_sdl.h"
 
-class EventHandler
+class __declspec(dllexport) EventHandler
 {
 public:
 	EventHandler();

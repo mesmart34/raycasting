@@ -17,12 +17,12 @@
 #define MAX_PACKET_SIZE 512
 #define MAX_CLIENTS 4
 
-class UDPClient
+class __declspec(dllexport) UDPClient
 {
 public:
 	UDPClient(UDPClient&&) {};
 	UDPClient();
-	~UDPClient();
+	virtual ~UDPClient();
 
 	void Connect(const std::string& ip, const int port);
 	void Disconnect();
@@ -35,7 +35,6 @@ public:
 	void SetOtherPlayerDisconnectCallback(std::function<void(UDPClient*, int)>);
 	void SetOnMessage(std::function<void(UDPClient*,char*, int, ServerMessage)>);
 	bool IsConnected() const;
-	PlayerData* PollMessage();
 
 	uint16_t GetID() const;
 	void Receive();

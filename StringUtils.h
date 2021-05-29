@@ -1,6 +1,6 @@
 #pragma once
 
-class StringUtils
+class __declspec(dllexport) StringUtils
 {
 public:
 

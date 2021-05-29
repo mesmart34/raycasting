@@ -7,6 +7,7 @@
 #include "imgui_impl_sdl.h"
 #include "imgui_impl_opengl3.h"
 #include "GL/glew.h"
+#include <functional>
 
 struct WindowProps
 {
@@ -16,11 +17,11 @@ struct WindowProps
 	std::string Title;
 };
 
-class Window
+class __declspec(dllexport) Window
 {
 public:
 	Window(const WindowProps& props = WindowProps());
-	~Window();
+	virtual ~Window();
 
 	SDL_Window* GetSDLPtr();
 	void Resize(const int width, const int height);

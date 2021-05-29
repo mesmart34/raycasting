@@ -1,17 +1,30 @@
 #include "pch.h"
 #include "Enemy.h"
 
-Enemy::Enemy(const Sprite& sprite, const vec2& position, const float angle)
-	: Object(sprite, position, true),
-	m_angle(angle), 
-	m_state(EnemyState::Idle), 
-	m_isAlive(true), 
-	m_health(100), 
-	m_spriteIndexCounter(0), 
-	m_end(false)
+Enemy::Enemy(const vec2& position, const float angle, const Sprite& sprite)
+	: Object(position, true, sprite),
+	m_state(ObjectState::Idle),
+	m_isAlive(true),
+	m_health(100),
+	m_spriteIndexCounter(0),
+	m_end(false),
+	m_diff(0),
+	m_isDamaged(false)
 {
 	m_spriteRowIndex = rand() % 8;
-	m_type = ObjectType::ENEMY;
+}
+
+Enemy::Enemy()
+	: Object(vec2(), true, Sprite()),
+	m_state(ObjectState::Idle),
+	m_isAlive(true),
+	m_health(100),
+	m_spriteIndexCounter(0),
+	m_end(false),
+	m_diff(0),
+	m_isDamaged(false)
+{
+
 }
 
 void Enemy::Update(const float deltaTime)
@@ -22,61 +35,52 @@ void Enemy::Update(const float deltaTime)
 	if (!m_isAlive)
 	{
 		
-		m_state = EnemyState::Die;
+		m_state = ObjectState::Die;
 	}
 	else {
 		if (m_isDamaged)
 		{
-			m_state = EnemyState::Damaged;
+			m_state = ObjectState::Damaged;
 			
 		}
 		else {
 			if (vec2::get_magnitude(m_velocity) > 0.001f)
 			{
-				m_state = EnemyState::Walk;
+				m_state = ObjectState::Walk;
 			}
 			else
 			{
 				
-				m_state = EnemyState::Idle;
+				m_state = ObjectState::Idle;
 			}
 		}
 	}
 	
-	
-	/*if (vec2::get_magnitude(m_velocity) > 0.001f && m_state != EnemyState::Die && m_state != EnemyState::Damaged)
-	{
-		m_state = EnemyState::Walk;
-	}
-	else {
-
-		m_state = EnemyState::Idle;
-	}*/
-	m_position += m_velocity;
 }
 
 void Enemy::CalculateSprite(const vec2& position)
 {
 	if (m_end)
 		return;
-	auto angle = atan2(m_position.x - position.x, m_position.y - position.y) / float(M_PI) / 2 - .5f - (360 - GetAngle() - 45.0f / 2) / 360.0f;
+	auto angle = atan2(m_position.x - position.x, m_position.y - position.y) / float(M_PI) / 2 - .5f - (360 - m_angle - 45.0f / 2) / 360.0f;
 	m_diff = (((angle * 360)) / -45);
+
 	switch (m_state)
 	{
-	case EnemyState::Idle:
+	case ObjectState::Idle:
 	{
 		m_spriteRowIndex = 0;
 		m_sprite.Id = m_diff - 8;
 
 	} break;
-	case EnemyState::Walk:
+	case ObjectState::Walk:
 	{
 		if (m_spriteIndexCounter > 4)
 			m_spriteIndexCounter = 0;
 		m_spriteRowIndex = (int)m_spriteIndexCounter + 1;
 		m_sprite.Id = m_diff + 8 * 2 + m_spriteRowIndex;
 	} break;
-	case EnemyState::Attack:
+	case ObjectState::Attack:
 	{
 		if (m_spriteIndexCounter > 3)
 			m_spriteIndexCounter = 0;
@@ -84,7 +88,7 @@ void Enemy::CalculateSprite(const vec2& position)
 		m_spriteRowIndex = 6;
 		m_sprite.Id = m_diff + 8 * (m_spriteRowIndex);
 	} break;
-	case EnemyState::Die:
+	case ObjectState::Die:
 	{
 		m_diff = (int)m_spriteIndexCounter;
 		if (m_spriteIndexCounter > 5)
@@ -95,7 +99,7 @@ void Enemy::CalculateSprite(const vec2& position)
 		m_spriteRowIndex = 5;
 		m_sprite.Id = m_diff + 8 * (m_spriteRowIndex);
 	} break;
-	case EnemyState::Damaged:
+	case ObjectState::Damaged:
 	{
 		//m_spriteIndexCounter += deltaTime;
 		if (m_spriteIndexCounter > 3)
@@ -110,14 +114,10 @@ void Enemy::CalculateSprite(const vec2& position)
 	}
 }
 
-float Enemy::GetAngle() const
-{
-	return m_angle;
-}
 
 void Enemy::Die()
 {
-	m_state = EnemyState::Die;
+	m_state = ObjectState::Die;
 	m_isAlive = false;
 	m_isCollidable = false;
 }
@@ -128,7 +128,7 @@ void Enemy::OnRaycastHit(int damage)
 		return;
 	//m_lastState = m_state;
 	m_health -= damage;
-	m_state = EnemyState::Damaged;
+	m_state = ObjectState::Damaged;
 	m_spriteIndexCounter = 0;
 	m_isDamaged = true;
 	if (m_health <= 0)

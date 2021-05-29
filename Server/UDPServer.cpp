@@ -33,7 +33,7 @@ void UDPServer::Start(const int port)
 	if (m_socket == INVALID_SOCKET)
 		throw "Invalid socket!";
 
-	
+
 
 	auto bindError = bind(m_socket, (sockaddr*)&localAddress, sizeof(localAddress));
 
@@ -57,19 +57,26 @@ void UDPServer::Start(const int port)
 }
 
 
+void UDPServer::InitGameWorld()
+{
+	m_map = Scope<Map>(Utils::LoadMap("maps/Test.xml"));
+}
+
 void UDPServer::Run()
 {
 	auto startTime = Timer::now();
 	m_running = true;
+	InitGameWorld();
+	//m_map = Scope<Map>(Utils::LoadMap("maps/Test.xml"));
+	//std::cout << m_map->GetObjects().size() << std::endl;
 	while (m_running)
 	{
 		auto endTime = Timer::now();
 		auto deltaTime = chrono::duration<float>(endTime - startTime).count();
-		
+
 		Receive();
 
 		UpdateWorld(deltaTime);
-
 		SendWorldData();
 
 
@@ -81,7 +88,7 @@ void UDPServer::Run()
 
 void UDPServer::Receive()
 {
-	
+
 	while (true)
 	{
 		auto from = sockaddr_in();
@@ -130,11 +137,10 @@ void UDPServer::UpdatePlayerData()
 
 	auto& client = m_clients[slot];
 	auto data = *(PlayerData*)&m_buffer[3];
-	client.Position = data.Position;
-	client.Velocity = data.Velocity;
-	client.Angle = data.Angle;
-	client.State = data.State;
-	//std::cout << (int)slot << ": " << client.Angle << std::endl;
+	m_players[slot]->SetVelocity(data.Velocity);
+	m_players[slot]->SetAngle(data.Angle);
+	m_players[slot]->SetState(data.State);
+	m_players[slot]->SetPosition(data.Position);
 	client.HeardTime = Timer::now();
 }
 
@@ -142,52 +148,115 @@ void UDPServer::UpdateWorld(const float deltaTime)
 {
 	for (auto i = 0; i < MAX_CLIENTS; i++)
 	{
-		auto &client = m_clients[i];
+		auto& client = m_clients[i];
 
 		if (!client.EndPoint.IpAddress)
 			continue;
-		//client.Velocity *= deltaTime;
-		client.State = vec2::get_magnitude(client.Velocity) < 0.001 ? EnemyState::Idle : EnemyState::Walk;
-		//client.Position += client.Velocity;
 		CheckForDisconnect(i);
 	}
+
+
+	for (auto obj : m_map->GetObjects())
+	{
+		obj->Update(deltaTime);
+		cout << vec2::get_magnitude(obj->GetVelocity()) << endl;
+		obj->Physics(deltaTime);
+	}
+	m_map->UpdateDoors(deltaTime);
+	Utils::DoPhysics(m_map);
 }
 
 void UDPServer::SendWorldData()
 {
-	m_buffer[0] = (char)ServerMessage::PlayersState;
+	/*m_buffer[0] = (char)ServerMessage::PlayersState;
 	auto bytesWriten = sizeof(char);
 	for (uint16_t i = 0; i < MAX_CLIENTS; i++)
 	{
 		auto& client = m_clients[i];
+		auto player = m_players[i];
 		if (client.EndPoint.IpAddress)
 		{
 			auto data = PlayerData();
-			data.Id = i;
-			data.Angle = client.Angle;
-			data.Position = client.Position;
-			data.Velocity = client.Velocity;
-			data.State = client.State;
-			
+			data.ClientID = i;
+			data.Angle = player->GetAngle();
+			data.Position = player->GetPosition();
+			data.Velocity = player->GetVelocity();
+			data.State = player->GetState();
+
 			auto size = sizeof(PlayerData);
 			memcpy(&m_buffer[bytesWriten], (char*)&data, size);
-			
+
 
 			bytesWriten += size;
 		}
 	}
 
+	for (uint16_t i = 0; i < MAX_CLIENTS; i++)
+	{
+		auto& client = m_clients[i];
+		SendToClient(client, m_buffer, bytesWriten);
+	}*/
 
+	//Objects
+
+	m_buffer[0] = (char)ServerMessage::ObjectState;
+	auto bytesWriten = sizeof(char);
+	for (auto obj : m_map->GetObjects())
+	{
+		/*if (auto n = dynamic_cast<NetPlayer*>(obj.get()))
+		{
+			cout << n->GetSprite().Atlas << endl;
+		}*/
+		//if (bytesWriten > MAX_BUFFER_SIZE)
+		//{
+		//	for (uint16_t i = 0; i < MAX_CLIENTS; i++)
+		//	{
+		//		auto& client = m_clients[i];
+		//		SendToClient(client, m_buffer, bytesWriten);
+		//	}
+		//	bytesWriten = sizeof(char);
+		//	m_buffer[bytesWriten] = (char)ServerMessage::ObjectState;
+		//	//bytesWriten += sizeof(char);
+		//}
+		auto size = 0;
+		if (auto n = dynamic_cast<NetPlayer*>(obj.get()))
+		{
+			size = sizeof(NetPlayer);
+			m_buffer[bytesWriten] = (char)ObjectType::NET_PLAYER;
+			bytesWriten += sizeof(char);
+			memcpy(&m_buffer[bytesWriten], n, size);
+		}else
+		if (auto n = dynamic_cast<Enemy*>(obj.get()))
+		{
+			size = sizeof(Enemy);
+			m_buffer[bytesWriten] = (char)ObjectType::ENEMY;
+			bytesWriten += sizeof(char);
+			memcpy(&m_buffer[bytesWriten], n, size);
+		}else
+		if (auto n = dynamic_cast<Object*>(obj.get()))
+		{
+			size = sizeof(Object);
+			m_buffer[bytesWriten] = (char)ObjectType::STATIC;
+			bytesWriten += sizeof(char);
+			memcpy(&m_buffer[bytesWriten], n, size);
+		}
+		bytesWriten += size;
+
+	}
+
+	//std::cout << bytesWriten << std::endl;
 	for (uint16_t i = 0; i < MAX_CLIENTS; i++)
 	{
 		auto& client = m_clients[i];
 		SendToClient(client, m_buffer, bytesWriten);
 	}
 
+
+
+
 	//Doors
-	bytesWriten = 0;
 	m_buffer[0] = (char)ServerMessage::Door;
-	bytesWriten += sizeof(char);
+	bytesWriten = sizeof(char);
 
 	for (auto i = 0; i < m_doorsToOpen.size(); i++)
 	{
@@ -202,6 +271,10 @@ void UDPServer::SendWorldData()
 		auto& client = m_clients[i];
 		SendToClient(client, m_buffer, bytesWriten);
 	}
+
+
+
+
 }
 
 void UDPServer::AddClient(sockaddr_in& from)
@@ -229,11 +302,18 @@ void UDPServer::AddClient(sockaddr_in& from)
 		{
 			std::cout << "Client " << slot << " is connected" << std::endl;
 			auto client = Client();
+			client.Id = slot;
 			client.EndPoint.IpAddress = from.sin_addr.S_un.S_addr;
 			client.EndPoint.Port = from.sin_port;
 			client.HeardTime = Timer::now();
 			m_clients[slot] = client;
-
+			auto player = CreateRef<NetPlayer>(NetPlayer(
+				slot,
+				m_map->GetPlayerSpawnPoint(),
+				0.0f, Sprite(0, "officer")
+			));
+			m_players[slot] = player;
+			m_map->AddObject(m_players[slot]);
 		}
 		else
 		{
@@ -256,6 +336,9 @@ void UDPServer::RemoveClient(const IPEndPoint& endPoint)
 		m_clients[slot].EndPoint.Port == endPoint.Port)
 	{
 		m_clients[slot] = {};
+		auto player = m_players[slot];
+		m_players.erase(slot);
+		m_map->EraseObjectWithId(player->GetID());
 		SendDisconnectMessage(slot);
 	}
 }

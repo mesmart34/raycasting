@@ -1,6 +1,8 @@
 #include "UDPServer.h"
-
 #include <thread>
+#include "Map.h"
+
+#undef main
 
 int main()
 {

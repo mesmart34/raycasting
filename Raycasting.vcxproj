@@ -39,13 +39,13 @@
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -98,10 +98,14 @@
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_WINSOCK_DEPRECATED_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>Windows</SubSystem>
       <AdditionalLibraryDirectories>F:\Users\artem\Documents\vs projects\SDL\lib\x64;F:\Users\artem\Documents\vs projects\SDL2_ttf-2.0.15\lib\x64;F:\Users\artem\Documents\vs projects\GLFW\lib;F:\Users\artem\Documents\vs projects\glew-2.1.0\lib\Release\x64;F:\Users\artem\Documents\SDL2-2.0.14\lib\x64;C:\Users\artem\Documents\SDL2-2.0.12\lib\x64;%(AdditionalLibraryDirectories);C:\Users\artem\Documents\GLEW\lib\Release\x64;C:\Users\artem\Documents\GitHub\Client\x64\Release</AdditionalLibraryDirectories>
       <AdditionalDependencies>SDL2.lib;SDL2main.lib;glew32.lib;opengl32.lib;glu32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>xcopy /y /d  "$(ProjectDir)Release\bin\Raycasting.dll" "$(ProjectDir)TRexStein"
+xcopy /y /d  "$(ProjectDir)Release\bin\Raycasting.dll" "$(ProjectDir)Server"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -139,6 +143,9 @@
       <AdditionalLibraryDirectories>C:\Users\artem\Documents\SDL2-2.0.12\lib\x64;F:\Users\artem\Documents\SDL2-2.0.14\lib\x64;%(AdditionalLibraryDirectories);C:\Users\artem\Documents\GLEW\lib\Release\x64;C:\Users\artem\Documents\GitHub\Client\x64\Release;F:\Users\artem\Documents\GLEW\lib</AdditionalLibraryDirectories>
       <AdditionalDependencies>SDL2.lib;SDL2main.lib;glew32.lib;opengl32.lib;glu32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>xcopy /y /d  "$(ProjectDir)Release\bin\Raycasting.dll" "$(ProjectDir)TRexStein"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Base.cpp" />
@@ -146,7 +153,6 @@
     <ClCompile Include="ClientMessage.cpp" />
     <ClCompile Include="Console.cpp" />
     <ClCompile Include="Door.cpp" />
-    <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="Event.cpp" />
     <ClCompile Include="Font.cpp" />
     <ClCompile Include="imgui.cpp" />
@@ -157,13 +163,11 @@
     <ClCompile Include="imgui_sdl.cpp" />
     <ClCompile Include="imgui_tables.cpp" />
     <ClCompile Include="imgui_widgets.cpp" />
-    <ClCompile Include="NetPlayer.cpp" />
     <ClCompile Include="Panel.cpp" />
     <ClCompile Include="pch.cpp" />
     <ClCompile Include="RaycastEngine.cpp" />
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="Label.cpp" />
-    <ClCompile Include="main.cpp" />
     <ClCompile Include="Map.cpp" />
     <ClCompile Include="MathUtils.cpp" />
     <ClCompile Include="Object.cpp" />
@@ -178,7 +182,6 @@
     <ClCompile Include="StringUtils.cpp" />
     <ClCompile Include="TextBox.cpp" />
     <ClCompile Include="Texture.cpp" />
-    <ClCompile Include="tinyxml2.cpp" />
     <ClCompile Include="UDPClient.cpp" />
     <ClCompile Include="UIElement.cpp" />
     <ClCompile Include="UIManager.cpp" />
@@ -191,7 +194,6 @@
     <ClInclude Include="ClientMessage.h" />
     <ClInclude Include="Console.h" />
     <ClInclude Include="Door.h" />
-    <ClInclude Include="Enemy.h" />
     <ClInclude Include="Event.h" />
     <ClInclude Include="Font.h" />
     <ClInclude Include="imconfig.h" />
@@ -203,7 +205,6 @@
     <ClInclude Include="imstb_rectpack.h" />
     <ClInclude Include="imstb_textedit.h" />
     <ClInclude Include="imstb_truetype.h" />
-    <ClInclude Include="NetPlayer.h" />
     <ClInclude Include="Panel.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="RaycastEngine.h" />
@@ -215,6 +216,7 @@
     <ClInclude Include="Physics.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="Raycaster.h" />
+    <ClInclude Include="Raycasting.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="SafeQueue.h" />
@@ -223,7 +225,6 @@
     <ClInclude Include="StringUtils.h" />
     <ClInclude Include="TextBox.h" />
     <ClInclude Include="Texture.h" />
-    <ClInclude Include="tinyxml2.h" />
     <ClInclude Include="UDPClient.h" />
     <ClInclude Include="UIElement.h" />
     <ClInclude Include="UIManager.h" />

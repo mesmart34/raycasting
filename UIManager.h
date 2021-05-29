@@ -8,7 +8,7 @@
 #include "Base.h"
 #include "Input.h"
 
-class UIManager
+class __declspec(dllexport) UIManager
 {
 public:
 	UIManager();

@@ -1,0 +1,24 @@
+<Map>
+    <Player x="5" y="5"/>
+    <Level>
+        <Walls width="10" height="10">
+            <Row>32, 32, 32, 32, 32, 32, 32, 32, 32, 32</Row>
+            <Row>32,  0,  0, 32,  0,  0,  0,  0,  0, 32</Row>
+            <Row>32,  0,  0  32,  0,  0,  0,  0,  0, 32</Row>
+            <Row>32,  0,  0, 32,  0,  0,  0,  0,  0, 32</Row>
+            <Row>32, 98,  32, 32,  0,  0,  0,  0,  0, 32</Row>
+            <Row>32,  0,  0,  0,  0,  0,  0,  0,  0, 32</Row>
+            <Row>32,  0,  0,  0,  0,  0,  0,  0,  0, 32</Row>
+            <Row>32,  0,  0,  0,  0,  0,  0,  0,  0, 32</Row>
+            <Row>32,  0,  0,  0,  0,  0,  0,  0,  0, 32</Row>
+            <Row>32, 32, 32, 32, 32, 32, 32, 32, 32, 32</Row>    
+        </Walls>
+        <Objects>
+            <Object x="8.0" y="8.0" type="0" enabled="true" atlasName="atlas" spriteId="5" angle="0" collidable="true"/>
+            <Object x="4.0" y="8.0" type="0" enabled="true" atlasName="atlas" spriteId="6" angle="0" collidable="false"/>
+            <Object x="8.0" y="3.0" type="0" enabled="true" atlasName="atlas" spriteId="7" angle="0" collidable="true"/>
+			
+        </Objects>
+    </Level>
+</Map>
+ 

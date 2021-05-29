@@ -4,33 +4,40 @@
 #include "vec2.h"
 #include "MathUtils.h"
 
-enum class ObjectType
+
+
+enum class ObjectState
 {
-	OBJECT, ENEMY, NET_PLAYER
+	Idle, Walk, Attack, Die, Damaged
 };
 
-class Object
+
+class __declspec(dllexport) Object
 {
 public:
 	Object() = default;
-	Object(const Sprite& sprite, const vec2& position, const bool isCollidable);
+	Object(const vec2& position, const bool isCollidable, const Sprite& sprite);
+	Object(const int id, const Sprite& sprite, const vec2& position, const bool isCollidable);
 
 	virtual ~Object() = default;
 
-	Sprite GetSprite() const;
+	void SetID(const int id);
+	void SetSprite(const Sprite& sprite);
 	void SetPosition(const vec2& position);
-	vec2 GetPosition() const;
-	vec2 GetVelocity() const;
+	void SetAngle(const float angle);
 	void SetVelocity(const vec2 velocity);
-	bool IsCollidable() const;
-	float GetRadius() const;
-	float GetAngle() const;
-
-	void AddVelocity(const vec2& vel);
-
-	bool IsEnabled() const;
 	void SetEnable(const bool value);
-	ObjectType GetType() const;
+	void SetColliable(const bool value);
+	float GetRadius() const;
+	int GetID() const;
+	float GetAngle() const;
+	vec2 GetPosition() const;
+	Sprite GetSprite() const;
+	vec2 GetVelocity() const;
+	void AddVelocity(const vec2& vel);
+	bool IsCollidable() const;
+	bool IsEnabled() const;
+
 
 	virtual void Update(const float deltaTime) {};
 	virtual void Physics(const float deltaTime);
@@ -38,6 +45,7 @@ public:
 	virtual void OnRaycastHit(int damage) { }
 
 protected:
+	int m_id;
 	Sprite m_sprite;
 	vec2 m_position;
 	vec2 m_velocity;
@@ -45,5 +53,4 @@ protected:
 	float m_angle;
 	bool m_isCollidable;
 	bool m_isEnabled;
-	ObjectType m_type;
 };

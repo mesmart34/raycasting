@@ -3,7 +3,7 @@
 #include "MathUtils.h"
 #include <iostream>
 
-class Physics
+class __declspec(dllexport) Physics
 {
 public:
 	static vec2 Intersection(const float circleRadius, const vec2& circlePosition, const vec2& rectPosition, const vec2& rectSize);

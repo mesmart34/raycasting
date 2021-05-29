@@ -116,11 +116,13 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions);_WINSOCK_DEPRECATED_NO_WARNINGS</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\artem\Documents\GitHub\Raycasting;C:\Users\artem\Documents\GitHub\Raycasting\TRexStein;C:\Users\artem\Documents\GLEW\include;C:\Users\artem\Documents\SDL2-2.0.12\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>C:\Users\artem\Documents\GitHub\Raycasting\TRexStein\x64\Release;C:\Users\artem\Documents\GitHub\Raycasting\intermediates</AdditionalLibraryDirectories>
+      <AdditionalDependencies>Enemy.obj;NetPlayer.obj;Map.obj;Object.obj;Door.obj;Utils.obj;tinyxml2.obj;Sprite.obj;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -131,27 +133,30 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions);_WINSOCK_DEPRECATED_NO_WARNINGS</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\artem\Documents\GitHub\Raycasting;C:\Users\artem\Documents\GitHub\Raycasting\TRexStein;C:\Users\artem\Documents\GLEW\include;C:\Users\artem\Documents\SDL2-2.0.12\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>C:\Users\artem\Documents\GitHub\Raycasting\TRexStein\x64\Release;C:\Users\artem\Documents\GitHub\Raycasting\intermediates</AdditionalLibraryDirectories>
+      <AdditionalDependencies>Enemy.obj;NetPlayer.obj;Map.obj;Object.obj;Door.obj;Utils.obj;tinyxml2.obj;Sprite.obj;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="ClientMessage.h" />
     <ClInclude Include="SafeQueue.h" />
     <ClInclude Include="UDPServer.h" />
-    <ClInclude Include="vec2.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="ClientMessage.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="SafeQueue.cpp" />
     <ClCompile Include="UDPServer.cpp" />
-    <ClCompile Include="vec2.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Raycasting.vcxproj">
+      <Project>{8165ca79-3462-41d3-abb7-1136462bc4f2}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

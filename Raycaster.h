@@ -36,7 +36,7 @@ struct Cast
 	float TextureOffset = 0.0f;
 };
 
-class Raycaster
+class __declspec(dllexport) Raycaster
 {
 public:
 	Raycaster() = default;
@@ -44,15 +44,15 @@ public:
 	Ray CastRay(
 		const int strip, 
 		const int width, 
-		const Scope<Player>& player,
+		const Scope<Camera>& player,
 		const Scope<Map>& map) const;
 
 private:
 	void MakeStep(Cast& cast) const;
-	float CalculateDistance(const Cast& cast, const Scope<Player>& player) const;
-	float CalculateWallX(const Cast& cast, const Scope<Player>& player) const;
-	void ProcessVerticalDoor(Cast& cast, const Scope<Player>& player, const Scope<Map>& map) const;
-	void ProcessHorizontalDoor(Cast& cast, const Scope<Player>& player, const Scope<Map>& map) const;
+	float CalculateDistance(const Cast& cast, const Scope<Camera>& player) const;
+	float CalculateWallX(const Cast& cast, const Scope<Camera>& player) const;
+	void ProcessVerticalDoor(Cast& cast, const Scope<Camera>& player, const Scope<Map>& map) const;
+	void ProcessHorizontalDoor(Cast& cast, const Scope<Camera>& player, const Scope<Map>& map) const;
 
 };
 

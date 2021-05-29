@@ -3,32 +3,30 @@
 #include "vec2.h"
 #include "Object.h"
 
-enum class EnemyState
+enum class ObjectType
 {
-	Idle, Walk, Attack, Die, Damaged
+	STATIC, ENEMY, NET_PLAYER
 };
 
-class Enemy : public Object
+class __declspec(dllexport) Enemy : public Object
 {
 public:
 
-	
-	Enemy(const Sprite& sprite, const vec2& position, const float angle);
+	Enemy();
+	Enemy(const vec2& position, const float angle, const Sprite& sprite);
 
 	virtual void Update(const float deltaTime) override;
 	virtual void CalculateSprite(const vec2& position) override;
 
-	float GetAngle() const;
 	void Die();
 
 protected:
 	virtual void OnRaycastHit(int damage) override;
 
 protected:
-	float m_angle = 0.0f;
 	int m_health;
 	int m_diff;
-	EnemyState m_state;
+	ObjectState m_state;
 	bool m_isAlive;
 	int m_spriteRowIndex;
 	float m_spriteIndexCounter;

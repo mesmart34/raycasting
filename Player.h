@@ -5,10 +5,10 @@
 #include "Input.h"
 #include "Object.h"
 
-class Player : public Object
+class __declspec(dllexport) Camera : public Object
 {
 public:
-	Player(const vec2& position = vec2(), const float angle = 0, const vec2& plane = vec2(1, 0));
+	Camera(const vec2& position = vec2(), const float angle = 0, const vec2& plane = vec2(1, 0));
 
 	void Move(const vec2& other);
 	void Rotate(const float angle);

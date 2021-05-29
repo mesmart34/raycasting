@@ -12,7 +12,7 @@
 
 class RaycastEngine;
 
-class Console
+class __declspec(dllexport) Console
 {
 public:
 	Console() = delete;
@@ -23,6 +23,7 @@ public:
 	static void AddLog(const std::string& data);
 
 	static void Draw(const Scope<Window>& window);
+	static void Clear();
 
 	static bool IsOpened();
 

@@ -10,7 +10,7 @@
 #include "Base.h"
 #include <sstream>
 
-class Font
+class __declspec(dllexport) Font
 {
 public:
 	Font() = default;

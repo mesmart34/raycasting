@@ -4,7 +4,7 @@
 #include <cstdint>
 #include "SDL/SDL.h"
 
-class MathUtils
+class __declspec(dllexport) MathUtils
 {
 public:
 	static vec2 Rotate(const vec2& other, const float angle);

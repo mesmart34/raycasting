@@ -4,7 +4,6 @@
     <ClCompile Include="vec2.cpp">
       <Filter>Math</Filter>
     </ClCompile>
-    <ClCompile Include="main.cpp" />
     <ClCompile Include="RaycastEngine.cpp" />
     <ClCompile Include="Input.cpp">
       <Filter>Event</Filter>
@@ -31,9 +30,6 @@
       <Filter>Graphics</Filter>
     </ClCompile>
     <ClCompile Include="Object.cpp">
-      <Filter>Objects</Filter>
-    </ClCompile>
-    <ClCompile Include="Enemy.cpp">
       <Filter>Objects</Filter>
     </ClCompile>
     <ClCompile Include="Sprite.cpp">
@@ -106,12 +102,6 @@
     <ClCompile Include="ClientMessage.cpp">
       <Filter>Networking</Filter>
     </ClCompile>
-    <ClCompile Include="NetPlayer.cpp">
-      <Filter>Objects</Filter>
-    </ClCompile>
-    <ClCompile Include="tinyxml2.cpp">
-      <Filter>Thirdparty\tinyxml2</Filter>
-    </ClCompile>
     <ClCompile Include="StringUtils.cpp">
       <Filter>Utils</Filter>
     </ClCompile>
@@ -122,7 +112,7 @@
       <Filter>Utils</Filter>
     </ClCompile>
     <ClCompile Include="Map.cpp">
-      <Filter>Utils</Filter>
+      <Filter>Objects</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -155,9 +145,6 @@
       <Filter>Graphics</Filter>
     </ClInclude>
     <ClInclude Include="Object.h">
-      <Filter>Objects</Filter>
-    </ClInclude>
-    <ClInclude Include="Enemy.h">
       <Filter>Objects</Filter>
     </ClInclude>
     <ClInclude Include="Sprite.h">
@@ -233,12 +220,6 @@
     <ClInclude Include="ClientMessage.h">
       <Filter>Networking</Filter>
     </ClInclude>
-    <ClInclude Include="NetPlayer.h">
-      <Filter>Objects</Filter>
-    </ClInclude>
-    <ClInclude Include="tinyxml2.h">
-      <Filter>Thirdparty\tinyxml2</Filter>
-    </ClInclude>
     <ClInclude Include="StringUtils.h">
       <Filter>Utils</Filter>
     </ClInclude>
@@ -251,6 +232,7 @@
     <ClInclude Include="Map.h">
       <Filter>Objects</Filter>
     </ClInclude>
+    <ClInclude Include="Raycasting.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Event">
@@ -285,9 +267,6 @@
     </Filter>
     <Filter Include="Graphics">
       <UniqueIdentifier>{123cc308-a248-45a5-9518-247d35a7af90}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Thirdparty\tinyxml2">
-      <UniqueIdentifier>{a68d8a42-f827-4fc7-872c-5e96ff3adc82}</UniqueIdentifier>
     </Filter>
     <Filter Include="Utils">
       <UniqueIdentifier>{095bbbc7-e27d-4f27-bb51-76bbdc619194}</UniqueIdentifier>

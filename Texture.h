@@ -7,7 +7,7 @@
 #include "vec2.h"
 #include "Base.h"
 
-class Texture
+class __declspec(dllexport) Texture
 {
 public:
 	Texture() = default;

@@ -3,7 +3,7 @@
 
 using namespace std;
 
-Ray Raycaster::CastRay(const int strip, const int width, const Scope<Player>& player, const Scope<Map>& map) const
+Ray Raycaster::CastRay(const int strip, const int width, const Scope<Camera>& player, const Scope<Map>& map) const
 {
 	auto cast = Cast();
 	cast.Rounded = vec2::floor(player->GetPosition());
@@ -81,7 +81,7 @@ Ray Raycaster::CastRay(const int strip, const int width, const Scope<Player>& pl
 	return ray;
 }
 
-float Raycaster::CalculateDistance(const Cast& cast, const Scope<Player>& player) const
+float Raycaster::CalculateDistance(const Cast& cast, const Scope<Camera>& player) const
 {
 	if (cast.Vertical)
 		return (cast.Rounded.y - player->GetPosition().y + (1 - cast.Step.y) / 2) / cast.Direction.y;
@@ -89,7 +89,7 @@ float Raycaster::CalculateDistance(const Cast& cast, const Scope<Player>& player
 		return (cast.Rounded.x - player->GetPosition().x + (1 - cast.Step.x) / 2) / cast.Direction.x;
 }
 
-float Raycaster::CalculateWallX(const Cast& cast, const Scope<Player>& player) const
+float Raycaster::CalculateWallX(const Cast& cast, const Scope<Camera>& player) const
 {
 	if (!cast.Vertical)
 		return player->GetPosition().y + cast.Distance * cast.Direction.y;
@@ -97,7 +97,7 @@ float Raycaster::CalculateWallX(const Cast& cast, const Scope<Player>& player) c
 		return player->GetPosition().x + cast.Distance * cast.Direction.x;
 }
 
-void Raycaster::ProcessVerticalDoor(Cast& cast, const Scope<Player>& player, const Scope<Map>& map) const
+void Raycaster::ProcessVerticalDoor(Cast& cast, const Scope<Camera>& player, const Scope<Map>& map) const
 {
 	auto temp = cast;
 	MakeStep(temp);
@@ -137,7 +137,7 @@ void Raycaster::ProcessVerticalDoor(Cast& cast, const Scope<Player>& player, con
 	cast.Hit = true;
 }
 
-void Raycaster::ProcessHorizontalDoor(Cast& cast, const Scope<Player>& player, const Scope<Map>& map) const
+void Raycaster::ProcessHorizontalDoor(Cast& cast, const Scope<Camera>& player, const Scope<Map>& map) const
 {
 	auto temp = cast;
 	MakeStep(temp);

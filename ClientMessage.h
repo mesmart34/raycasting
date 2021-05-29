@@ -1,8 +1,8 @@
 #pragma once
 #include <cstdint>
 #include <string>
+#include "Object.h"
 #include "Player.h"
-#include "Enemy.h"
 
 
 struct IPEndPoint
@@ -13,21 +13,27 @@ struct IPEndPoint
 
 struct PlayerData
 {
-	uint16_t Id;
+	uint16_t ClientID;
 	vec2 Position;
 	vec2 Velocity;
 	float Angle;
-	EnemyState State;
+	ObjectState State;
+};
+
+struct ObjectData
+{
+	int Id;
+	vec2 Position;
+	vec2 Velocity;
+	float Angle;
+	ObjectState State;
 };
 
 struct Client
 {
+	int Id;
 	IPEndPoint EndPoint = {};
 	std::chrono::time_point<std::chrono::high_resolution_clock> HeardTime = {};
-	float Angle = 0.0;
-	vec2 Position = vec2();
-	vec2 Velocity = vec2();
-	EnemyState State;
 };
 
 struct DoorInfo
@@ -42,5 +48,5 @@ enum class ClientMessage : int8_t
 
 enum class ServerMessage : int8_t
 {
-	JoinResult, PlayersState, ClientConnect, ClientDisconnect, Door
+	JoinResult, PlayersState, ClientConnect, ClientDisconnect, Door, ObjectState
 };

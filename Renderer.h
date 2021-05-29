@@ -21,12 +21,12 @@
 #include "Player.h"
 
 
-class Renderer
+class __declspec(dllexport) Renderer
 {
 public:
 	Renderer() = default;
 	Renderer(const int width, const int height);
-	~Renderer();
+	virtual ~Renderer();
 
 	void Init(const int width, const int height);
 	void Resize(const int width, const int height);
@@ -37,7 +37,7 @@ public:
 	void Draw();
 	void DrawRect(const vec2& start, const vec2& size, const uint32_t color);
 	void DrawColumn(const std::vector<uint32_t>& data, const int x);
-	void DrawSprite(const Sprite& sprite, const vec2& position, const Scope<Player>& player);
+	void DrawSprite(const Sprite& sprite, const vec2& position, const Scope<Camera>& player);
 	void SortObjects(std::vector<Ref<Object>>& m_objects, const vec2& cameraPosition);
 	int GetWidth() const;
 	int GetHeight() const;

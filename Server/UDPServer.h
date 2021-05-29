@@ -1,5 +1,5 @@
 #pragma once
-
+#include "Utils.h"
 #include <WinSock2.h>
 #include <Ws2tcpip.h>
 #include <string>
@@ -12,61 +12,15 @@
 #include <chrono>
 #include <cstdint>
 #include "vec2.h"
+#include "ClientMessage.h"
+#include "TRexStein/tinyxml2.h"
+#include "StringUtils.h"
+#include "Map.h"
 #pragma comment(lib, "ws2_32.lib")
 
 #define MAX_BUFFER_SIZE 512
 #define MAX_CLIENTS 4
 
-enum class EnemyState
-{
-	Idle, Walk, Attack, Die, Damaged
-};
-
-
-struct IPEndPoint
-{
-	uint32_t IpAddress = 0;
-	uint16_t Port = 0;
-};
-
-struct PlayerData
-{
-	uint16_t Id;
-	vec2 Position;
-	vec2 Velocity;
-	float Angle;
-	EnemyState State;
-};
-
-struct Client
-{
-	IPEndPoint EndPoint = {};
-	std::chrono::time_point<std::chrono::high_resolution_clock> HeardTime;
-	float Angle = 0.0;
-	vec2 Position = vec2();
-	vec2 Velocity = vec2();
-	EnemyState State;
-};
-
-struct DoorInfo
-{
-	int x, y;
-};
-
-enum class ClientMessage : int8_t
-{
-	Join, Leave, Input, Door
-};
-
-enum class ServerMessage : int8_t
-{
-	JoinResult, PlayersState, ClientConnect, ClientDisconnect, Door
-};
-
-struct Map
-{
-	
-};
 
 class UDPServer
 {
@@ -75,7 +29,9 @@ public:
 
 	void Start(const int port);
 
+private:
 	void Run();
+	void InitGameWorld();
 	void Receive();
 	void UpdatePlayerData();
 	void UpdateWorld(const float deltaTime);
@@ -86,6 +42,7 @@ public:
 	void SendDisconnectMessage(const int id);
 	void SendToClient(const Client& client, const char* buffer, const int len);
 
+
 private:
 	WSAData m_wsaData;
 	SOCKET m_socket;
@@ -95,5 +52,7 @@ private:
 	bool m_running;
 	char m_buffer[MAX_BUFFER_SIZE];
 	std::queue<DoorInfo> m_doorsToOpen;
+	Scope<Map> m_map;
+	std::map<int, Ref<NetPlayer>> m_players;
 };
 

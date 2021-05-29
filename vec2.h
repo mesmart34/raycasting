@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include <math.h>
 
-class vec2
+class __declspec(dllexport) vec2
 {
 public:
 	vec2() : x(0.0f), y(0.0f) { };

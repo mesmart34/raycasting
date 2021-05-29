@@ -3,14 +3,10 @@
   <ItemGroup>
     <ClInclude Include="UDPServer.h" />
     <ClInclude Include="SafeQueue.h" />
-    <ClInclude Include="ClientMessage.h" />
-    <ClInclude Include="vec2.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="UDPServer.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="SafeQueue.cpp" />
-    <ClCompile Include="ClientMessage.cpp" />
-    <ClCompile Include="vec2.cpp" />
   </ItemGroup>
 </Project>

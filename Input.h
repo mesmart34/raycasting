@@ -13,7 +13,7 @@ enum class CursorMode
 };
 
 
-class Input
+class __declspec(dllexport) Input
 {
 public:
 	
@@ -41,7 +41,8 @@ private:
 	static std::array<bool, 10> m_mousePressed;
 	static std::array<bool, 10> m_mousePreviousPressed;
 	static std::string* m_inputString;
-	static int mouseScreenX, mouseScreenY;
+	static int mouseScreenX;
+	static int mouseScreenY;
 	static vec2 mouseAxis;
 	static float m_scale;
 	static bool m_inputMode;

@@ -140,7 +140,7 @@ void Renderer::DrawColumn(const std::vector<uint32_t>& data, const int x)
 	memcpy(m_data + x * m_height, data.data(), data.size());
 }
 
-void Renderer::DrawSprite(const Sprite& sprite, const vec2& position, const Scope<Player>& player)
+void Renderer::DrawSprite(const Sprite& sprite, const vec2& position, const Scope<Camera>& player)
 {
 	auto width = 64;
 	auto height = 64;
@@ -164,7 +164,8 @@ void Renderer::DrawSprite(const Sprite& sprite, const vec2& position, const Scop
 			if (transform.y > 0 && stripe >= 0 && stripe < m_width && transform.y < m_zBuffer[stripe]) {
 			auto texX = ((stripe - drawStartX) / spriteSize);
 			static auto column = new uint32_t[m_height];
-			sprite.Atlas->GetScaledColumn(column, texX, m_height, spriteSize, vec2(0, 0), sprite.Id, m_renderVerticalOffset / transform.y);
+			auto texture = ResourceManager::GetTexture(sprite.Atlas);
+			texture->GetScaledColumn(column, texX, m_height, spriteSize, vec2(0, 0), sprite.Id, m_renderVerticalOffset / transform.y);
 			if (drawEndY - drawStartY > m_height) {
 				drawStartY = 0;
 				drawEndY = m_height;

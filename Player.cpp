@@ -1,19 +1,20 @@
 #include "pch.h"
 #include "Player.h"
 
-Player::Player(const vec2& position, const float angle, const vec2& plane)
-	: Object(Sprite(), position, true), m_fieldOfView(90.0f), m_plane(plane), m_direction(-1, 0)
+Camera::Camera(const vec2& position, const float angle, const vec2& plane)
+	: Object(position, true, Sprite()), m_fieldOfView(90.0f), m_plane(plane), m_direction(-1, 0)
 {
+	m_angle = 0.0f;
 	m_plane = MathUtils::Rotate(m_plane, angle);
 	m_direction = MathUtils::Rotate(m_direction, angle);
 }
 
-void Player::Move(const vec2& other)
+void Camera::Move(const vec2& other)
 {
 	m_position += other;
 }
 
-void Player::Rotate(const float angle)
+void Camera::Rotate(const float angle)
 {
 	m_plane = MathUtils::Rotate(m_plane, angle);
 	m_direction = MathUtils::Rotate(m_direction, angle);
@@ -25,33 +26,20 @@ void Player::Rotate(const float angle)
 }
 
 
-vec2 Player::GetDirection() const
+vec2 Camera::GetDirection() const
 {
 	return m_direction;
-}
+}	
 
-vec2 Player::GetPlane() const
+vec2 Camera::GetPlane() const
 {
 	return m_plane;
 }
 
 
-void Player::Update(const float deltaTime)
+void Camera::Update(const float deltaTime)
 {
 
-	static float mouseX = 0;
-
-	mouseX += -Input::GetMouseAxis().x * deltaTime * 30.0f;
-	mouseX *= 0.75f;
-
-	Rotate(mouseX);
-	if (Input::IsKeyPressed(SDL_SCANCODE_W))
-		m_velocity += m_direction * deltaTime * 0.2;
-	else if (Input::IsKeyPressed(SDL_SCANCODE_S))
-		m_velocity += m_direction * deltaTime * -0.2;
-	if (Input::IsKeyPressed(SDL_SCANCODE_A))
-		m_velocity += vec2(-m_direction.y, m_direction.x) * deltaTime * 0.2;
-	else if (Input::IsKeyPressed(SDL_SCANCODE_D))
-		m_velocity += vec2(m_direction.y, -m_direction.x) * deltaTime * 0.2;
+	
 }
 

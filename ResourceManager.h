@@ -3,7 +3,7 @@
 #include "Base.h"
 #include "Texture.h"
 
-class ResourceManager
+class __declspec(dllexport) ResourceManager
 {
 public:
 	static void LoadEverything();

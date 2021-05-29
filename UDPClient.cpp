@@ -96,10 +96,6 @@ bool UDPClient::IsConnected() const
 	return m_connected;
 }
 
-PlayerData* UDPClient::PollMessage()
-{
-	return m_clientMessages.next();
-}
 
 uint16_t UDPClient::GetID() const
 {
@@ -127,7 +123,7 @@ void UDPClient::Receive()
 				m_failedToConnectCallback(this);
 			}
 		}
-		else if (type == (char)ServerMessage::PlayersState)
+		/*else if (type == (char)ServerMessage::PlayersState)
 		{
 			auto bytes = 1;
 			while (bytes < len)
@@ -135,6 +131,16 @@ void UDPClient::Receive()
 				memcpy(&dataBuffer[0], &m_buffer[bytes], sizeof(PlayerData));
 				m_onMessage(this, &dataBuffer[0], sizeof(PlayerData), (ServerMessage)type);
 				bytes += sizeof(PlayerData);
+			}
+		}
+		else if (type == (char)ServerMessage::ObjectState)
+		{
+			auto bytes = 1;
+			while (bytes < len)
+			{
+				memcpy(&dataBuffer[0], &m_buffer[bytes], sizeof(Object));
+				m_onMessage(this, &dataBuffer[0], sizeof(Object), (ServerMessage)type);
+				bytes += sizeof(Object);
 			}
 		}
 		else if (m_buffer[0] == (char)ServerMessage::Door)
@@ -146,12 +152,15 @@ void UDPClient::Receive()
 				m_onMessage(this, &dataBuffer[0], sizeof(DoorInfo), (ServerMessage)type);
 				bytes += sizeof(DoorInfo);
 			}
-		}
+		}*/
 		else if (m_buffer[0] == (char)ServerMessage::ClientDisconnect)
 		{
 			auto id = 0;
 			memcpy(&id, &m_buffer[1], sizeof(uint16_t));
 			m_otherPlayerDisconnect(this, id);
+		}
+		else {
+			m_onMessage(this, &m_buffer[1], len - 1, (ServerMessage)type);
 		}
 	}
 }

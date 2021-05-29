@@ -32,6 +32,7 @@ void Console::AddLog(const std::string& data)
 
 void Console::Draw(const Scope<Window>& window)
 {
+	cout << "awdawd" << endl;
 	static bool reclaim_focus = true;
 	if (!m_opened)
 		return;
@@ -82,6 +83,11 @@ void Console::Draw(const Scope<Window>& window)
 	ImGui::End();
 }
 
+void Console::Clear()
+{
+	m_consoleHistory.clear();
+}
+
 bool Console::IsOpened()
 {
 	return m_opened;
@@ -90,45 +96,6 @@ bool Console::IsOpened()
 void Console::ProcessCommand(const std::string& line)
 {
 	auto command = StringUtils::ParseCommand(line, " ");
-	if (command[0] == "quit")
-	{
-		m_engine->Shutdown();
-	}
-	else if (command[0] == "clear")
-	{
-		m_consoleHistory.clear();
-	}
-	else if (command[0] == "connect")
-	{
-		auto clientInfo = StringUtils::ParseCommand(command[1], ":");
-		auto ip = clientInfo[0];
-		auto port = atoi(clientInfo[1].c_str());
-		AddLog(line);
-		m_engine->ConnectToServer(ip, port);
-	}
-	else if (command[0] == "disconnect")
-	{
-		AddLog(line);
-		m_engine->DisconnectFromServer();
-	}
-	else if (command[0] == "load")
-	{
-		if (command[1] == "level")
-		{
-			AddLog(line);
-			auto level = Map::LoadMap("maps/" + command[2] + ".xml");
-
-			if (level == nullptr)
-				AddLog("Failed");
-			else
-			{
-				m_engine->LoadLevel(level);
-				AddLog("The level " + command[2] + " is successfully loaded!");
-			}
-
-		}
-	}
-	else {
-		AddLog("Unknown command \'" + line + "\'");
-	}
+	AddLog("> " + line);
+	m_engine->OnConsoleCommand(command);
 }

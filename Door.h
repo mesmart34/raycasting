@@ -1,7 +1,7 @@
 #pragma once
 #include "MathUtils.h"
 
-class Door
+class __declspec(dllexport) Door
 {
 public:
 	Door() = default;

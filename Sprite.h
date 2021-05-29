@@ -4,13 +4,14 @@
 #include <vector>
 #include "vec2.h"
 #include "Texture.h"
+#include <string>
 
-
-struct Sprite
+struct __declspec(dllexport) Sprite
 {
 	Sprite() = default;
-	Sprite(const int id, const Ref<Texture> atlas);
-	Ref<Texture> Atlas;
-	int Id;
+	Sprite(const int id, const std::string& atlas);
+	virtual ~Sprite() {};
+	std::string Atlas = "";
+	int Id = 0;
 };
 
